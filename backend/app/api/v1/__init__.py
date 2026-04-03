@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import products, categories, brands, quotes, auth, posts
+from app.api.v1.endpoints import products, categories, brands, quotes, auth, posts, upload
 
 api_router = APIRouter(prefix="/api/v1")
 
@@ -11,3 +11,6 @@ api_router.include_router(brands.router)
 api_router.include_router(quotes.router)
 api_router.include_router(posts.router)
 api_router.include_router(auth.router)
+
+# Admin routes
+api_router.include_router(upload.router, prefix="/admin", tags=["Admin - Upload"])
