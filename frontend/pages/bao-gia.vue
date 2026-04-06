@@ -88,11 +88,8 @@
               <label class="label">Thương hiệu phim quan tâm</label>
               <select v-model="form.film_type_preference" class="input">
                 <option value="">Chọn thương hiệu</option>
+                <option value="Newnice">Newnice (Khuyên dùng)</option>
                 <option value="3M">3M</option>
-                <option value="LLumar">LLumar</option>
-                <option value="V-KOOL">V-KOOL</option>
-                <option value="SunTek">SunTek</option>
-                <option value="Ntech">Ntech</option>
                 <option value="Chưa biết - Cần tư vấn">Chưa biết - Cần tư vấn</option>
               </select>
             </div>

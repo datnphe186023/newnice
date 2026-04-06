@@ -123,7 +123,7 @@ import type { Product, Category, Brand, PaginatedResponse } from '~/types'
 // SEO
 useSeoMeta({
   title: 'Sản phẩm phim cách nhiệt ô tô | Newnice',
-  description: 'Khám phá các sản phẩm phim cách nhiệt ô tô, phim đổi màu xe, phim cách nhiệt nhà kính cao cấp từ 3M, LLumar, V-KOOL, SunTek',
+  description: 'Khám phá các sản phẩm phim cách nhiệt ô tô, phim đổi màu xe, phim cách nhiệt nhà kính cao cấp từ Newnice và 3M',
 })
 
 const route = useRoute()
