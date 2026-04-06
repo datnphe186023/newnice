@@ -77,7 +77,6 @@
               <select v-model="form.service_type" class="input">
                 <option value="">Chọn dịch vụ</option>
                 <option value="Phim cách nhiệt ô tô">Phim cách nhiệt ô tô</option>
-                <option value="Phim PPF bảo vệ sơn">Phim PPF bảo vệ sơn</option>
                 <option value="Phim đổi màu xe">Phim đổi màu xe</option>
                 <option value="Phim nhà kính">Phim nhà kính</option>
                 <option value="Khác">Khác</option>
@@ -92,8 +91,8 @@
                 <option value="3M">3M</option>
                 <option value="LLumar">LLumar</option>
                 <option value="V-KOOL">V-KOOL</option>
-                <option value="XPEL">XPEL</option>
                 <option value="SunTek">SunTek</option>
+                <option value="Ntech">Ntech</option>
                 <option value="Chưa biết - Cần tư vấn">Chưa biết - Cần tư vấn</option>
               </select>
             </div>
@@ -147,8 +146,8 @@
 import type { QuoteRequest } from '~/types'
 
 useSeoMeta({
-  title: 'Yêu cầu báo giá | AutoFilm',
-  description: 'Gửi yêu cầu báo giá phim cách nhiệt ô tô, phim PPF, phim đổi màu xe. Phản hồi nhanh trong 30 phút.',
+  title: 'Yêu cầu báo giá | Newnice',
+  description: 'Gửi yêu cầu báo giá phim cách nhiệt ô tô, phim đổi màu xe, phim cách nhiệt nhà kính. Phản hồi nhanh trong 30 phút.',
 })
 
 const { isSubmitting, error, submitQuote } = useQuote()

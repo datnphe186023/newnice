@@ -4,7 +4,7 @@
       <div class="bg-white rounded-2xl shadow-xl p-8">
         <!-- Logo -->
         <div class="text-center mb-8">
-          <h1 class="text-2xl font-bold text-gray-900">AutoFilm Admin</h1>
+          <h1 class="text-2xl font-bold text-gray-900">Newnice Admin</h1>
           <p class="text-gray-500 mt-2">Đăng nhập để quản lý website</p>
         </div>
 
@@ -26,7 +26,7 @@
               v-model="email"
               type="email"
               required
-              placeholder="admin@autofilm.vn"
+              placeholder="admin@newnice.vn"
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
           </div>
@@ -74,7 +74,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Đăng nhập Admin | AutoFilm',
+  title: 'Đăng nhập Admin | Newnice',
   robots: 'noindex, nofollow',
 })
 

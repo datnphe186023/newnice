@@ -30,7 +30,7 @@
         <!-- Logo -->
         <NuxtLink to="/" class="flex-shrink-0">
           <h1 class="text-2xl font-bold text-primary-600">
-            Auto<span class="text-accent">Film</span>
+            New<span class="text-accent">nice</span>
           </h1>
         </NuxtLink>
 
@@ -117,9 +117,9 @@ const isMobileMenuOpen = ref(false)
 
 const menuItems = [
   { label: 'Trang chủ', href: '/' },
-  { label: 'Phim cách nhiệt', href: '/danh-muc/phim-cach-nhiet-o-to' },
-  { label: 'Phim PPF', href: '/danh-muc/phim-ppf' },
-  { label: 'Phim đổi màu', href: '/danh-muc/phim-doi-mau-xe' },
+  { label: 'Phim cách nhiệt ô tô', href: '/danh-muc/phim-cach-nhiet-o-to' },
+  { label: 'Phim đổi màu xe', href: '/danh-muc/phim-doi-mau-xe' },
+  { label: 'Phim nhà kính', href: '/danh-muc/phim-cach-nhiet-nha-kinh' },
   { label: 'Sản phẩm', href: '/san-pham' },
   { label: 'Tin tức', href: '/tin-tuc' },
   { label: 'Liên hệ', href: '/lien-he' },

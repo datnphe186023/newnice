@@ -12,7 +12,6 @@ class FilmType(str, enum.Enum):
     METALLIC = "metallic"
     DYED = "dyed"
     HYBRID = "hybrid"
-    PPF = "ppf"
     COLOR_CHANGE = "color_change"
 
 

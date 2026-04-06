@@ -45,8 +45,8 @@
               </div>
               <div>
                 <h3 class="font-semibold mb-1">Email</h3>
-                <a href="mailto:info@autofilm.vn" class="text-primary-600 hover:text-primary-700">
-                  info@autofilm.vn
+                <a href="mailto:info@newnice.vn" class="text-primary-600 hover:text-primary-700">
+                  info@newnice.vn
                 </a>
               </div>
             </div>
@@ -131,8 +131,8 @@ import { MapPinIcon, PhoneIcon, EnvelopeIcon, ClockIcon } from '@heroicons/vue/2
 import type { Contact } from '~/types'
 
 useSeoMeta({
-  title: 'Liên hệ | AutoFilm',
-  description: 'Liên hệ AutoFilm để được tư vấn về phim cách nhiệt ô tô, phim PPF, phim đổi màu xe.',
+  title: 'Liên hệ | Newnice',
+  description: 'Liên hệ Newnice để được tư vấn về phim cách nhiệt ô tô, phim đổi màu xe, phim cách nhiệt nhà kính.',
 })
 
 const { isSubmitting, error, submitContact } = useQuote()

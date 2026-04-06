@@ -1,4 +1,4 @@
-# AutoFilm Website
+# Newnice Website
 
 Automotive Window Film E-commerce Website built with FastAPI + Nuxt.js 3
 
@@ -48,7 +48,7 @@ npm run dev
 ## Project Structure
 
 ```
-autofilm-website/
+newnice-website/
 ├── backend/           # FastAPI backend
 │   ├── app/
 │   │   ├── api/       # API endpoints
@@ -70,7 +70,7 @@ autofilm-website/
 ## Default Admin
 
 After running seed script:
-- Email: admin@autofilm.vn
+- Email: admin@newnice.vn
 - Password: admin123
 
 ## API Endpoints

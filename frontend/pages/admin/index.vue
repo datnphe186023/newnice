@@ -136,7 +136,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Dashboard | AutoFilm Admin',
+  title: 'Dashboard | Newnice Admin',
   robots: 'noindex, nofollow',
 })
 

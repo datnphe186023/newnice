@@ -16,7 +16,7 @@
       <div class="text-center mb-12">
         <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Tin tức & Kiến thức</h1>
         <p class="text-gray-600 max-w-2xl mx-auto">
-          Cập nhật những thông tin mới nhất về phim cách nhiệt ô tô, phim PPF và các công nghệ bảo vệ xe hơi
+          Cập nhật những thông tin mới nhất về phim cách nhiệt ô tô, phim đổi màu xe và các công nghệ bảo vệ xe hơi
         </p>
       </div>
 
@@ -110,8 +110,8 @@ import type { PostList, PaginatedResponse } from '~/types'
 
 // SEO
 useSeoMeta({
-  title: 'Tin tức & Kiến thức phim cách nhiệt | AutoFilm',
-  description: 'Cập nhật những thông tin mới nhất về phim cách nhiệt ô tô, phim PPF, phim đổi màu xe và các công nghệ bảo vệ xe hơi',
+  title: 'Tin tức & Kiến thức phim cách nhiệt | Newnice',
+  description: 'Cập nhật những thông tin mới nhất về phim cách nhiệt ô tô, phim đổi màu xe, phim cách nhiệt nhà kính và các công nghệ bảo vệ xe hơi',
 })
 
 const config = useRuntimeConfig()

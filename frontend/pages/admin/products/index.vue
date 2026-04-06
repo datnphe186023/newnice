@@ -164,7 +164,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Quản lý sản phẩm | AutoFilm Admin',
+  title: 'Quản lý sản phẩm | Newnice Admin',
   robots: 'noindex, nofollow',
 })
 

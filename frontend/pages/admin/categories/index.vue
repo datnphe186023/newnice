@@ -431,7 +431,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Quản lý danh mục | AutoFilm Admin',
+  title: 'Quản lý danh mục | Newnice Admin',
   robots: 'noindex, nofollow',
 })
 

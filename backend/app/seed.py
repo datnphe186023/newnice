@@ -1,5 +1,5 @@
 """
-Seed script to populate initial data for AutoFilm website
+Seed script to populate initial data for Newnice website
 Run with: python -m app.seed
 """
 import asyncio
@@ -19,19 +19,14 @@ async def seed_categories():
             "sort_order": 1
         },
         {
-            "name": "Phim PPF",
-            "description": "Phim bảo vệ sơn xe (Paint Protection Film) - bảo vệ xe khỏi trầy xước",
-            "sort_order": 2
-        },
-        {
             "name": "Phim đổi màu xe",
             "description": "Phim đổi màu xe cao cấp - thay đổi diện mạo xe theo phong cách riêng",
-            "sort_order": 3
+            "sort_order": 2
         },
         {
             "name": "Phim cách nhiệt nhà kính",
             "description": "Phim dán kính nhà, văn phòng - cách nhiệt, chống nắng hiệu quả",
-            "sort_order": 4
+            "sort_order": 3
         },
     ]
     
@@ -55,8 +50,7 @@ async def seed_brands():
         {"name": "3M", "country": "Mỹ", "description": "Thương hiệu phim cách nhiệt hàng đầu thế giới"},
         {"name": "LLumar", "country": "Mỹ", "description": "Phim cách nhiệt cao cấp từ Eastman"},
         {"name": "V-KOOL", "country": "Mỹ", "description": "Phim cách nhiệt công nghệ nano ceramic"},
-        {"name": "XPEL", "country": "Mỹ", "description": "Thương hiệu PPF hàng đầu thế giới"},
-        {"name": "SunTek", "country": "Mỹ", "description": "Phim cách nhiệt và PPF chất lượng cao"},
+        {"name": "SunTek", "country": "Mỹ", "description": "Phim cách nhiệt chất lượng cao"},
         {"name": "Ntech", "country": "Hàn Quốc", "description": "Phim cách nhiệt Hàn Quốc"},
     ]
     
@@ -140,37 +134,6 @@ async def seed_products():
             "category_slug": "phim-cach-nhiet-o-to",
             "brand_slug": "v-kool"
         },
-        {
-            "name": "XPEL Ultimate Plus",
-            "short_description": "Phim PPF tự phục hồi hàng đầu thế giới",
-            "description": """
-            <h3>XPEL Ultimate Plus - PPF cao cấp nhất</h3>
-            <p>XPEL Ultimate Plus là dòng phim bảo vệ sơn xe cao cấp với khả năng tự phục hồi vết xước.</p>
-            <h4>Đặc điểm:</h4>
-            <ul>
-                <li>Tự phục hồi vết xước nhẹ khi tiếp xúc nhiệt</li>
-                <li>Độ trong suốt tuyệt đối</li>
-                <li>Chống ố vàng theo thời gian</li>
-                <li>Bảo hành 10 năm</li>
-            </ul>
-            """,
-            "film_type": "ppf",
-            "thickness": "8mil",
-            "warranty_years": 10,
-            "is_featured": True,
-            "category_slug": "phim-ppf",
-            "brand_slug": "xpel"
-        },
-        {
-            "name": "SunTek PPF Ultra",
-            "short_description": "Phim PPF SunTek bảo vệ toàn diện",
-            "film_type": "ppf",
-            "thickness": "8mil",
-            "warranty_years": 10,
-            "is_featured": False,
-            "category_slug": "phim-ppf",
-            "brand_slug": "suntek"
-        },
     ]
     
     async with async_session_maker() as session:
@@ -207,7 +170,7 @@ async def seed_admin():
     """Seed admin user"""
     async with async_session_maker() as session:
         admin = AdminUser(
-            email="admin@autofilm.vn",
+            email="admin@newnice.vn",
             password_hash=get_password_hash("admin123"),
             full_name="Administrator",
             role="super_admin",
@@ -215,7 +178,7 @@ async def seed_admin():
         )
         session.add(admin)
         await session.commit()
-        print("✓ Seeded admin user (admin@autofilm.vn / admin123)")
+        print("✓ Seeded admin user (admin@newnice.vn / admin123)")
 
 
 async def main():

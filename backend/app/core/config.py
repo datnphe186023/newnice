@@ -5,7 +5,7 @@ from pathlib import Path
 
 class Settings(BaseSettings):
     # App
-    APP_NAME: str = "AutoFilm API"
+    APP_NAME: str = "Newnice API"
     APP_VERSION: str = "0.1.0"
     DEBUG: bool = True
     

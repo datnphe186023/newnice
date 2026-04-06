@@ -8,7 +8,7 @@
       <!-- Logo -->
       <div class="h-16 flex items-center justify-center border-b border-gray-800">
         <NuxtLink to="/admin" class="text-xl font-bold text-white">
-          AutoFilm Admin
+          Newnice Admin
         </NuxtLink>
       </div>
 

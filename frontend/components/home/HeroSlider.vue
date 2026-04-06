@@ -55,16 +55,16 @@ const slides = [
     link: '/danh-muc/phim-cach-nhiet-o-to'
   },
   {
-    title: 'Phim PPF Bảo Vệ Sơn Xe',
-    description: 'Bảo vệ toàn diện khỏi trầy xước, đá văng, côn trùng với công nghệ tự phục hồi',
-    image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1920&q=80',
-    link: '/danh-muc/phim-ppf'
-  },
-  {
     title: 'Phim Đổi Màu Xe Cao Cấp',
     description: 'Thay đổi diện mạo xe theo phong cách riêng với hàng trăm màu sắc độc đáo',
     image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1920&q=80',
     link: '/danh-muc/phim-doi-mau-xe'
+  },
+  {
+    title: 'Phim Cách Nhiệt Nhà Kính',
+    description: 'Giải pháp cách nhiệt chống nắng hiệu quả cho nhà ở, văn phòng và tòa nhà',
+    image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1920&q=80',
+    link: '/danh-muc/phim-cach-nhiet-nha-kinh'
   }
 ]
 </script>

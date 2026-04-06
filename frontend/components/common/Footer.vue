@@ -6,10 +6,10 @@
         <!-- Company info -->
         <div>
           <h3 class="text-xl font-bold mb-4">
-            Auto<span class="text-accent">Film</span>
+            New<span class="text-accent">nice</span>
           </h3>
           <p class="text-gray-300 mb-4">
-            Chuyên cung cấp và thi công phim cách nhiệt ô tô, phim PPF, phim đổi màu xe cao cấp với chất lượng hàng đầu.
+            Chuyên cung cấp và thi công phim cách nhiệt ô tô, phim đổi màu xe, phim cách nhiệt nhà kính cao cấp với chất lượng hàng đầu.
           </p>
           <div class="flex gap-3">
             <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-accent transition-colors">
@@ -37,13 +37,13 @@
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/danh-muc/phim-ppf" class="text-gray-300 hover:text-accent transition-colors">
-                Phim PPF bảo vệ sơn
+              <NuxtLink to="/danh-muc/phim-doi-mau-xe" class="text-gray-300 hover:text-accent transition-colors">
+                Phim đổi màu xe
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/danh-muc/phim-doi-mau-xe" class="text-gray-300 hover:text-accent transition-colors">
-                Phim đổi màu xe
+              <NuxtLink to="/danh-muc/phim-cach-nhiet-nha-kinh" class="text-gray-300 hover:text-accent transition-colors">
+                Phim cách nhiệt nhà kính
               </NuxtLink>
             </li>
             <li>
@@ -97,8 +97,8 @@
             </li>
             <li class="flex items-center gap-3">
               <EnvelopeIcon class="w-5 h-5 text-accent flex-shrink-0" />
-              <a href="mailto:info@autofilm.vn" class="text-gray-300 hover:text-accent transition-colors">
-                info@autofilm.vn
+              <a href="mailto:info@newnice.vn" class="text-gray-300 hover:text-accent transition-colors">
+                info@newnice.vn
               </a>
             </li>
             <li class="flex items-center gap-3">
@@ -113,7 +113,7 @@
     <!-- Bottom bar -->
     <div class="border-t border-white/10 py-4">
       <div class="container text-center text-gray-400 text-sm">
-        <p>© {{ currentYear }} AutoFilm. All rights reserved.</p>
+        <p>© {{ currentYear }} Newnice. All rights reserved.</p>
       </div>
     </div>
   </footer>

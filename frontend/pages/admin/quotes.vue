@@ -209,7 +209,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Yêu cầu báo giá | AutoFilm Admin',
+  title: 'Yêu cầu báo giá | Newnice Admin',
   robots: 'noindex, nofollow',
 })
 

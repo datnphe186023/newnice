@@ -58,7 +58,7 @@
     <!-- Why Choose Us -->
     <section class="py-12 bg-dark text-white">
       <div class="container">
-        <h2 class="section-title text-center text-white mb-12">Tại Sao Chọn AutoFilm?</h2>
+        <h2 class="section-title text-center text-white mb-12">Tại Sao Chọn Newnice?</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div v-for="feature in features" :key="feature.title" class="text-center">
             <div class="w-16 h-16 mx-auto mb-4 bg-accent rounded-full flex items-center justify-center">
@@ -106,10 +106,10 @@ import type { Product } from '~/types'
 
 // SEO
 useSeoMeta({
-  title: 'AutoFilm - Phim Cách Nhiệt Ô Tô Cao Cấp | Dán Phim PPF',
-  description: 'AutoFilm - Chuyên cung cấp và thi công phim cách nhiệt ô tô 3M, LLumar, V-KOOL, phim PPF bảo vệ sơn, phim đổi màu xe cao cấp tại TP.HCM',
-  ogTitle: 'AutoFilm - Phim Cách Nhiệt Ô Tô Cao Cấp',
-  ogDescription: 'Chuyên cung cấp và thi công phim cách nhiệt ô tô, phim PPF, phim đổi màu xe cao cấp',
+  title: 'Newnice - Phim Cách Nhiệt Ô Tô Cao Cấp',
+  description: 'Newnice - Chuyên cung cấp và thi công phim cách nhiệt ô tô 3M, LLumar, V-KOOL, phim đổi màu xe, phim cách nhiệt nhà kính cao cấp tại TP.HCM',
+  ogTitle: 'Newnice - Phim Cách Nhiệt Ô Tô Cao Cấp',
+  ogDescription: 'Chuyên cung cấp và thi công phim cách nhiệt ô tô, phim đổi màu xe, phim cách nhiệt nhà kính cao cấp',
 })
 
 // Categories
@@ -119,12 +119,6 @@ const categories = [
     slug: 'phim-cach-nhiet-o-to',
     description: 'Giảm nhiệt, chống UV, bảo vệ nội thất',
     icon: SunIcon
-  },
-  {
-    name: 'Phim PPF',
-    slug: 'phim-ppf',
-    description: 'Bảo vệ sơn xe khỏi trầy xước',
-    icon: ShieldCheckIcon
   },
   {
     name: 'Phim đổi màu xe',
