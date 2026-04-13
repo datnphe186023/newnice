@@ -91,14 +91,14 @@
             </li>
             <li class="flex items-center gap-3">
               <PhoneIcon class="w-5 h-5 text-accent flex-shrink-0" />
-              <a href="tel:0901234567" class="text-gray-300 hover:text-accent transition-colors">
-                0901 234 567
+              <a href="tel:0869418104" class="text-gray-300 hover:text-accent transition-colors">
+                0869 418 104
               </a>
             </li>
             <li class="flex items-center gap-3">
               <EnvelopeIcon class="w-5 h-5 text-accent flex-shrink-0" />
-              <a href="mailto:info@newnice.vn" class="text-gray-300 hover:text-accent transition-colors">
-                info@newnice.vn
+              <a href="mailto:newnicefilm@gmail.com" class="text-gray-300 hover:text-accent transition-colors">
+                newnicefilm@gmail.com
               </a>
             </li>
             <li class="flex items-center gap-3">

@@ -27,8 +27,8 @@
               <PhoneIcon class="w-5 h-5 text-primary-600" />
               Liên hệ trực tiếp
             </h3>
-            <a href="tel:0901234567" class="block text-2xl font-bold text-primary-600 hover:text-primary-700 mb-1">
-              0901 234 567
+            <a href="tel:0869418104" class="block text-2xl font-bold text-primary-600 hover:text-primary-700 mb-1">
+              0869 418 104
             </a>
             <p class="text-sm text-gray-500">Thứ 2 - Chủ nhật: 8:00 - 18:00</p>
           </div>

@@ -64,7 +64,7 @@
             <NuxtLink to="/bao-gia" class="btn-primary text-lg px-8">
               Yêu cầu báo giá
             </NuxtLink>
-            <a href="tel:0901234567" class="btn-outline text-lg px-8" @click="trackPhoneClick('0901234567')">
+            <a href="tel:0869418104" class="btn-outline text-lg px-8" @click="trackPhoneClick('0869418104')">
               <PhoneIcon class="w-5 h-5 mr-2" />
               Gọi ngay
             </a>

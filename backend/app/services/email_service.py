@@ -135,8 +135,8 @@ def _base_html(title: str, content: str) -> str:
                      border-top:1px solid #e2e8f0;">
             <p style="margin:0;color:#94a3b8;font-size:12px;">
               © 2024 Newnice · 123 Nguyễn Văn Linh, Quận 7, TP.HCM<br/>
-              <a href="tel:0901234567" style="color:#2563eb;">0901 234 567</a> ·
-              <a href="mailto:info@newnice.vn" style="color:#2563eb;">info@newnice.vn</a>
+              <a href="tel:0869418104" style="color:#2563eb;">0869 418 104</a> ·
+              <a href="mailto:newnicefilm@gmail.com" style="color:#2563eb;">newnicefilm@gmail.com</a>
             </p>
           </td>
         </tr>
@@ -243,7 +243,7 @@ async def notify_new_quote(
           Nếu cần hỗ trợ gấp, hãy gọi thẳng cho chúng tôi:
         </p>
         <div style="text-align:center;">
-          <a href="tel:0901234567"
+          <a href="tel:0869418104"
              style="display:inline-block;background:#f59e0b;color:#fff;padding:12px 28px;
                     border-radius:8px;text-decoration:none;font-weight:700;font-size:16px;">
             📞 0901 234 567
@@ -258,8 +258,8 @@ async def notify_new_quote(
                 f"Xin chào {customer_name},\n\n"
                 "Chúng tôi đã nhận được yêu cầu báo giá của bạn và sẽ liên hệ "
                 "trong vòng 30 phút (giờ hành chính).\n\n"
-                "Hotline: 0901 234 567\n"
-                "Email: info@newnice.vn"
+                "Hotline: 0869 418 104\n"
+                "Email: newnicefilm@gmail.com"
             ),
         )
 
@@ -336,7 +336,7 @@ async def notify_new_contact(
       hoặc gọi hotline nếu cần hỗ trợ ngay:
     </p>
     <div style="text-align:center;">
-      <a href="tel:0901234567"
+      <a href="tel:0869418104"
          style="display:inline-block;background:#2563eb;color:#fff;padding:12px 28px;
                 border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;margin-right:8px;">
         📞 Gọi ngay
@@ -356,7 +356,7 @@ async def notify_new_contact(
             f"Xin chào {name},\n\n"
             "Chúng tôi đã nhận được tin nhắn của bạn và sẽ phản hồi trong "
             "vòng 24 giờ làm việc.\n\n"
-            "Hotline: 0901 234 567\n"
-            "Email: info@newnice.vn"
+            "Hotline: 0869 418 104\n"
+            "Email: newnicefilm@gmail.com"
         ),
     )

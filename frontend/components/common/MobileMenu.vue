@@ -61,11 +61,11 @@
             <!-- Footer -->
             <div class="p-4 border-t bg-gray-50">
               <a 
-                href="tel:0901234567" 
+                href="tel:0869418104" 
                 class="btn-primary w-full mb-3"
               >
                 <PhoneIcon class="w-5 h-5 mr-2" />
-                Gọi ngay: 0901 234 567
+                Gọi ngay: 0869 418 104
               </a>
               <NuxtLink 
                 to="/bao-gia" 

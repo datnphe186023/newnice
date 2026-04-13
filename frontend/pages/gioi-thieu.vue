@@ -168,8 +168,8 @@
           <NuxtLink to="/bao-gia" class="bg-white text-primary-600 hover:bg-gray-50 font-semibold px-8 py-3 rounded-xl transition-colors">
             Yêu cầu báo giá
           </NuxtLink>
-          <a href="tel:0901234567" class="border-2 border-white/60 hover:border-white text-white font-semibold px-8 py-3 rounded-xl transition-colors">
-            📞 0901 234 567
+          <a href="tel:0869418104" class="border-2 border-white/60 hover:border-white text-white font-semibold px-8 py-3 rounded-xl transition-colors">
+            📞 0869 418 104
           </a>
         </div>
       </div>

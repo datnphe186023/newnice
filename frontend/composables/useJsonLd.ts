@@ -9,7 +9,7 @@
 
 const SITE_URL = 'https://newnice.vn'
 const ORG_NAME = 'Newnice'
-const ORG_PHONE = '+84901234567'
+const ORG_PHONE = '+84869418104'
 const ORG_ADDRESS = '123 Nguyễn Văn Linh, Quận 7, Thành phố Hồ Chí Minh, Việt Nam'
 
 // ---------------------------------------------------------------------------

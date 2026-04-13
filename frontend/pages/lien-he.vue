@@ -33,8 +33,8 @@
               </div>
               <div>
                 <h3 class="font-semibold mb-1">Điện thoại</h3>
-                <a href="tel:0901234567" class="text-primary-600 hover:text-primary-700 font-medium">
-                  0901 234 567
+                <a href="tel:0869418104" class="text-primary-600 hover:text-primary-700 font-medium">
+                  0869 418 104
                 </a>
               </div>
             </div>
@@ -45,8 +45,8 @@
               </div>
               <div>
                 <h3 class="font-semibold mb-1">Email</h3>
-                <a href="mailto:info@newnice.vn" class="text-primary-600 hover:text-primary-700">
-                  info@newnice.vn
+                <a href="mailto:newnicefilm@gmail.com" class="text-primary-600 hover:text-primary-700">
+                  newnicefilm@gmail.com
                 </a>
               </div>
             </div>
@@ -94,7 +94,7 @@ import { useCanonical } from '~/composables/useCanonical'
 
 useSeoMeta({
   title: 'Liên hệ Newnice — Tư vấn phim cách nhiệt ô tô tại TP.HCM',
-  description: 'Liên hệ Newnice để được tư vấn miễn phí về phim cách nhiệt ô tô, phim PPF, phim đổi màu xe. Địa chỉ: 123 Nguyễn Văn Linh, Quận 7, TP.HCM. Hotline: 0901 234 567',
+  description: 'Liên hệ Newnice để được tư vấn miễn phí về phim cách nhiệt ô tô, phim PPF, phim đổi màu xe. Hotline: 0869 418 104 · Email: newnicefilm@gmail.com',
   ogTitle: 'Liên hệ Newnice — Tư vấn phim cách nhiệt ô tô tại TP.HCM',
   ogDescription: 'Liên hệ Newnice để được tư vấn miễn phí về phim cách nhiệt ô tô, phim PPF, phim đổi màu xe.',
 })

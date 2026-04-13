@@ -2,7 +2,7 @@
   <div class="fixed bottom-4 right-4 z-40 flex flex-col gap-3">
     <!-- Zalo -->
     <a
-      href="https://zalo.me/0901234567"
+      href="https://zalo.me/0869418104"
       target="_blank"
       class="group relative w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
     >
@@ -28,7 +28,7 @@
 
     <!-- Phone -->
     <a
-      href="tel:0901234567"
+      href="tel:0869418104"
       class="group relative w-14 h-14 bg-green-500 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform animate-pulse"
     >
       <PhoneIcon class="w-7 h-7 text-white" />

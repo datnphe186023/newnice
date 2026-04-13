@@ -75,8 +75,8 @@
           <NuxtLink to="/bao-gia" class="btn-accent text-lg px-8">
             Báo giá miễn phí
           </NuxtLink>
-          <a href="tel:0901234567" class="btn bg-white text-primary-600 hover:bg-gray-100 text-lg px-8" @click="trackPhoneClick('0901234567')">
-            Gọi ngay: 0901 234 567
+          <a href="tel:0869418104" class="btn bg-white text-primary-600 hover:bg-gray-100 text-lg px-8" @click="trackPhoneClick('0869418104')">
+            Gọi ngay: 0869 418 104
           </a>
         </div>
       </div>

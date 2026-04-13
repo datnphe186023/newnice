@@ -4,9 +4,9 @@
     <div class="bg-dark text-white py-2 hidden md:block">
       <div class="container flex items-center justify-between">
         <div class="flex items-center gap-6 text-sm">
-          <a href="tel:0901234567" class="flex items-center gap-2 hover:text-accent transition-colors">
+          <a href="tel:0869418104" class="flex items-center gap-2 hover:text-accent transition-colors">
             <PhoneIcon class="w-4 h-4" />
-            <span>Hotline: <strong>0901 234 567</strong></span>
+            <span>Hotline: <strong>0869 418 104</strong></span>
           </a>
           <span class="flex items-center gap-2">
             <MapPinIcon class="w-4 h-4" />
@@ -55,9 +55,9 @@
 
         <!-- Actions -->
         <div class="flex items-center gap-4">
-          <a href="tel:0901234567" class="hidden sm:flex items-center gap-2 text-primary-600 font-semibold">
+          <a href="tel:0869418104" class="hidden sm:flex items-center gap-2 text-primary-600 font-semibold">
             <PhoneIcon class="w-5 h-5" />
-            <span class="hidden lg:inline">0901 234 567</span>
+            <span class="hidden lg:inline">0869 418 104</span>
           </a>
           
           <NuxtLink to="/bao-gia" class="btn-primary hidden sm:flex">
