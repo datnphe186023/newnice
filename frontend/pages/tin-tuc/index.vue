@@ -107,12 +107,19 @@
 
 <script setup lang="ts">
 import type { PostList, PaginatedResponse } from '~/types'
+import { buildBreadcrumbSchema, useJsonLd } from '~/composables/useJsonLd'
+import { useCanonical } from '~/composables/useCanonical'
 
 // SEO
 useSeoMeta({
   title: 'Tin tức & Kiến thức phim cách nhiệt | Newnice',
   description: 'Cập nhật những thông tin mới nhất về phim cách nhiệt ô tô, phim đổi màu xe, phim cách nhiệt nhà kính và các công nghệ bảo vệ xe hơi',
 })
+useJsonLd(buildBreadcrumbSchema([
+  { name: 'Trang chủ', url: '/' },
+  { name: 'Tin tức', url: '/tin-tuc' },
+]))
+useCanonical('/tin-tuc')
 
 const config = useRuntimeConfig()
 const currentPage = ref(1)

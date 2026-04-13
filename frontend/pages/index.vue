@@ -4,53 +4,46 @@
     <HomeHeroSlider />
 
     <!-- Categories -->
-    <section class="py-12 bg-gray-50">
-      <div class="container">
-        <h2 class="section-title text-center mb-8">Dịch Vụ Của Chúng Tôi</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <NuxtLink 
-            v-for="category in categories" 
-            :key="category.slug"
-            :to="`/danh-muc/${category.slug}`"
-            class="card group p-6 text-center hover:bg-primary-600 hover:text-white transition-all"
-          >
-            <div class="w-16 h-16 mx-auto mb-4 bg-primary-100 rounded-full flex items-center justify-center group-hover:bg-white/20">
-              <component :is="category.icon" class="w-8 h-8 text-primary-600 group-hover:text-white" />
-            </div>
-            <h3 class="font-semibold text-lg mb-2">{{ category.name }}</h3>
-            <p class="text-sm text-gray-500 group-hover:text-white/80">{{ category.description }}</p>
-          </NuxtLink>
-        </div>
-      </div>
-    </section>
+    <HomeCategoryGrid />
 
-    <!-- Featured Products -->
-    <section class="py-12">
+    <!-- Featured Products (inline to avoid SSR sub-component issues) -->
+    <section class="py-14">
       <div class="container">
-        <div class="flex items-center justify-between mb-8">
-          <h2 class="section-title">Sản Phẩm Nổi Bật</h2>
-          <NuxtLink to="/san-pham" class="text-primary-600 hover:text-primary-700 font-medium">
+        <div class="flex items-end justify-between mb-10">
+          <div>
+            <p class="text-primary-600 font-semibold text-sm uppercase tracking-wider mb-2">Được yêu thích nhất</p>
+            <h2 class="section-title">Sản Phẩm Nổi Bật</h2>
+          </div>
+          <NuxtLink
+            to="/san-pham"
+            class="hidden sm:flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium transition-colors"
+          >
             Xem tất cả →
           </NuxtLink>
         </div>
-        
-        <div v-if="pending" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <!-- Loading skeleton -->
+        <div v-if="featuredPending" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div v-for="i in 4" :key="i" class="card animate-pulse">
             <div class="aspect-square bg-gray-200" />
             <div class="p-4 space-y-3">
-              <div class="h-4 bg-gray-200 rounded w-1/2" />
+              <div class="h-3 bg-gray-200 rounded w-1/3" />
               <div class="h-5 bg-gray-200 rounded" />
               <div class="h-4 bg-gray-200 rounded w-3/4" />
             </div>
           </div>
         </div>
-        
+
         <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <ProductProductCard 
-            v-for="product in featuredProducts" 
-            :key="product.id" 
-            :product="product" 
+          <ProductCard
+            v-for="product in featuredProducts"
+            :key="product.id"
+            :product="product"
           />
+        </div>
+
+        <div class="text-center mt-8 sm:hidden">
+          <NuxtLink to="/san-pham" class="btn-outline">Xem tất cả sản phẩm</NuxtLink>
         </div>
       </div>
     </section>
@@ -82,7 +75,7 @@
           <NuxtLink to="/bao-gia" class="btn-accent text-lg px-8">
             Báo giá miễn phí
           </NuxtLink>
-          <a href="tel:0901234567" class="btn bg-white text-primary-600 hover:bg-gray-100 text-lg px-8">
+          <a href="tel:0901234567" class="btn bg-white text-primary-600 hover:bg-gray-100 text-lg px-8" @click="trackPhoneClick('0901234567')">
             Gọi ngay: 0901 234 567
           </a>
         </div>
@@ -97,12 +90,13 @@ import {
   SparklesIcon, 
   TruckIcon, 
   WrenchScrewdriverIcon,
-  SunIcon,
-  FilmIcon,
-  PaintBrushIcon,
-  HomeIcon
 } from '@heroicons/vue/24/outline'
 import type { Product } from '~/types'
+import { useJsonLd, buildOrganizationSchema } from '~/composables/useJsonLd'
+import { useCanonical } from '~/composables/useCanonical'
+import { usePhoneTracking } from '~/composables/usePhoneTracking'
+
+const config = useRuntimeConfig()
 
 // SEO
 useSeoMeta({
@@ -111,28 +105,16 @@ useSeoMeta({
   ogTitle: 'Newnice - Phim Cách Nhiệt Ô Tô Cao Cấp',
   ogDescription: 'Chuyên cung cấp và thi công phim cách nhiệt ô tô, phim đổi màu xe, phim cách nhiệt nhà kính cao cấp',
 })
+useJsonLd(buildOrganizationSchema())
+useCanonical('/')
 
-// Categories
-const categories = [
-  {
-    name: 'Phim cách nhiệt ô tô',
-    slug: 'phim-cach-nhiet-o-to',
-    description: 'Giảm nhiệt, chống UV, bảo vệ nội thất',
-    icon: SunIcon
-  },
-  {
-    name: 'Phim đổi màu xe',
-    slug: 'phim-doi-mau-xe',
-    description: 'Đổi màu xe theo phong cách riêng',
-    icon: PaintBrushIcon
-  },
-  {
-    name: 'Phim nhà kính',
-    slug: 'phim-cach-nhiet-nha-kinh',
-    description: 'Cách nhiệt cho nhà ở, văn phòng',
-    icon: HomeIcon
-  }
-]
+const { trackPhoneClick } = usePhoneTracking()
+
+// Featured products
+const { data: featuredProducts, pending: featuredPending } = await useFetch<Product[]>(
+  `${config.public.apiBase}/products/featured?limit=8`,
+  { default: () => [] }
+)
 
 // Features
 const features = [
@@ -158,10 +140,5 @@ const features = [
   }
 ]
 
-// Fetch featured products
-const config = useRuntimeConfig()
-const { data: featuredProducts, pending } = await useFetch<Product[]>(
-  `${config.public.apiBase}/products/featured?limit=8`,
-  { default: () => [] }
-)
 </script>
+

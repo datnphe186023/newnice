@@ -144,6 +144,18 @@ useSeoMeta({
   articleModifiedTime: () => post.value?.updated_at,
 })
 
+// JSON-LD structured data
+if (post.value) {
+  useJsonLd([
+    buildArticleSchema(post.value),
+    buildBreadcrumbSchema([
+      { name: 'Trang chủ', url: '/' },
+      { name: 'Tin tức', url: '/tin-tuc' },
+      { name: post.value.title, url: `/tin-tuc/${post.value.slug}` },
+    ]),
+  ])
+}
+
 // Fetch recent posts for related section
 const { data: recentPosts } = await useFetch<PostList[]>(
   `${config.public.apiBase}/posts/recent?limit=4`

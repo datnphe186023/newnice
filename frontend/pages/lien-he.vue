@@ -63,7 +63,7 @@
           </div>
 
           <!-- Map -->
-          <div class="mt-8 rounded-lg overflow-hidden h-64 bg-gray-200">
+          <div class="mt-8 rounded-xl overflow-hidden h-64 bg-gray-200">
             <iframe 
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3920.0245!2d106.7!3d10.73!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDQzJzQ4LjAiTiAxMDbCsDQyJzAwLjAiRQ!5e0!3m2!1sen!2s!4v1234567890"
               width="100%" 
@@ -78,47 +78,8 @@
         <!-- Contact form -->
         <div>
           <h2 class="text-2xl font-bold mb-6">Gửi Tin Nhắn</h2>
-          
           <div class="card p-6">
-            <form @submit.prevent="handleSubmit">
-              <div class="mb-4">
-                <label class="label">Họ và tên *</label>
-                <input v-model="form.name" type="text" class="input" required />
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label class="label">Email *</label>
-                  <input v-model="form.email" type="email" class="input" required />
-                </div>
-                <div>
-                  <label class="label">Số điện thoại</label>
-                  <input v-model="form.phone" type="tel" class="input" />
-                </div>
-              </div>
-
-              <div class="mb-4">
-                <label class="label">Tiêu đề</label>
-                <input v-model="form.subject" type="text" class="input" />
-              </div>
-
-              <div class="mb-6">
-                <label class="label">Nội dung *</label>
-                <textarea v-model="form.message" class="input" rows="5" required />
-              </div>
-
-              <div v-if="error" class="mb-4 p-4 bg-red-50 text-red-600 rounded-lg">
-                {{ error }}
-              </div>
-
-              <div v-if="successMessage" class="mb-4 p-4 bg-green-50 text-green-600 rounded-lg">
-                {{ successMessage }}
-              </div>
-
-              <button type="submit" class="btn-primary w-full" :disabled="isSubmitting">
-                {{ isSubmitting ? 'Đang gửi...' : 'Gửi tin nhắn' }}
-              </button>
-            </form>
+            <FormsContactForm />
           </div>
         </div>
       </div>
@@ -128,29 +89,15 @@
 
 <script setup lang="ts">
 import { MapPinIcon, PhoneIcon, EnvelopeIcon, ClockIcon } from '@heroicons/vue/24/outline'
-import type { Contact } from '~/types'
+import { buildLocalBusinessSchema, useJsonLd } from '~/composables/useJsonLd'
+import { useCanonical } from '~/composables/useCanonical'
 
 useSeoMeta({
-  title: 'Liên hệ | Newnice',
-  description: 'Liên hệ Newnice để được tư vấn về phim cách nhiệt ô tô, phim đổi màu xe, phim cách nhiệt nhà kính.',
+  title: 'Liên hệ Newnice — Tư vấn phim cách nhiệt ô tô tại TP.HCM',
+  description: 'Liên hệ Newnice để được tư vấn miễn phí về phim cách nhiệt ô tô, phim PPF, phim đổi màu xe. Địa chỉ: 123 Nguyễn Văn Linh, Quận 7, TP.HCM. Hotline: 0901 234 567',
+  ogTitle: 'Liên hệ Newnice — Tư vấn phim cách nhiệt ô tô tại TP.HCM',
+  ogDescription: 'Liên hệ Newnice để được tư vấn miễn phí về phim cách nhiệt ô tô, phim PPF, phim đổi màu xe.',
 })
-
-const { isSubmitting, error, submitContact } = useQuote()
-const successMessage = ref('')
-
-const form = reactive<Contact>({
-  name: '',
-  email: '',
-  phone: '',
-  subject: '',
-  message: ''
-})
-
-const handleSubmit = async () => {
-  const result = await submitContact(form)
-  if (result) {
-    successMessage.value = result.message
-    Object.assign(form, { name: '', email: '', phone: '', subject: '', message: '' })
-  }
-}
+useJsonLd(buildLocalBusinessSchema())
+useCanonical('/lien-he')
 </script>

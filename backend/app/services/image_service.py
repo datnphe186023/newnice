@@ -145,6 +145,8 @@ async def save_upload(
     if not generate_variants:
         return result
     
+    result["original_size_bytes"] = len(content)
+
     # Open image for processing
     try:
         image = Image.open(original_path)
@@ -156,6 +158,7 @@ async def save_upload(
     # Convert original to WebP
     webp_path = convert_to_webp(image.copy(), original_path)
     result["webp"] = f"/uploads/{base_subfolder}/{webp_path.name}"
+    result["webp_size_bytes"] = webp_path.stat().st_size
     
     # Generate size variants
     sizes = BANNER_SIZES if is_banner else IMAGE_SIZES

@@ -113,7 +113,7 @@
 
           <!-- Products grid -->
           <div v-else-if="products?.items.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <ProductProductCard 
+            <ProductCard 
               v-for="product in products.items" 
               :key="product.id" 
               :product="product" 
@@ -159,6 +159,8 @@
 
 <script setup lang="ts">
 import type { Product, Category, Brand, PaginatedResponse } from '~/types'
+import { buildBreadcrumbSchema, useJsonLd } from '~/composables/useJsonLd'
+import { useCanonical } from '~/composables/useCanonical'
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -180,12 +182,20 @@ if (categoryError.value) {
 
 // SEO
 useSeoMeta({
-  title: () => category.value?.meta_title || `${category.value?.name} | AutoFilm`,
-  description: () => category.value?.meta_description || category.value?.description || `Khám phá các sản phẩm ${category.value?.name} chất lượng cao tại AutoFilm`,
+  title: () => category.value?.meta_title || `${category.value?.name} | Newnice`,
+  description: () => category.value?.meta_description || category.value?.description || `Khám phá các sản phẩm ${category.value?.name} chất lượng cao tại Newnice`,
   ogTitle: () => category.value?.meta_title || category.value?.name,
   ogDescription: () => category.value?.meta_description || category.value?.description,
   ogImage: () => category.value?.banner_image || category.value?.image,
 })
+useCanonical(route.path)
+if (category.value) {
+  useJsonLd(buildBreadcrumbSchema([
+    { name: 'Trang chủ', url: '/' },
+    { name: 'Sản phẩm', url: '/san-pham' },
+    { name: category.value.name, url: `/danh-muc/${category.value.slug}` },
+  ]))
+}
 
 // Filters
 const currentPage = ref(1)

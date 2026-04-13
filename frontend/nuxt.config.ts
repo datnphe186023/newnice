@@ -15,6 +15,8 @@ export default defineNuxtConfig({
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
       siteName: 'Newnice',
       siteDescription: 'Phim cách nhiệt ô tô cao cấp - Phim đổi màu xe - Phim cách nhiệt nhà kính chuyên nghiệp',
+      gaId: process.env.NUXT_PUBLIC_GA_ID || '',                   // GA4 measurement ID e.g. G-XXXXXXXXXX
+      gscVerification: process.env.NUXT_PUBLIC_GSC_VERIFICATION || '', // Google Search Console verification token
     }
   },
 
@@ -32,6 +34,10 @@ export default defineNuxtConfig({
         { name: 'author', content: 'Newnice' },
         { property: 'og:type', content: 'website' },
         { property: 'og:site_name', content: 'Newnice' },
+        // Google Search Console verification — set NUXT_PUBLIC_GSC_VERIFICATION in .env
+        ...(process.env.NUXT_PUBLIC_GSC_VERIFICATION
+          ? [{ name: 'google-site-verification', content: process.env.NUXT_PUBLIC_GSC_VERIFICATION }]
+          : []),
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },

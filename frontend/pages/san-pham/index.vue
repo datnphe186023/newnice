@@ -87,7 +87,7 @@
 
           <!-- Products grid -->
           <div v-else-if="products?.items.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <ProductProductCard 
+            <ProductCard 
               v-for="product in products.items" 
               :key="product.id" 
               :product="product" 
@@ -119,12 +119,19 @@
 
 <script setup lang="ts">
 import type { Product, Category, Brand, PaginatedResponse } from '~/types'
+import { buildBreadcrumbSchema, useJsonLd } from '~/composables/useJsonLd'
+import { useCanonical } from '~/composables/useCanonical'
 
 // SEO
 useSeoMeta({
   title: 'Sản phẩm phim cách nhiệt ô tô | Newnice',
   description: 'Khám phá các sản phẩm phim cách nhiệt ô tô, phim đổi màu xe, phim cách nhiệt nhà kính cao cấp từ Newnice và 3M',
 })
+useJsonLd(buildBreadcrumbSchema([
+  { name: 'Trang chủ', url: '/' },
+  { name: 'Sản phẩm', url: '/san-pham' },
+]))
+useCanonical('/san-pham')
 
 const route = useRoute()
 const config = useRuntimeConfig()

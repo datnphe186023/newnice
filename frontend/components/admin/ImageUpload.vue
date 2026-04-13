@@ -86,6 +86,21 @@
     <p v-if="error" class="mt-2 text-sm text-red-600">
       {{ error }}
     </p>
+
+    <!-- Optimization stats -->
+    <div
+      v-if="uploadStats"
+      class="mt-3 flex items-center gap-2 text-sm bg-green-50 border border-green-200 rounded-lg px-3 py-2"
+    >
+      <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <span class="text-green-800">
+        Tối ưu: {{ (uploadStats.original_size_bytes / 1024 / 1024).toFixed(2) }} MB
+        → {{ (uploadStats.webp_size_bytes / 1024).toFixed(0) }} KB
+        <strong>(giảm {{ Math.round((1 - uploadStats.webp_size_bytes / uploadStats.original_size_bytes) * 100) }}%)</strong>
+      </span>
+    </div>
   </div>
 </template>
 
@@ -104,6 +119,8 @@ interface ImageData {
   srcset?: string
   sizes?: string
   filename?: string
+  original_size_bytes?: number
+  webp_size_bytes?: number
 }
 
 const props = withDefaults(defineProps<{
@@ -141,6 +158,7 @@ const isDragging = ref(false)
 const uploading = ref(false)
 const uploadProgress = ref(0)
 const error = ref<string | null>(null)
+const uploadStats = ref<{ original_size_bytes: number; webp_size_bytes: number } | null>(null)
 
 const acceptText = computed(() => {
   const types = props.accept.split(',').map(t => t.split('/')[1]?.toUpperCase()).filter(Boolean)
@@ -243,6 +261,13 @@ async function uploadFile(file: File) {
       const imageUrl = imageData.webp || imageData.original
       emit('update:modelValue', imageUrl)
       emit('uploaded', imageData)
+      // Show optimization stats if available
+      if (imageData.original_size_bytes != null && imageData.webp_size_bytes != null) {
+        uploadStats.value = {
+          original_size_bytes: imageData.original_size_bytes,
+          webp_size_bytes: imageData.webp_size_bytes,
+        }
+      }
     } else {
       throw new Error('Invalid response from server')
     }
@@ -274,10 +299,12 @@ async function removeImage() {
     // Even if delete fails on server, clear the local value
     emit('update:modelValue', null)
     emit('removed')
+    uploadStats.value = null
   } catch (e: any) {
     // Still clear local value
     emit('update:modelValue', null)
     emit('removed')
+    uploadStats.value = null
   }
 }
 
