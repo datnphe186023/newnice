@@ -10,7 +10,7 @@
           </a>
           <span class="flex items-center gap-2">
             <MapPinIcon class="w-4 h-4" />
-            <span>123 Nguyễn Văn Linh, Quận 7, TP.HCM</span>
+            <span>311 Phúc Diễn, Nam Từ Liêm, Hà Nội</span>
           </span>
         </div>
         <div class="flex items-center gap-4 text-sm">

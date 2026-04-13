@@ -89,7 +89,7 @@
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1.5">Địa chỉ</label>
-            <input v-model="form.contact_address" type="text" class="input" placeholder="123 Nguyễn Văn Linh, Quận 7, TP.HCM"/>
+            <input v-model="form.contact_address" type="text" class="input" placeholder="311 Phúc Diễn, Nam Từ Liêm, Hà Nội"/>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1.5">Tiêu đề bảo hành</label>

@@ -14,7 +14,7 @@ export default defineNuxtConfig({
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000/api/v1',
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
       siteName: 'Newnice',
-      siteDescription: 'Phim cách nhiệt ô tô cao cấp - Phim đổi màu xe - Phim cách nhiệt nhà kính chuyên nghiệp',
+      siteDescription: 'Phim cách nhiệt ô tô cao cấp tại Hà Nội - Phim đổi màu xe - Phim cách nhiệt nhà kính chuyên nghiệp',
       gaId: process.env.NUXT_PUBLIC_GA_ID || '',                   // GA4 measurement ID e.g. G-XXXXXXXXXX
       gscVerification: process.env.NUXT_PUBLIC_GSC_VERIFICATION || '', // Google Search Console verification token
     }

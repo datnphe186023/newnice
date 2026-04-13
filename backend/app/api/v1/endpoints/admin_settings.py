@@ -49,7 +49,7 @@ DEFAULT_SETTINGS: dict[str, tuple[str, str]] = {
     "site_tagline":       ("Phim cách nhiệt ô tô cao cấp", "text"),
     "contact_phone":      ("0869 418 104", "text"),
     "contact_email":      ("newnicefilm@gmail.com", "text"),
-    "contact_address":    ("123 Nguyễn Văn Linh, Quận 7, TP.HCM", "text"),
+    "contact_address":    ("311 Phúc Diễn, Nam Từ Liêm, Hà Nội", "text"),
     "facebook_url":       ("", "text"),
     "zalo_url":           ("", "text"),
     "youtube_url":        ("", "text"),
@@ -58,7 +58,7 @@ DEFAULT_SETTINGS: dict[str, tuple[str, str]] = {
     "ga_measurement_id":  ("", "text"),
     "gsc_verification":   ("", "text"),
     "warranty_headline":  ("Bảo hành lên đến 10 năm", "text"),
-    "meta_description":   ("Newnice - Chuyên cung cấp và thi công phim cách nhiệt ô tô, phim đổi màu xe, phim nhà kính cao cấp tại TP.HCM", "text"),
+    "meta_description":   ("Newnice - Chuyên cung cấp và thi công phim cách nhiệt ô tô, phim đổi màu xe, phim nhà kính cao cấp tại Hà Nội", "text"),
 }
 
 

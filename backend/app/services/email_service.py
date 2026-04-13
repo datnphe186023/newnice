@@ -134,7 +134,7 @@ def _base_html(title: str, content: str) -> str:
           <td style="background:#f8fafc;padding:24px 40px;text-align:center;
                      border-top:1px solid #e2e8f0;">
             <p style="margin:0;color:#94a3b8;font-size:12px;">
-              © 2024 Newnice · 123 Nguyễn Văn Linh, Quận 7, TP.HCM<br/>
+              © 2024 Newnice · 311 Phúc Diễn, Nam Từ Liêm, Hà Nội<br/>
               <a href="tel:0869418104" style="color:#2563eb;">0869 418 104</a> ·
               <a href="mailto:newnicefilm@gmail.com" style="color:#2563eb;">newnicefilm@gmail.com</a>
             </p>

@@ -23,7 +23,7 @@
               </div>
               <div>
                 <h3 class="font-semibold mb-1">Địa chỉ</h3>
-                <p class="text-gray-600">123 Nguyễn Văn Linh, Quận 7, TP. Hồ Chí Minh</p>
+                <p class="text-gray-600">311 Phúc Diễn, Nam Từ Liêm, Hà Nội</p>
               </div>
             </div>
 
@@ -65,7 +65,7 @@
           <!-- Map -->
           <div class="mt-8 rounded-xl overflow-hidden h-64 bg-gray-200">
             <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3920.0245!2d106.7!3d10.73!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTDCsDQzJzQ4LjAiTiAxMDbCsDQyJzAwLjAiRQ!5e0!3m2!1sen!2s!4v1234567890"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3723.8!2d105.7469!3d21.0285!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjHCsDAxJzQyLjYiTiAxMDXCsDQ0JzQ4LjgiRQ!5e0!3m2!1svi!2s!4v1234567890"
               width="100%" 
               height="100%" 
               style="border:0;" 
@@ -93,9 +93,9 @@ import { buildLocalBusinessSchema, useJsonLd } from '~/composables/useJsonLd'
 import { useCanonical } from '~/composables/useCanonical'
 
 useSeoMeta({
-  title: 'Liên hệ Newnice — Tư vấn phim cách nhiệt ô tô tại TP.HCM',
-  description: 'Liên hệ Newnice để được tư vấn miễn phí về phim cách nhiệt ô tô, phim PPF, phim đổi màu xe. Hotline: 0869 418 104 · Email: newnicefilm@gmail.com',
-  ogTitle: 'Liên hệ Newnice — Tư vấn phim cách nhiệt ô tô tại TP.HCM',
+  title: 'Liên hệ Newnice — Tư vấn phim cách nhiệt ô tô tại Hà Nội',
+  description: 'Liên hệ Newnice để được tư vấn miễn phí về phim cách nhiệt ô tô, phim PPF, phim đổi màu xe. Địa chỉ: 311 Phúc Diễn, Nam Từ Liêm, Hà Nội. Hotline: 0869 418 104',
+  ogTitle: 'Liên hệ Newnice — Tư vấn phim cách nhiệt ô tô tại Hà Nội',
   ogDescription: 'Liên hệ Newnice để được tư vấn miễn phí về phim cách nhiệt ô tô, phim PPF, phim đổi màu xe.',
 })
 useJsonLd(buildLocalBusinessSchema())

@@ -101,7 +101,7 @@ const config = useRuntimeConfig()
 // SEO
 useSeoMeta({
   title: 'Newnice - Phim Cách Nhiệt Ô Tô Cao Cấp',
-  description: 'Newnice - Chuyên cung cấp và thi công phim cách nhiệt ô tô Newnice, 3M, phim đổi màu xe, phim cách nhiệt nhà kính cao cấp tại TP.HCM',
+  description: 'Newnice - Chuyên cung cấp và thi công phim cách nhiệt ô tô Newnice, 3M, phim đổi màu xe, phim cách nhiệt nhà kính cao cấp tại Hà Nội',
   ogTitle: 'Newnice - Phim Cách Nhiệt Ô Tô Cao Cấp',
   ogDescription: 'Chuyên cung cấp và thi công phim cách nhiệt ô tô, phim đổi màu xe, phim cách nhiệt nhà kính cao cấp',
 })

@@ -10,7 +10,7 @@
 const SITE_URL = 'https://newnice.vn'
 const ORG_NAME = 'Newnice'
 const ORG_PHONE = '+84869418104'
-const ORG_ADDRESS = '123 Nguyễn Văn Linh, Quận 7, Thành phố Hồ Chí Minh, Việt Nam'
+const ORG_ADDRESS = '311 Phúc Diễn, Nam Từ Liêm, Hà Nội, Việt Nam'
 
 // ---------------------------------------------------------------------------
 // Core inject helper
@@ -40,9 +40,9 @@ export function buildOrganizationSchema() {
     telephone: ORG_PHONE,
     address: {
       '@type': 'PostalAddress',
-      streetAddress: '123 Nguyễn Văn Linh',
-      addressLocality: 'Quận 7',
-      addressRegion: 'Thành phố Hồ Chí Minh',
+      streetAddress: '311 Phúc Diễn',
+      addressLocality: 'Nam Từ Liêm',
+      addressRegion: 'Hà Nội',
       addressCountry: 'VN',
     },
     openingHoursSpecification: [
@@ -170,8 +170,8 @@ export function buildLocalBusinessSchema() {
     },
     geo: {
       '@type': 'GeoCoordinates',
-      latitude: 10.73,
-      longitude: 106.7,
+      latitude: 21.0285,
+      longitude: 105.7469,
     },
     priceRange: '$$',
     openingHours: 'Mo-Su 08:00-18:00',

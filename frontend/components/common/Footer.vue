@@ -87,7 +87,7 @@
           <ul class="space-y-3">
             <li class="flex items-start gap-3">
               <MapPinIcon class="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-              <span class="text-gray-300">123 Nguyễn Văn Linh, Quận 7, TP.HCM</span>
+              <span class="text-gray-300">311 Phúc Diễn, Nam Từ Liêm, Hà Nội</span>
             </li>
             <li class="flex items-center gap-3">
               <PhoneIcon class="w-5 h-5 text-accent flex-shrink-0" />

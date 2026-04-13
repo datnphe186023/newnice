@@ -34,7 +34,7 @@
             <div class="space-y-4 text-gray-600 leading-relaxed">
               <p>
                 Newnice được thành lập năm 2014 bởi đội ngũ những người đam mê xe và công nghệ phim.
-                Xuất phát từ một xưởng nhỏ tại Quận 7 TP.HCM, chúng tôi đã không ngừng học hỏi,
+                Xuất phát từ một xưởng nhỏ tại Nam Từ Liêm, Hà Nội, chúng tôi đã không ngừng học hỏi,
                 đầu tư công nghệ và xây dựng đội ngũ kỹ thuật viên giỏi.
               </p>
               <p>
@@ -190,7 +190,7 @@ import { useCanonical } from '~/composables/useCanonical'
 
 useSeoMeta({
   title: 'Về chúng tôi | Newnice — Phim cách nhiệt ô tô cao cấp',
-  description: 'Newnice — Hơn 10 năm kinh nghiệm trong lĩnh vực phim cách nhiệt ô tô, phim PPF, phim đổi màu xe tại TP.HCM. Đại lý ủy quyền 3M, chuyên nghiệp và uy tín.',
+  description: 'Newnice — Hơn 10 năm kinh nghiệm trong lĩnh vực phim cách nhiệt ô tô, phim PPF, phim đổi màu xe tại Hà Nội. Đại lý ủy quyền 3M, chuyên nghiệp và uy tín.',
   ogTitle: 'Về Newnice — Hơn 10 năm dẫn đầu phim cách nhiệt',
   ogDescription: 'Hơn 15,000 khách hàng tin tưởng. Đại lý chính hãng 3M, Newnice, PPF. Bảo hành lên đến 10 năm.',
 })
@@ -262,7 +262,7 @@ const milestones = [
   {
     year: '2014',
     title: 'Thành lập Newnice',
-    desc: 'Bắt đầu với một xưởng nhỏ tại Quận 7, TP.HCM với 3 nhân sự và niềm đam mê lớn.',
+    desc: 'Bắt đầu với một xưởng nhỏ tại Nam Từ Liêm, Hà Nội với 3 nhân sự và niềm đam mê lớn.',
   },
   {
     year: '2016',
@@ -272,7 +272,7 @@ const milestones = [
   {
     year: '2018',
     title: 'Mở rộng dịch vụ PPF',
-    desc: 'Ra mắt dịch vụ dán phim PPF (Paint Protection Film) tại TP.HCM, đầu tiên trong khu vực.',
+    desc: 'Ra mắt dịch vụ dán phim PPF (Paint Protection Film) tại Hà Nội, đầu tiên trong khu vực.',
   },
   {
     year: '2020',
