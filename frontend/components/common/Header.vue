@@ -29,9 +29,7 @@
       <div class="flex items-center justify-between gap-4">
         <!-- Logo -->
         <NuxtLink to="/" class="flex-shrink-0">
-          <h1 class="text-2xl font-bold text-primary-600">
-            New<span class="text-accent">nice</span>
-          </h1>
+          <img src="/logo.png" alt="Newnice" class="h-10 w-auto" />
         </NuxtLink>
 
         <!-- Search bar - Desktop -->
@@ -117,11 +115,11 @@ const isMobileMenuOpen = ref(false)
 
 const menuItems = [
   { label: 'Trang chủ', href: '/' },
-  { label: 'Phim cách nhiệt ô tô', href: '/danh-muc/phim-cach-nhiet-o-to' },
-  { label: 'Phim đổi màu xe', href: '/danh-muc/phim-doi-mau-xe' },
-  { label: 'Phim nhà kính', href: '/danh-muc/phim-cach-nhiet-nha-kinh' },
-  { label: 'Sản phẩm', href: '/san-pham' },
+  { label: 'Phim cách nhiệt 3M', href: '/danh-muc/phim-cach-nhiet-3m' },
+  { label: 'Phim cách nhiệt Newnice', href: '/danh-muc/phim-cach-nhiet-newnice' },
+  { label: 'Tất cả sản phẩm', href: '/san-pham' },
   { label: 'Tin tức', href: '/tin-tuc' },
+  { label: 'Giới thiệu', href: '/gioi-thieu' },
   { label: 'Liên hệ', href: '/lien-he' },
 ]
 

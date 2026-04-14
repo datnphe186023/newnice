@@ -16,8 +16,8 @@
           <div class="flex flex-col h-full">
             <!-- Header -->
             <div class="flex items-center justify-between p-4 border-b">
-              <NuxtLink to="/" class="text-xl font-bold text-primary-600" @click="$emit('close')">
-                Auto<span class="text-accent">Film</span>
+              <NuxtLink to="/" class="flex-shrink-0" @click="$emit('close')">
+                <img src="/logo.png" alt="Newnice" class="h-8 w-auto" />
               </NuxtLink>
               <button @click="$emit('close')" class="p-2">
                 <XMarkIcon class="w-6 h-6" />
