@@ -29,7 +29,7 @@
       <div class="flex items-center justify-between gap-4">
         <!-- Logo -->
         <NuxtLink to="/" class="flex-shrink-0">
-          <img src="/logo.png" alt="Newnice" class="h-16 w-auto" />
+          <img src="/logo.png" alt="Newnice" class="h-20 w-auto" />
         </NuxtLink>
 
         <!-- Search bar - Desktop -->
@@ -58,7 +58,7 @@
             <span class="hidden lg:inline">0869 418 104</span>
           </a>
           
-          <NuxtLink to="/bao-gia" class="btn-primary hidden sm:flex">
+          <NuxtLink to="/bao-gia" class="btn-accent hidden sm:flex">
             Báo giá ngay
           </NuxtLink>
 
