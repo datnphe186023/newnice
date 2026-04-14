@@ -100,14 +100,15 @@ class ProductImageResponse(ProductImageBase):
 class ProductBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=255)
     sku: Optional[str] = None
+    film_code: Optional[str] = None          # e.g. "CR BLK 40", "IR 50", "VR50"
     category_id: Optional[int] = None
     brand_id: Optional[int] = None
     short_description: Optional[str] = None
     description: Optional[str] = None
-    price: Optional[int] = None
-    is_contact_price: bool = True
+    price_sedan: Optional[int] = None        # VND
+    price_suv: Optional[int] = None          # VND
+    is_contact_price: bool = False
     thumbnail: Optional[str] = None
-    film_type: Optional[str] = None
     vlt: Optional[int] = Field(None, ge=0, le=100)
     uv_rejection: Optional[int] = Field(None, ge=0, le=100)
     ir_rejection: Optional[int] = Field(None, ge=0, le=100)
@@ -128,14 +129,15 @@ class ProductCreate(ProductBase):
 class ProductUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=255)
     sku: Optional[str] = None
+    film_code: Optional[str] = None
     category_id: Optional[int] = None
     brand_id: Optional[int] = None
     short_description: Optional[str] = None
     description: Optional[str] = None
-    price: Optional[int] = None
+    price_sedan: Optional[int] = None
+    price_suv: Optional[int] = None
     is_contact_price: Optional[bool] = None
     thumbnail: Optional[str] = None
-    film_type: Optional[str] = None
     vlt: Optional[int] = Field(None, ge=0, le=100)
     uv_rejection: Optional[int] = Field(None, ge=0, le=100)
     ir_rejection: Optional[int] = Field(None, ge=0, le=100)
@@ -166,8 +168,10 @@ class ProductListResponse(BaseModel):
     id: int
     name: str
     slug: str
+    film_code: Optional[str] = None
     thumbnail: Optional[str] = None
-    price: Optional[int] = None
+    price_sedan: Optional[int] = None
+    price_suv: Optional[int] = None
     is_contact_price: bool
     vlt: Optional[int] = None
     uv_rejection: Optional[int] = None

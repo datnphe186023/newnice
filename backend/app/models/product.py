@@ -1,18 +1,8 @@
 from datetime import datetime
 from typing import Optional, List
-from sqlalchemy import String, Text, Integer, Boolean, ForeignKey, DateTime, Numeric, Enum as SQLEnum
+from sqlalchemy import String, Text, Integer, Boolean, ForeignKey, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-import enum
 from app.core.database import Base
-
-
-class FilmType(str, enum.Enum):
-    CERAMIC = "ceramic"
-    CARBON = "carbon"
-    METALLIC = "metallic"
-    DYED = "dyed"
-    HYBRID = "hybrid"
-    COLOR_CHANGE = "color_change"
 
 
 class Category(Base):
@@ -32,7 +22,6 @@ class Category(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    # Relationships
     parent: Mapped[Optional["Category"]] = relationship("Category", remote_side=[id], back_populates="children")
     children: Mapped[List["Category"]] = relationship("Category", back_populates="parent")
     products: Mapped[List["Product"]] = relationship("Product", back_populates="category")
@@ -51,7 +40,6 @@ class Brand(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    # Relationships
     products: Mapped[List["Product"]] = relationship("Product", back_populates="brand")
 
 
@@ -62,37 +50,37 @@ class Product(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     slug: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
     sku: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    film_code: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)   # e.g. "CR BLK 40", "IR 50"
     category_id: Mapped[Optional[int]] = mapped_column(ForeignKey("categories.id"), nullable=True)
     brand_id: Mapped[Optional[int]] = mapped_column(ForeignKey("brands.id"), nullable=True)
     short_description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    price: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # VND
-    is_contact_price: Mapped[bool] = mapped_column(Boolean, default=True)
+
+    # Pricing per vehicle type (VND)
+    price_sedan: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    price_suv: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    is_contact_price: Mapped[bool] = mapped_column(Boolean, default=False)
+
     thumbnail: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     
-    # Specifications
-    film_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
-    vlt: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # Visible Light Transmission %
-    uv_rejection: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # %
-    ir_rejection: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # Infrared rejection %
-    heat_rejection: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)  # Total heat rejection %
+    # Film specifications
+    vlt: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)       # Visible Light Transmission %
+    uv_rejection: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    ir_rejection: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    heat_rejection: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     thickness: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     warranty_years: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     
-    # Status
     is_featured: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     sort_order: Mapped[int] = mapped_column(Integer, default=0)
     
-    # SEO
     meta_title: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     meta_description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     
-    # Timestamps
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    # Relationships
     category: Mapped[Optional["Category"]] = relationship("Category", back_populates="products")
     brand: Mapped[Optional["Brand"]] = relationship("Brand", back_populates="products")
     images: Mapped[List["ProductImage"]] = relationship("ProductImage", back_populates="product", cascade="all, delete-orphan")
@@ -108,5 +96,4 @@ class ProductImage(Base):
     alt_text: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     sort_order: Mapped[int] = mapped_column(Integer, default=0)
     
-    # Relationships
     product: Mapped["Product"] = relationship("Product", back_populates="images")

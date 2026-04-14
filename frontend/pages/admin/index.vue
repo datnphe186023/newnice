@@ -64,6 +64,59 @@
       </div>
     </div>
 
+    <!-- Price table -->
+    <div class="mt-8 bg-white rounded-xl shadow-sm overflow-hidden">
+      <div class="p-6 border-b flex items-center justify-between">
+        <div>
+          <h2 class="font-semibold text-gray-900">Bảng giá phim cách nhiệt 3M</h2>
+          <p class="text-xs text-gray-400 mt-0.5">Giá đã bao gồm VAT, chưa bao gồm cửa sổ trời</p>
+        </div>
+        <span class="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-medium">Cập nhật mới nhất</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-gray-50 border-b">
+              <th class="text-left px-4 py-3 font-semibold text-gray-700 w-44">Vị trí kính</th>
+              <th v-for="pkg in priceTable.packages" :key="pkg.name"
+                  class="text-center px-3 py-3 font-semibold text-gray-700 min-w-[140px]">
+                {{ pkg.name }}
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y">
+            <tr v-for="row in priceTable.rows" :key="row.position" class="hover:bg-gray-50">
+              <td class="px-4 py-3 text-gray-600 font-medium">{{ row.position }}</td>
+              <td v-for="pkg in priceTable.packages" :key="pkg.name" class="px-3 py-3 text-center">
+                <div v-if="row.cells[pkg.name]">
+                  <div class="text-xs text-gray-500">{{ row.cells[pkg.name].code }}</div>
+                  <div class="font-semibold text-red-600 text-sm">
+                    {{ formatVND(row.cells[pkg.name].price) }}
+                  </div>
+                </div>
+                <span v-else class="text-gray-300">—</span>
+              </td>
+            </tr>
+            <!-- SEDAN / SUV totals -->
+            <tr class="bg-gray-50 font-semibold border-t-2 border-gray-200">
+              <td class="px-4 py-3 text-gray-800">SEDAN</td>
+              <td v-for="pkg in priceTable.packages" :key="pkg.name + '-sedan'"
+                  class="px-3 py-3 text-center text-gray-800">
+                {{ formatVND(pkg.sedan) }}
+              </td>
+            </tr>
+            <tr class="bg-gray-50 font-semibold">
+              <td class="px-4 py-3 text-gray-800">SUV</td>
+              <td v-for="pkg in priceTable.packages" :key="pkg.name + '-suv'"
+                  class="px-3 py-3 text-center text-gray-800">
+                {{ formatVND(pkg.suv) }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Recent activity -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Recent quotes -->
@@ -191,5 +244,61 @@ const getStatusLabel = (status: string) => {
 
 const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString('vi-VN')
+}
+
+// ── Price table (3M) ────────────────────────────────────────────────────────
+const formatVND = (n?: number) =>
+  n ? new Intl.NumberFormat('vi-VN').format(n) + ' ₫' : '—'
+
+const priceTable = {
+  packages: [
+    { name: 'CR BLK PRO', sedan: 15_500_000, suv: 18_300_000 },
+    { name: 'CR BLK',     sedan: 14_700_000, suv: 17_500_000 },
+    { name: 'Best Seller 01', sedan: 12_800_000, suv: 14_300_000 },
+    { name: 'Best Seller 02', sedan: 11_200_000, suv: 12_700_000 },
+    { name: 'Ceramic IR', sedan:  9_000_000, suv: 10_500_000 },
+  ],
+  rows: [
+    {
+      position: 'Kính trước (Lái)',
+      cells: {
+        'CR BLK PRO':     { code: 'CR BLK 40', price: 6_500_000 },
+        'CR BLK':         { code: 'CR 50',     price: 6_000_000 },
+        'Best Seller 01': { code: 'CR BLK 40', price: 6_500_000 },
+        'Best Seller 02': { code: 'CR BLK 50', price: 5_700_000 },
+        'Ceramic IR':     { code: 'IR 50',     price: 3_300_000 },
+      },
+    },
+    {
+      position: 'Kính sườn (Trước)',
+      cells: {
+        'CR BLK PRO':     { code: 'CR BLK 15/35', price: 2_600_000 },
+        'CR BLK':         { code: 'CR BLK 15/35', price: 2_600_000 },
+        'Best Seller 01': { code: 'CR BLK 15/35', price: 2_600_000 },
+        'Best Seller 02': { code: 'IR 15/25',     price: 1_800_000 },
+        'Ceramic IR':     { code: 'IR 15/25',     price: 1_800_000 },
+      },
+    },
+    {
+      position: 'Kính sườn (Giữa)',
+      cells: {
+        'CR BLK PRO':     { code: 'CR BLK 15/35', price: 2_600_000 },
+        'CR BLK':         { code: 'CR 20',         price: 2_400_000 },
+        'Best Seller 01': { code: 'IR 15/25',      price: 1_800_000 },
+        'Best Seller 02': { code: 'IR 15/25',      price: 1_800_000 },
+        'Ceramic IR':     { code: 'IR 15/25',      price: 1_800_000 },
+      },
+    },
+    {
+      position: 'Kính sau (Lưng)',
+      cells: {
+        'CR BLK PRO':     { code: 'CR BLK 15/35', price: 4_100_000 },
+        'CR BLK':         { code: 'CR 20',         price: 3_900_000 },
+        'Best Seller 01': { code: 'IR 15/25',      price: 2_300_000 },
+        'Best Seller 02': { code: 'IR 15/25',      price: 2_300_000 },
+        'Ceramic IR':     { code: 'IR 15/25',      price: 2_300_000 },
+      },
+    },
+  ],
 }
 </script>

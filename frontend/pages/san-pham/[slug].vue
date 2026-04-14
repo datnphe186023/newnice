@@ -54,9 +54,24 @@
 
           <!-- Price -->
           <div class="mb-6">
-            <span class="text-3xl font-bold text-primary-600">
-              {{ product.is_contact_price ? 'Liên hệ báo giá' : formatPrice(product.price) }}
-            </span>
+            <div v-if="product.is_contact_price" class="text-2xl font-bold text-primary-600">
+              Liên hệ báo giá
+            </div>
+            <div v-else class="space-y-2">
+              <div class="flex items-center gap-4">
+                <span class="w-16 text-sm text-gray-500 font-medium">SEDAN</span>
+                <span class="text-2xl font-bold text-primary-600">
+                  {{ formatPrice(product.price_sedan) }}
+                </span>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="w-16 text-sm text-gray-500 font-medium">SUV</span>
+                <span class="text-2xl font-bold text-primary-600">
+                  {{ formatPrice(product.price_suv) }}
+                </span>
+              </div>
+              <p class="text-xs text-gray-400 mt-1">Giá đã bao gồm VAT, chưa bao gồm cửa sổ trời</p>
+            </div>
           </div>
 
           <!-- CTA -->
@@ -139,10 +154,7 @@ const hasSpecs = computed(() => {
 // Format price
 const formatPrice = (price?: number) => {
   if (!price) return 'Liên hệ'
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND'
-  }).format(price)
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price)
 }
 
 // Related products

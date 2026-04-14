@@ -4,12 +4,13 @@ export interface Product {
   name: string
   slug: string
   sku?: string
+  film_code?: string
   short_description?: string
   description?: string
-  price?: number
+  price_sedan?: number
+  price_suv?: number
   is_contact_price: boolean
   thumbnail?: string
-  film_type?: string
   vlt?: number
   uv_rejection?: number
   ir_rejection?: number
