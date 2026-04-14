@@ -1,23 +1,23 @@
 <template>
-  <header class="bg-white shadow-sm sticky top-0 z-50">
+  <header class="bg-gray-900 shadow-sm sticky top-0 z-50">
     <!-- Top bar -->
-    <div class="bg-dark text-white py-2 hidden md:block">
+    <div class="bg-black text-white py-2 hidden md:block border-b border-gray-800">
       <div class="container flex items-center justify-between">
         <div class="flex items-center gap-6 text-sm">
           <a href="tel:0869418104" class="flex items-center gap-2 hover:text-accent transition-colors">
             <PhoneIcon class="w-4 h-4" />
             <span>Hotline: <strong>0869 418 104</strong></span>
           </a>
-          <span class="flex items-center gap-2">
+          <span class="flex items-center gap-2 text-gray-400">
             <MapPinIcon class="w-4 h-4" />
             <span>311 Phúc Diễn, Nam Từ Liêm, Hà Nội</span>
           </span>
         </div>
         <div class="flex items-center gap-4 text-sm">
-          <NuxtLink to="/bao-gia" class="hover:text-accent transition-colors">
+          <NuxtLink to="/bao-gia" class="hover:text-accent transition-colors text-gray-300">
             Báo giá nhanh
           </NuxtLink>
-          <NuxtLink to="/lien-he" class="hover:text-accent transition-colors">
+          <NuxtLink to="/lien-he" class="hover:text-accent transition-colors text-gray-300">
             Liên hệ
           </NuxtLink>
         </div>
@@ -25,18 +25,11 @@
     </div>
 
     <!-- Main header -->
-    <div class="container py-4">
+    <div class="container py-3">
       <div class="flex items-center justify-between gap-4">
         <!-- Logo -->
-        <NuxtLink to="/" class="flex-shrink-0 flex items-center gap-0.5">
-          <span class="text-2xl font-black tracking-tight text-gray-900 uppercase">New</span>
-          <span class="relative text-2xl font-black tracking-tight text-primary-600 uppercase">
-            Nice
-            <!-- swoosh star accent -->
-            <svg class="absolute -top-1 -right-2 w-3 h-3 text-primary-500" viewBox="0 0 12 12" fill="currentColor">
-              <polygon points="6,0 7.5,4.5 12,4.5 8.5,7 10,12 6,9 2,12 3.5,7 0,4.5 4.5,4.5"/>
-            </svg>
-          </span>
+        <NuxtLink to="/" class="flex-shrink-0">
+          <img src="/logo.png" alt="Newnice" class="h-12 w-auto" />
         </NuxtLink>
 
         <!-- Search bar - Desktop -->
@@ -60,7 +53,7 @@
 
         <!-- Actions -->
         <div class="flex items-center gap-4">
-          <a href="tel:0869418104" class="hidden sm:flex items-center gap-2 text-primary-600 font-semibold">
+          <a href="tel:0869418104" class="hidden sm:flex items-center gap-2 text-white font-semibold hover:text-accent transition-colors">
             <PhoneIcon class="w-5 h-5" />
             <span class="hidden lg:inline">0869 418 104</span>
           </a>
@@ -71,7 +64,7 @@
 
           <!-- Mobile menu button -->
           <button 
-            class="md:hidden p-2"
+            class="md:hidden p-2 text-white"
             @click="isMobileMenuOpen = true"
           >
             <Bars3Icon class="w-6 h-6" />
