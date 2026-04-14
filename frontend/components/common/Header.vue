@@ -29,7 +29,7 @@
       <div class="flex items-center justify-between gap-4">
         <!-- Logo -->
         <NuxtLink to="/" class="flex-shrink-0">
-          <img src="/logo.png" alt="Newnice" class="h-12 w-auto" />
+          <img src="/logo.png" alt="Newnice" class="h-16 w-auto" />
         </NuxtLink>
 
         <!-- Search bar - Desktop -->
@@ -74,14 +74,14 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="bg-primary-600 hidden md:block">
+    <nav class="bg-accent hidden md:block">
       <div class="container">
         <ul class="flex items-center gap-1">
           <li v-for="item in menuItems" :key="item.href">
             <NuxtLink 
               :to="item.href" 
-              class="block px-4 py-3 text-white font-medium hover:bg-primary-700 transition-colors"
-              :class="{ 'bg-primary-700': isActiveRoute(item.href) }"
+              class="block px-4 py-3 text-white font-medium hover:bg-accent-600 transition-colors text-sm tracking-wide uppercase"
+              :class="{ 'bg-accent-600': isActiveRoute(item.href) }"
             >
               {{ item.label }}
             </NuxtLink>

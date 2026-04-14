@@ -65,7 +65,7 @@
     </section>
 
     <!-- CTA -->
-    <section class="py-16 bg-gradient-to-r from-primary-600 to-primary-800 text-white">
+    <section class="py-16 bg-gradient-to-r from-gray-900 to-primary-800 text-white">
       <div class="container text-center">
         <h2 class="text-3xl md:text-4xl font-bold mb-4">Nhận Báo Giá Ngay Hôm Nay</h2>
         <p class="text-xl text-white/80 mb-8 max-w-2xl mx-auto">

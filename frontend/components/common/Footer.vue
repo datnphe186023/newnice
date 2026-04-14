@@ -9,7 +9,7 @@
             New<span class="text-accent">nice</span>
           </h3>
           <p class="text-gray-300 mb-4">
-            Chuyên cung cấp và thi công phim cách nhiệt ô tô, phim đổi màu xe, phim cách nhiệt nhà kính cao cấp với chất lượng hàng đầu.
+            Chuyên cung cấp và thi công phim cách nhiệt ô tô 3M và Newnice tại Hà Nội. Chất lượng chính hãng, bảo hành dài hạn.
           </p>
           <div class="flex gap-3">
             <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-accent transition-colors">

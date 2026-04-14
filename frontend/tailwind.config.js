@@ -11,30 +11,33 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Primary: deep charcoal/black — matches logo background
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-          950: '#172554',
+          50:  '#f5f5f5',
+          100: '#e8e8e8',
+          200: '#d1d1d1',
+          300: '#a8a8a8',
+          400: '#737373',
+          500: '#404040',
+          600: '#262626',
+          700: '#1a1a1a',
+          800: '#111111',
+          900: '#0a0a0a',
+          950: '#050505',
         },
+        // Accent: vivid red — automotive energy
         accent: {
-          DEFAULT: '#f59e0b',
-          50: '#fffbeb',
-          100: '#fef3c7',
-          500: '#f59e0b',
-          600: '#d97706',
+          DEFAULT: '#e11d48',
+          50:  '#fff1f2',
+          100: '#ffe4e6',
+          500: '#e11d48',
+          600: '#be123c',
+          700: '#9f1239',
         },
         dark: {
-          DEFAULT: '#1a1a2e',
-          100: '#16213e',
-          200: '#0f3460',
+          DEFAULT: '#111111',
+          100: '#1a1a1a',
+          200: '#262626',
         }
       },
       fontFamily: {
