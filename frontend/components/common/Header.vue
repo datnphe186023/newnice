@@ -119,7 +119,6 @@ const menuItems = [
   { label: 'Phim cách nhiệt Newnice', href: '/danh-muc/phim-cach-nhiet-newnice' },
   { label: 'Tất cả sản phẩm', href: '/san-pham' },
   { label: 'Tin tức', href: '/tin-tuc' },
-  { label: 'Giới thiệu', href: '/gioi-thieu' },
   { label: 'Liên hệ', href: '/lien-he' },
 ]
 

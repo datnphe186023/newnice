@@ -59,11 +59,6 @@
           <h4 class="text-lg font-semibold mb-4">Liên kết</h4>
           <ul class="space-y-2">
             <li>
-              <NuxtLink to="/gioi-thieu" class="text-gray-300 hover:text-accent transition-colors">
-                Giới thiệu
-              </NuxtLink>
-            </li>
-            <li>
               <NuxtLink to="/tin-tuc" class="text-gray-300 hover:text-accent transition-colors">
                 Tin tức
               </NuxtLink>

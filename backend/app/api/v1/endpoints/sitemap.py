@@ -50,7 +50,6 @@ async def sitemap(db: Annotated[AsyncSession, Depends(get_db)]):
         ("/", "daily", "1.0"),
         ("/san-pham", "daily", "0.9"),
         ("/tin-tuc", "weekly", "0.8"),
-        ("/gioi-thieu", "monthly", "0.6"),
         ("/lien-he", "monthly", "0.6"),
         ("/bao-gia", "monthly", "0.7"),
     ]
