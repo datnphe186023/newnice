@@ -5,8 +5,8 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <!-- Company info -->
         <div>
-          <h3 class="text-xl font-bold mb-4">
-            New<span class="text-accent">nice</span>
+          <h3 class="mb-4">
+            <img src="/logo.png" alt="Newnice" class="h-14 w-auto" />
           </h3>
           <p class="text-gray-300 mb-4">
             Chuyên cung cấp và thi công phim cách nhiệt ô tô 3M và Newnice tại Hà Nội. Chất lượng chính hãng, bảo hành dài hạn.
@@ -19,7 +19,7 @@
               <span class="sr-only">YouTube</span>
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.5,6.19a3.02,3.02,0,0,0-2.12-2.14C19.58,3.5,12,3.5,12,3.5s-7.58,0-9.38.55A3.02,3.02,0,0,0,.5,6.19,31.56,31.56,0,0,0,0,12a31.56,31.56,0,0,0,.5,5.81,3.02,3.02,0,0,0,2.12,2.14c1.8.55,9.38.55,9.38.55s7.58,0,9.38-.55a3.02,3.02,0,0,0,2.12-2.14A31.56,31.56,0,0,0,24,12,31.56,31.56,0,0,0,23.5,6.19ZM9.55,15.57V8.43L15.82,12Z"/></svg>
             </a>
-            <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-accent transition-colors">
+            <a href="https://zalo.me/0705410751" target="_blank" rel="noopener" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-accent transition-colors">
               <span class="sr-only">Zalo</span>
               <span class="font-bold text-sm">Zalo</span>
             </a>

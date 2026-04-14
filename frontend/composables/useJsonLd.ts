@@ -55,7 +55,7 @@ export function buildOrganizationSchema() {
     ],
     sameAs: [
       'https://www.facebook.com/newnicevn',
-      'https://zalo.me/0869418104',
+      'https://zalo.me/0705410751',
     ],
   }
 }

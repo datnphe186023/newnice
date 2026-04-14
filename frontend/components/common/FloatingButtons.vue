@@ -2,7 +2,7 @@
   <div class="fixed bottom-4 right-4 z-40 flex flex-col gap-3">
     <!-- Zalo -->
     <a
-      href="https://zalo.me/0869418104"
+      href="https://zalo.me/0705410751"
       target="_blank"
       class="group relative w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
     >
