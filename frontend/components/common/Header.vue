@@ -28,8 +28,15 @@
     <div class="container py-4">
       <div class="flex items-center justify-between gap-4">
         <!-- Logo -->
-        <NuxtLink to="/" class="flex-shrink-0">
-          <img src="/logo.png" alt="Newnice" class="h-10 w-auto" />
+        <NuxtLink to="/" class="flex-shrink-0 flex items-center gap-0.5">
+          <span class="text-2xl font-black tracking-tight text-gray-900 uppercase">New</span>
+          <span class="relative text-2xl font-black tracking-tight text-primary-600 uppercase">
+            Nice
+            <!-- swoosh star accent -->
+            <svg class="absolute -top-1 -right-2 w-3 h-3 text-primary-500" viewBox="0 0 12 12" fill="currentColor">
+              <polygon points="6,0 7.5,4.5 12,4.5 8.5,7 10,12 6,9 2,12 3.5,7 0,4.5 4.5,4.5"/>
+            </svg>
+          </span>
         </NuxtLink>
 
         <!-- Search bar - Desktop -->

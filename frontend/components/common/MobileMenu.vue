@@ -16,8 +16,9 @@
           <div class="flex flex-col h-full">
             <!-- Header -->
             <div class="flex items-center justify-between p-4 border-b">
-              <NuxtLink to="/" class="flex-shrink-0" @click="$emit('close')">
-                <img src="/logo.png" alt="Newnice" class="h-8 w-auto" />
+              <NuxtLink to="/" class="flex items-center gap-0.5" @click="$emit('close')">
+                <span class="text-xl font-black tracking-tight text-gray-900 uppercase">New</span>
+                <span class="text-xl font-black tracking-tight text-primary-600 uppercase">Nice</span>
               </NuxtLink>
               <button @click="$emit('close')" class="p-2">
                 <XMarkIcon class="w-6 h-6" />
