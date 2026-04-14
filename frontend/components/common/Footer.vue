@@ -12,8 +12,7 @@
             Chuyên cung cấp và thi công phim cách nhiệt ô tô 3M và Newnice tại Hà Nội. Chất lượng chính hãng, bảo hành dài hạn.
           </p>
           <div class="flex gap-3">
-            <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-accent transition-colors">
-              <span class="sr-only">Facebook</span>
+            <a href="https://facebook.com/newnicevn" target="_blank" rel="noopener" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-accent transition-colors">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.77,7.46H14.5v-1.9c0-.9.6-1.1,1-1.1h3V.5h-4.33C10.24.5,9.5,3.44,9.5,5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4Z"/></svg>
             </a>
             <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-accent transition-colors">
@@ -32,18 +31,13 @@
           <h4 class="text-lg font-semibold mb-4">Sản phẩm</h4>
           <ul class="space-y-2">
             <li>
-              <NuxtLink to="/danh-muc/phim-cach-nhiet-o-to" class="text-gray-300 hover:text-accent transition-colors">
-                Phim cách nhiệt ô tô
+              <NuxtLink to="/danh-muc/phim-cach-nhiet-3m" class="text-gray-300 hover:text-accent transition-colors">
+                Phim cách nhiệt 3M
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/danh-muc/phim-doi-mau-xe" class="text-gray-300 hover:text-accent transition-colors">
-                Phim đổi màu xe
-              </NuxtLink>
-            </li>
-            <li>
-              <NuxtLink to="/danh-muc/phim-cach-nhiet-nha-kinh" class="text-gray-300 hover:text-accent transition-colors">
-                Phim cách nhiệt nhà kính
+              <NuxtLink to="/danh-muc/phim-cach-nhiet-newnice" class="text-gray-300 hover:text-accent transition-colors">
+                Phim cách nhiệt New Nice
               </NuxtLink>
             </li>
             <li>

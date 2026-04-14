@@ -54,8 +54,8 @@ export function buildOrganizationSchema() {
       },
     ],
     sameAs: [
-      'https://www.facebook.com/newnice.vn',
-      'https://zalo.me/newnice',
+      'https://www.facebook.com/newnicevn',
+      'https://zalo.me/0869418104',
     ],
   }
 }
