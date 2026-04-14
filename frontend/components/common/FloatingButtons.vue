@@ -14,7 +14,7 @@
 
     <!-- Messenger -->
     <a
-      href="https://m.me/newnice"
+      href="https://m.me/newnicevn"
       target="_blank"
       class="group relative w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
     >
