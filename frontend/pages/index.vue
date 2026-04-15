@@ -68,12 +68,7 @@
     <section class="py-16 bg-gray-50">
       <div class="container">
         <!-- Header -->
-        <div class="text-center mb-10">
-          <img src="/logo.png" alt="Newnice" class="h-16 w-auto mx-auto mb-4" />
-          <h2 class="text-2xl md:text-3xl font-black uppercase tracking-wide text-gray-900">
-            Bảng Báo Giá Film Cách Nhiệt Newnice
-          </h2>
-        </div>
+        
 
         <!-- Price table -->
         <div class="overflow-x-auto rounded-xl border border-yellow-300 shadow-md">
