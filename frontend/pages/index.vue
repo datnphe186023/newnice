@@ -49,16 +49,16 @@
     </section>
 
     <!-- Why Choose Us -->
-    <section class="py-12 bg-dark text-white">
+    <section class="py-12 bg-white text-gray-900 border-y border-gray-100">
       <div class="container">
-        <h2 class="section-title text-center text-white mb-12">Tại Sao Chọn Newnice?</h2>
+        <h2 class="section-title text-center text-gray-900 mb-12">Tại Sao Chọn Newnice?</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div v-for="feature in features" :key="feature.title" class="text-center">
             <div class="w-16 h-16 mx-auto mb-4 bg-accent rounded-full flex items-center justify-center">
               <component :is="feature.icon" class="w-8 h-8 text-white" />
             </div>
-            <h3 class="font-semibold text-lg mb-2">{{ feature.title }}</h3>
-            <p class="text-gray-400">{{ feature.description }}</p>
+            <h3 class="font-semibold text-lg mb-2 text-gray-900">{{ feature.title }}</h3>
+            <p class="text-gray-500">{{ feature.description }}</p>
           </div>
         </div>
       </div>
