@@ -208,6 +208,7 @@ const newnicePrices = {
   ],
 }
 
+const features = [
   {
     title: 'Sản phẩm chính hãng',
     description: 'Cam kết 100% sản phẩm chính hãng từ các thương hiệu hàng đầu',
