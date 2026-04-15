@@ -25,14 +25,14 @@ export default {
           900: '#0a0a0a',
           950: '#050505',
         },
-        // Accent: vivid red — automotive energy
+        // Accent: vivid blue
         accent: {
-          DEFAULT: '#e11d48',
-          50:  '#fff1f2',
-          100: '#ffe4e6',
-          500: '#e11d48',
-          600: '#be123c',
-          700: '#9f1239',
+          DEFAULT: '#2563eb',
+          50:  '#eff6ff',
+          100: '#dbeafe',
+          500: '#2563eb',
+          600: '#1d4ed8',
+          700: '#1e40af',
         },
         dark: {
           DEFAULT: '#111111',
