@@ -64,18 +64,75 @@
       </div>
     </section>
 
-    <!-- CTA -->
-    <section class="py-16 bg-gradient-to-r from-blue-900 to-blue-700 text-white">
-      <div class="container text-center">
-        <h2 class="text-3xl md:text-4xl font-bold mb-4">Nhận Báo Giá Ngay Hôm Nay</h2>
-        <p class="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
-          Liên hệ với chúng tôi để được tư vấn và báo giá miễn phí cho xe của bạn
-        </p>
-        <div class="flex flex-wrap justify-center gap-4">
+    <!-- Newnice Price Table -->
+    <section class="py-16 bg-gray-50">
+      <div class="container">
+        <!-- Header -->
+        <div class="text-center mb-10">
+          <img src="/logo.png" alt="Newnice" class="h-16 w-auto mx-auto mb-4" />
+          <h2 class="text-2xl md:text-3xl font-black uppercase tracking-wide text-gray-900">
+            Bảng Báo Giá Film Cách Nhiệt Newnice
+          </h2>
+        </div>
+
+        <!-- Price table -->
+        <div class="overflow-x-auto rounded-xl border border-yellow-300 shadow-md">
+          <table class="w-full text-sm text-center">
+            <thead>
+              <tr class="bg-yellow-50 border-b-2 border-yellow-300">
+                <th class="px-4 py-3 font-bold text-gray-700 text-left w-40">Hạng mục</th>
+                <th v-for="pkg in newnicePrices.packages" :key="pkg.name"
+                    class="px-4 py-3 font-bold text-gray-900 border-l border-yellow-200">
+                  {{ pkg.name }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- SEDAN -->
+              <tr class="border-b border-gray-200 bg-white">
+                <td class="px-4 py-3 text-left font-semibold text-gray-700">SEDAN - Xe 5 chỗ</td>
+                <td v-for="pkg in newnicePrices.packages" :key="pkg.name + '-sedan'"
+                    class="px-4 py-3 border-l border-gray-100">
+                  <div class="font-bold text-accent text-base">{{ formatVND(pkg.sedan) }}</div>
+                </td>
+              </tr>
+              <!-- SUV -->
+              <tr class="border-b border-gray-200 bg-gray-50">
+                <td class="px-4 py-3 text-left font-semibold text-gray-700">SUV - Xe 7 chỗ</td>
+                <td v-for="pkg in newnicePrices.packages" :key="pkg.name + '-suv'"
+                    class="px-4 py-3 border-l border-gray-100">
+                  <div class="font-bold text-accent text-base">{{ formatVND(pkg.suv) }}</div>
+                </td>
+              </tr>
+              <!-- Per-window rows -->
+              <tr v-for="(row, i) in newnicePrices.rows" :key="row.position"
+                  :class="i % 2 === 0 ? 'bg-white' : 'bg-gray-50'"
+                  class="border-b border-gray-200">
+                <td class="px-4 py-3 text-left text-gray-600 font-medium">{{ row.position }}</td>
+                <td v-for="pkg in newnicePrices.packages" :key="pkg.name + row.position"
+                    class="px-4 py-3 border-l border-gray-100">
+                  <div class="text-xs text-gray-500">{{ row.codes[pkg.name] }}</div>
+                  <div class="font-semibold text-accent">{{ formatVND(row.prices[pkg.name]) }}</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Notes -->
+        <ul class="mt-6 space-y-1 text-sm text-gray-500 list-none">
+          <li>- Giá trên chưa bao gồm thuế VAT.</li>
+          <li>- Đối với xe có kính nóc tính thêm giá 1 nóc bằng giá 1 sườn.</li>
+          <li>- Không bảo hành trong trường hợp lỗi Film do người sử dụng gây nên.</li>
+          <li>- Phục vụ lắp đặt tại cơ quan, nhà riêng cho quý khách.</li>
+        </ul>
+
+        <!-- CTA -->
+        <div class="text-center mt-10 flex flex-wrap justify-center gap-4">
           <NuxtLink to="/bao-gia" class="btn-accent text-lg px-8">
             Báo giá miễn phí
           </NuxtLink>
-          <a href="tel:0869418104" class="btn bg-white text-primary-600 hover:bg-gray-100 text-lg px-8" @click="trackPhoneClick('0869418104')">
+          <a href="tel:0869418104" class="btn bg-gray-900 text-white hover:bg-gray-700 text-lg px-8" @click="trackPhoneClick('0869418104')">
             Gọi ngay: 0869 418 104
           </a>
         </div>
@@ -117,7 +174,40 @@ const { data: featuredProducts, pending: featuredPending } = await useFetch<Prod
 )
 
 // Features
-const features = [
+const formatVND = (n?: number) =>
+  n ? new Intl.NumberFormat('vi-VN').format(n) + ' ₫' : '—'
+
+const newnicePrices = {
+  packages: [
+    { name: 'NewNice Eco',     sedan:  5_800_000, suv:  7_000_000 },
+    { name: 'NewNice Premium', sedan: 10_500_000, suv: 11_500_000 },
+    { name: 'NewNice Crystal', sedan: 12_500_000, suv: 14_500_000 },
+    { name: 'NewNice Royal',   sedan: 15_500_000, suv: 17_500_000 },
+  ],
+  rows: [
+    {
+      position: 'Kính lái',
+      codes:  { 'NewNice Eco': 'NE75',        'NewNice Premium': 'NP62/NP66',  'NewNice Crystal': 'HD/NC60-70', 'NewNice Royal': 'NR/60-70'   },
+      prices: { 'NewNice Eco': 2_500_000,     'NewNice Premium': 3_600_000,    'NewNice Crystal': 5_500_000,    'NewNice Royal': 5_500_000    },
+    },
+    {
+      position: 'Kính sườn (trước)',
+      codes:  { 'NewNice Eco': 'NE25',        'NewNice Premium': 'NP40/NP25',  'NewNice Crystal': 'NC40/NC25',  'NewNice Royal': 'NR40/NR25'  },
+      prices: { 'NewNice Eco': 500_000,       'NewNice Premium': 1_000_000,    'NewNice Crystal': 1_600_000,    'NewNice Royal': 1_600_000    },
+    },
+    {
+      position: 'Kính sườn (sau)',
+      codes:  { 'NewNice Eco': 'NE25',        'NewNice Premium': 'NP40/NP25',  'NewNice Crystal': 'NC40/NC25',  'NewNice Royal': 'NR40/NR25'  },
+      prices: { 'NewNice Eco': 500_000,       'NewNice Premium': 1_050_000,    'NewNice Crystal': 1_600_000,    'NewNice Royal': 1_600_000    },
+    },
+    {
+      position: 'Kính hậu',
+      codes:  { 'NewNice Eco': 'NE25',        'NewNice Premium': 'NP15',       'NewNice Crystal': 'NC15',       'NewNice Royal': 'NR40/NR25'  },
+      prices: { 'NewNice Eco': 1_200_000,     'NewNice Premium': 1_800_000,    'NewNice Crystal': 1_800_000,    'NewNice Royal': 3_800_000    },
+    },
+  ],
+}
+
   {
     title: 'Sản phẩm chính hãng',
     description: 'Cam kết 100% sản phẩm chính hãng từ các thương hiệu hàng đầu',
