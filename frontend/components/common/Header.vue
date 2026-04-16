@@ -115,8 +115,8 @@ const isMobileMenuOpen = ref(false)
 
 const menuItems = [
   { label: 'Trang chủ', href: '/' },
-  { label: 'Phim cách nhiệt 3M', href: '/danh-muc/phim-cach-nhiet-3m' },
   { label: 'Phim cách nhiệt Newnice', href: '/danh-muc/phim-cach-nhiet-newnice' },
+  { label: 'PPF Newnice', href: '/danh-muc/ppf-newnice' },
   { label: 'Tất cả sản phẩm', href: '/san-pham' },
   { label: 'Tin tức', href: '/tin-tuc' },
   { label: 'Liên hệ', href: '/lien-he' },

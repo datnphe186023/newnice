@@ -68,8 +68,8 @@
     <div class="mt-8 bg-white rounded-xl shadow-sm overflow-hidden">
       <div class="p-6 border-b flex items-center justify-between">
         <div>
-          <h2 class="font-semibold text-gray-900">Bảng giá phim cách nhiệt 3M</h2>
-          <p class="text-xs text-gray-400 mt-0.5">Giá đã bao gồm VAT, chưa bao gồm cửa sổ trời</p>
+          <h2 class="font-semibold text-gray-900">Bảng giá phim cách nhiệt Newnice</h2>
+          <p class="text-xs text-gray-400 mt-0.5">Giá chưa bao gồm thuế VAT</p>
         </div>
         <span class="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-medium">Cập nhật mới nhất</span>
       </div>
@@ -246,57 +246,52 @@ const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString('vi-VN')
 }
 
-// ── Price table (3M) ────────────────────────────────────────────────────────
+// ── Price table (Newnice) ───────────────────────────────────────────────────
 const formatVND = (n?: number) =>
   n ? new Intl.NumberFormat('vi-VN').format(n) + ' ₫' : '—'
 
 const priceTable = {
   packages: [
-    { name: 'CR BLK PRO', sedan: 15_500_000, suv: 18_300_000 },
-    { name: 'CR BLK',     sedan: 14_700_000, suv: 17_500_000 },
-    { name: 'Best Seller 01', sedan: 12_800_000, suv: 14_300_000 },
-    { name: 'Best Seller 02', sedan: 11_200_000, suv: 12_700_000 },
-    { name: 'Ceramic IR', sedan:  9_000_000, suv: 10_500_000 },
+    { name: 'Eco',     sedan:  5_800_000, suv:  7_000_000 },
+    { name: 'Premium', sedan: 10_500_000, suv: 11_500_000 },
+    { name: 'Crystal', sedan: 12_500_000, suv: 14_500_000 },
+    { name: 'Royal',   sedan: 15_500_000, suv: 17_500_000 },
   ],
   rows: [
     {
-      position: 'Kính trước (Lái)',
+      position: 'Kính lái',
       cells: {
-        'CR BLK PRO':     { code: 'CR BLK 40', price: 6_500_000 },
-        'CR BLK':         { code: 'CR 50',     price: 6_000_000 },
-        'Best Seller 01': { code: 'CR BLK 40', price: 6_500_000 },
-        'Best Seller 02': { code: 'CR BLK 50', price: 5_700_000 },
-        'Ceramic IR':     { code: 'IR 50',     price: 3_300_000 },
+        'Eco':     { code: 'NE75',       price: 2_500_000 },
+        'Premium': { code: 'NP62/NP66',  price: 3_600_000 },
+        'Crystal': { code: 'HD/NC60-70', price: 5_500_000 },
+        'Royal':   { code: 'NR/60-70',   price: 5_500_000 },
       },
     },
     {
-      position: 'Kính sườn (Trước)',
+      position: 'Kính sườn (trước)',
       cells: {
-        'CR BLK PRO':     { code: 'CR BLK 15/35', price: 2_600_000 },
-        'CR BLK':         { code: 'CR BLK 15/35', price: 2_600_000 },
-        'Best Seller 01': { code: 'CR BLK 15/35', price: 2_600_000 },
-        'Best Seller 02': { code: 'IR 15/25',     price: 1_800_000 },
-        'Ceramic IR':     { code: 'IR 15/25',     price: 1_800_000 },
+        'Eco':     { code: 'NE25',      price: 500_000   },
+        'Premium': { code: 'NP40/NP25', price: 1_000_000 },
+        'Crystal': { code: 'NC40/NC25', price: 1_600_000 },
+        'Royal':   { code: 'NR40/NR25', price: 1_600_000 },
       },
     },
     {
-      position: 'Kính sườn (Giữa)',
+      position: 'Kính sườn (sau)',
       cells: {
-        'CR BLK PRO':     { code: 'CR BLK 15/35', price: 2_600_000 },
-        'CR BLK':         { code: 'CR 20',         price: 2_400_000 },
-        'Best Seller 01': { code: 'IR 15/25',      price: 1_800_000 },
-        'Best Seller 02': { code: 'IR 15/25',      price: 1_800_000 },
-        'Ceramic IR':     { code: 'IR 15/25',      price: 1_800_000 },
+        'Eco':     { code: 'NE25',      price: 500_000   },
+        'Premium': { code: 'NP40/NP25', price: 1_050_000 },
+        'Crystal': { code: 'NC40/NC25', price: 1_600_000 },
+        'Royal':   { code: 'NR40/NR25', price: 1_600_000 },
       },
     },
     {
-      position: 'Kính sau (Lưng)',
+      position: 'Kính hậu',
       cells: {
-        'CR BLK PRO':     { code: 'CR BLK 15/35', price: 4_100_000 },
-        'CR BLK':         { code: 'CR 20',         price: 3_900_000 },
-        'Best Seller 01': { code: 'IR 15/25',      price: 2_300_000 },
-        'Best Seller 02': { code: 'IR 15/25',      price: 2_300_000 },
-        'Ceramic IR':     { code: 'IR 15/25',      price: 2_300_000 },
+        'Eco':     { code: 'NE25', price: 1_200_000 },
+        'Premium': { code: 'NP15', price: 1_800_000 },
+        'Crystal': { code: 'NC15', price: 1_800_000 },
+        'Royal':   { code: 'NR40/NR25', price: 3_800_000 },
       },
     },
   ],

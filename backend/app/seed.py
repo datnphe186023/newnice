@@ -13,13 +13,13 @@ from app.models import Category, Brand, Product, AdminUser
 async def seed_categories():
     categories = [
         {
-            "name": "Phim cách nhiệt 3M",
-            "description": "Các dòng phim cách nhiệt chính hãng 3M — Crystalline, CR BLK, Ceramic IR",
+            "name": "Phim cách nhiệt Newnice",
+            "description": "Các dòng phim cách nhiệt thương hiệu Newnice — Eco, Premium, Crystal, Royal",
             "sort_order": 1,
         },
         {
-            "name": "Phim cách nhiệt Newnice",
-            "description": "Các dòng phim cách nhiệt thương hiệu Newnice — chất lượng cao, giá tốt",
+            "name": "PPF Newnice",
+            "description": "Phim bảo vệ sơn PPF thương hiệu Newnice — bảo vệ toàn diện, chống trầy xước",
             "sort_order": 2,
         },
     ]
@@ -35,8 +35,7 @@ async def seed_categories():
 
 async def seed_brands():
     brands = [
-        {"name": "3M",      "country": "Mỹ",       "description": "Thương hiệu phim cách nhiệt hàng đầu thế giới"},
-        {"name": "Newnice", "country": "Việt Nam",  "description": "Thương hiệu phim cách nhiệt Việt Nam — chất lượng cao, giá tốt nhất"},
+        {"name": "Newnice", "country": "Việt Nam", "description": "Thương hiệu phim cách nhiệt & PPF Việt Nam — chất lượng cao, giá tốt nhất"},
     ]
     async with async_session_maker() as session:
         for d in brands:
@@ -49,78 +48,68 @@ async def seed_brands():
 
 
 async def seed_products():
-    """
-    Seed film products based on the 3M price table.
-    Each product = one film package (brand + film code).
-    Prices are SEDAN / SUV totals from the price table.
-    """
     products = [
-        # ── 3M Crystalline CR BLK PRO ──────────────────────────────────────
+        # ── Phim cách nhiệt Newnice ────────────────────────────────────────
         {
-            "name": "3M Crystalline CR BLK PRO",
-            "film_code": "CR BLK PRO",
-            "short_description": "Gói phim cách nhiệt 3M Crystalline CR BLK PRO — dòng cao cấp nhất, kính trước CR BLK 40",
-            "price_sedan": 15_500_000,
-            "price_suv":   18_300_000,
-            "vlt": 40, "uv_rejection": 99, "ir_rejection": 97, "heat_rejection": 65,
-            "warranty_years": 10, "is_featured": True,
-            "category_slug": "phim-cach-nhiet-3m", "brand_slug": "3m",
+            "name": "Newnice Eco",
+            "film_code": "NE",
+            "short_description": "Gói phim cách nhiệt Newnice Eco — tiết kiệm, hiệu quả cơ bản",
+            "price_sedan": 5_800_000, "price_suv": 7_000_000,
+            "vlt": 75, "uv_rejection": 99, "ir_rejection": 80, "heat_rejection": 45,
+            "warranty_years": 5, "is_featured": True,
+            "category_slug": "phim-cach-nhiet-newnice", "brand_slug": "newnice",
         },
-        # ── 3M Crystalline CR BLK ──────────────────────────────────────────
-        {
-            "name": "3M Crystalline CR BLK",
-            "film_code": "CR BLK",
-            "short_description": "Gói phim cách nhiệt 3M Crystalline CR BLK — kính trước CR 50, kính sườn CR BLK 15/35",
-            "price_sedan": 14_700_000,
-            "price_suv":   17_500_000,
-            "vlt": 50, "uv_rejection": 99, "ir_rejection": 97, "heat_rejection": 62,
-            "warranty_years": 10, "is_featured": True,
-            "category_slug": "phim-cach-nhiet-3m", "brand_slug": "3m",
-        },
-        # ── 3M Best Seller 01 ──────────────────────────────────────────────
-        {
-            "name": "3M Best Seller 01",
-            "film_code": "BS01",
-            "short_description": "Gói phim 3M Best Seller 01 — kính trước CR BLK 40, kính sườn CR BLK 15/35",
-            "price_sedan": 12_800_000,
-            "price_suv":   14_300_000,
-            "vlt": 40, "uv_rejection": 99, "ir_rejection": 95, "heat_rejection": 60,
-            "warranty_years": 10, "is_featured": True,
-            "category_slug": "phim-cach-nhiet-3m", "brand_slug": "3m",
-        },
-        # ── 3M Best Seller 02 ──────────────────────────────────────────────
-        {
-            "name": "3M Best Seller 02",
-            "film_code": "BS02",
-            "short_description": "Gói phim 3M Best Seller 02 — kính trước CR BLK 50, kính sườn IR 15/25",
-            "price_sedan": 11_200_000,
-            "price_suv":   12_700_000,
-            "vlt": 50, "uv_rejection": 99, "ir_rejection": 93, "heat_rejection": 58,
-            "warranty_years": 10, "is_featured": False,
-            "category_slug": "phim-cach-nhiet-3m", "brand_slug": "3m",
-        },
-        # ── 3M Ceramic IR ──────────────────────────────────────────────────
-        {
-            "name": "3M Ceramic IR",
-            "film_code": "Ceramic IR",
-            "short_description": "Gói phim 3M Ceramic IR — kính trước IR 50, kính sườn IR 15/25",
-            "price_sedan":  9_000_000,
-            "price_suv":   10_500_000,
-            "vlt": 50, "uv_rejection": 99, "ir_rejection": 90, "heat_rejection": 55,
-            "warranty_years": 10, "is_featured": False,
-            "category_slug": "phim-cach-nhiet-3m", "brand_slug": "3m",
-        },
-        # ── Newnice (template — bạn sẽ cung cấp mã cụ thể sau) ────────────
         {
             "name": "Newnice Premium",
-            "film_code": "NNC-PRE",
-            "short_description": "Gói phim cách nhiệt Newnice Premium — chất lượng cao, giá tốt nhất thị trường",
-            "price_sedan": None,
-            "price_suv":   None,
-            "is_contact_price": True,
-            "vlt": 70, "uv_rejection": 99, "ir_rejection": 95, "heat_rejection": 60,
+            "film_code": "NP",
+            "short_description": "Gói phim cách nhiệt Newnice Premium — cân bằng hoàn hảo giữa giá và chất lượng",
+            "price_sedan": 10_500_000, "price_suv": 11_500_000,
+            "vlt": 70, "uv_rejection": 99, "ir_rejection": 90, "heat_rejection": 55,
             "warranty_years": 7, "is_featured": True,
             "category_slug": "phim-cach-nhiet-newnice", "brand_slug": "newnice",
+        },
+        {
+            "name": "Newnice Crystal",
+            "film_code": "NC",
+            "short_description": "Gói phim cách nhiệt Newnice Crystal — độ trong cao, cách nhiệt vượt trội",
+            "price_sedan": 12_500_000, "price_suv": 14_500_000,
+            "vlt": 65, "uv_rejection": 99, "ir_rejection": 95, "heat_rejection": 62,
+            "warranty_years": 7, "is_featured": True,
+            "category_slug": "phim-cach-nhiet-newnice", "brand_slug": "newnice",
+        },
+        {
+            "name": "Newnice Royal",
+            "film_code": "NR",
+            "short_description": "Gói phim cách nhiệt Newnice Royal — dòng cao cấp nhất, cách nhiệt tối đa",
+            "price_sedan": 15_500_000, "price_suv": 17_500_000,
+            "vlt": 60, "uv_rejection": 99, "ir_rejection": 97, "heat_rejection": 68,
+            "warranty_years": 10, "is_featured": True,
+            "category_slug": "phim-cach-nhiet-newnice", "brand_slug": "newnice",
+        },
+        # ── PPF Newnice ────────────────────────────────────────────────────
+        {
+            "name": "Newnice PPF Standard",
+            "film_code": "PPF-STD",
+            "short_description": "Phim PPF Newnice Standard — bảo vệ sơn xe khỏi trầy xước, đá bắn",
+            "price_sedan": None, "price_suv": None, "is_contact_price": True,
+            "warranty_years": 5, "is_featured": True,
+            "category_slug": "ppf-newnice", "brand_slug": "newnice",
+        },
+        {
+            "name": "Newnice PPF Premium",
+            "film_code": "PPF-PRE",
+            "short_description": "Phim PPF Newnice Premium — tự phục hồi vết xước nhỏ, bảo vệ toàn diện",
+            "price_sedan": None, "price_suv": None, "is_contact_price": True,
+            "warranty_years": 7, "is_featured": True,
+            "category_slug": "ppf-newnice", "brand_slug": "newnice",
+        },
+        {
+            "name": "Newnice PPF Crystal",
+            "film_code": "PPF-CRY",
+            "short_description": "Phim PPF Newnice Crystal — trong suốt tuyệt đối, giữ màu sơn gốc hoàn hảo",
+            "price_sedan": None, "price_suv": None, "is_contact_price": True,
+            "warranty_years": 10, "is_featured": False,
+            "category_slug": "ppf-newnice", "brand_slug": "newnice",
         },
     ]
 

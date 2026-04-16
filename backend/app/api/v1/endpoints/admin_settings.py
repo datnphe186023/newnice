@@ -58,7 +58,7 @@ DEFAULT_SETTINGS: dict[str, tuple[str, str]] = {
     "ga_measurement_id":  ("", "text"),
     "gsc_verification":   ("", "text"),
     "warranty_headline":  ("Bảo hành lên đến 10 năm", "text"),
-    "meta_description":   ("Newnice - Chuyên cung cấp và thi công phim cách nhiệt ô tô, phim đổi màu xe, phim nhà kính cao cấp tại Hà Nội", "text"),
+    "meta_description":   ("Newnice - Chuyên cung cấp và thi công phim cách nhiệt ô tô, PPF bảo vệ sơn xe tại Hà Nội", "text"),
 }
 
 
