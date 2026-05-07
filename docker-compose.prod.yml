@@ -1,0 +1,101 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-autofilm}
+      POSTGRES_USER: ${POSTGRES_USER:-autofilm}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in environment}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-autofilm}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DEBUG: "False"
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in environment}
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in environment}
+      SITE_URL: ${SITE_URL:?Set SITE_URL in environment}
+      ADMIN_URL: ${ADMIN_URL:?Set ADMIN_URL in environment}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://yourdomain.com}
+      EMAIL_HOST: ${EMAIL_HOST}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USE_STARTTLS: ${EMAIL_USE_STARTTLS:-True}
+      EMAIL_USERNAME: ${EMAIL_USERNAME}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      EMAIL_FROM: ${EMAIL_FROM:-noreply@yourdomain.com}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?Set ADMIN_EMAIL in environment}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - backend
+      - frontend
+    expose:
+      - "8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: production
+    restart: always
+    depends_on:
+      - backend
+    environment:
+      NUXT_PUBLIC_API_BASE: ${NUXT_PUBLIC_API_BASE:?Set NUXT_PUBLIC_API_BASE in environment}
+      NUXT_PUBLIC_SITE_URL: ${NUXT_PUBLIC_SITE_URL:?Set NUXT_PUBLIC_SITE_URL in environment}
+      NUXT_PUBLIC_GA_ID: ${NUXT_PUBLIC_GA_ID}
+      NUXT_PUBLIC_GSC_VERIFICATION: ${NUXT_PUBLIC_GSC_VERIFICATION}
+      NODE_ENV: production
+      NITRO_HOST: 0.0.0.0
+      NITRO_PORT: 3000
+    networks:
+      - frontend
+    expose:
+      - "3000"
+
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - frontend
+      - backend
+
+volumes:
+  postgres_data:
+
+networks:
+  backend:
+    driver: bridge
+  frontend:
+    driver: bridge

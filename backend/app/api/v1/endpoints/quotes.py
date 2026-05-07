@@ -1,21 +1,130 @@
 import logging
 from typing import Annotated
 
-from fastapi import APIRouter, BackgroundTasks, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.models import QuoteRequest, Contact
+from app.models import QuoteRequest, Contact, AdminUser
 from app.schemas import (
     QuoteRequestCreate, QuoteRequestResponse,
-    ContactCreate, ContactResponse,
+    ContactCreate, ContactResponse, QuoteRequestUpdate,
+    PaginatedResponse,
     MessageResponse
 )
+from app.api.deps import get_current_user
 from app.services.email_service import notify_new_quote, notify_new_contact
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["Quotes & Contact"])
+
+
+@router.get("/quotes", response_model=PaginatedResponse[QuoteRequestResponse])
+async def get_quotes(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _: Annotated[AdminUser, Depends(get_current_user)],
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
+    status: str | None = Query(None),
+    search: str | None = Query(None),
+):
+    query = select(QuoteRequest)
+    count_query = select(func.count(QuoteRequest.id))
+
+    if status:
+        query = query.where(QuoteRequest.status == status)
+        count_query = count_query.where(QuoteRequest.status == status)
+
+    if search:
+        like = f"%{search}%"
+        condition = or_(QuoteRequest.customer_name.ilike(like), QuoteRequest.phone.ilike(like))
+        query = query.where(condition)
+        count_query = count_query.where(condition)
+
+    total = (await db.execute(count_query)).scalar() or 0
+    items = (
+        await db.execute(
+            query
+            .order_by(QuoteRequest.created_at.desc())
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+        )
+    ).scalars().all()
+
+    total_pages = max(1, (total + page_size - 1) // page_size)
+    return PaginatedResponse(
+        items=items,
+        total=total,
+        page=page,
+        page_size=page_size,
+        total_pages=total_pages,
+    )
+
+
+@router.put("/quotes/{quote_id}", response_model=QuoteRequestResponse)
+async def update_quote(
+    quote_id: int,
+    data: QuoteRequestUpdate,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _: Annotated[AdminUser, Depends(get_current_user)],
+):
+    quote = (await db.execute(select(QuoteRequest).where(QuoteRequest.id == quote_id))).scalar_one_or_none()
+    if not quote:
+        raise HTTPException(status_code=404, detail="Quote not found")
+
+    update_data = data.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(quote, field, value)
+
+    await db.commit()
+    await db.refresh(quote)
+    return quote
+
+
+@router.get("/contacts", response_model=PaginatedResponse[ContactResponse])
+async def get_contacts(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _: Annotated[AdminUser, Depends(get_current_user)],
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
+):
+    count_query = select(func.count(Contact.id))
+    total = (await db.execute(count_query)).scalar() or 0
+    items = (
+        await db.execute(
+            select(Contact)
+            .order_by(Contact.created_at.desc())
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+        )
+    ).scalars().all()
+
+    total_pages = max(1, (total + page_size - 1) // page_size)
+    return PaginatedResponse(
+        items=items,
+        total=total,
+        page=page,
+        page_size=page_size,
+        total_pages=total_pages,
+    )
+
+
+@router.put("/contacts/{contact_id}/read", response_model=ContactResponse)
+async def mark_contact_as_read(
+    contact_id: int,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _: Annotated[AdminUser, Depends(get_current_user)],
+):
+    contact = (await db.execute(select(Contact).where(Contact.id == contact_id))).scalar_one_or_none()
+    if not contact:
+        raise HTTPException(status_code=404, detail="Contact not found")
+
+    contact.is_read = True
+    await db.commit()
+    await db.refresh(contact)
+    return contact
 
 
 @router.post("/quotes", response_model=QuoteRequestResponse, status_code=201)

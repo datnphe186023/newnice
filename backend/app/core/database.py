@@ -1,4 +1,5 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from sqlalchemy import text
 from sqlalchemy.orm import DeclarativeBase
 from app.core.config import settings
 
@@ -31,5 +32,7 @@ async def get_db():
 
 
 async def init_db():
+    # Keep startup lightweight: verify DB connectivity only.
+    # Schema creation is handled by Alembic migrations.
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.execute(text("SELECT 1"))

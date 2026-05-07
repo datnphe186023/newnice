@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
+from app.utils.sanitize import sanitize_html, sanitize_plain_text
 
 
 class PostBase(BaseModel):
@@ -11,6 +12,18 @@ class PostBase(BaseModel):
     thumbnail: Optional[str] = None
     meta_title: Optional[str] = None
     meta_description: Optional[str] = None
+
+    @field_validator('content', mode='before')
+    @classmethod
+    def sanitize_content(cls, v: Optional[str]) -> Optional[str]:
+        """Sanitize HTML content to prevent XSS."""
+        return sanitize_html(v)
+    
+    @field_validator('excerpt', 'title', 'meta_title', mode='before')
+    @classmethod
+    def sanitize_text_fields(cls, v: Optional[str]) -> Optional[str]:
+        """Sanitize plain text fields."""
+        return sanitize_plain_text(v)
 
 
 class PostCreate(PostBase):
@@ -26,6 +39,18 @@ class PostUpdate(BaseModel):
     is_published: Optional[bool] = None
     meta_title: Optional[str] = None
     meta_description: Optional[str] = None
+
+    @field_validator('content', mode='before')
+    @classmethod
+    def sanitize_content(cls, v: Optional[str]) -> Optional[str]:
+        """Sanitize HTML content to prevent XSS."""
+        return sanitize_html(v)
+    
+    @field_validator('excerpt', 'title', 'meta_title', mode='before')
+    @classmethod
+    def sanitize_text_fields(cls, v: Optional[str]) -> Optional[str]:
+        """Sanitize plain text fields."""
+        return sanitize_plain_text(v)
 
 
 class PostResponse(PostBase):

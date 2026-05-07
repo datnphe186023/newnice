@@ -1,34 +1,55 @@
-version: '3.8'
+version: "3.8"
 
 services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: autofilm
+      POSTGRES_USER: autofilm
+      POSTGRES_PASSWORD: autofilm
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U autofilm -d autofilm"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
       - "8000:8000"
-    volumes:
-      - ./backend:/app
-      - backend_uploads:/app/uploads
     environment:
-      - DEBUG=True
-      - DATABASE_URL=sqlite+aiosqlite:///./autofilm.db
-      - SECRET_KEY=dev-secret-key-change-in-production
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      DEBUG: "False"
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in environment}
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://autofilm:autofilm@postgres:5432/autofilm}
+      SITE_URL: ${SITE_URL:-http://localhost:3000}
+      ADMIN_URL: ${ADMIN_URL:-http://localhost:3000}
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - backend
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.nuxt
     environment:
-      - NUXT_PUBLIC_API_BASE=http://localhost:8000/api/v1
-    command: npm run dev
+      NUXT_PUBLIC_API_BASE: ${NUXT_PUBLIC_API_BASE:-http://localhost:8000/api/v1}
+      NUXT_PUBLIC_SITE_URL: ${NUXT_PUBLIC_SITE_URL:-http://localhost:3000}
+      NODE_ENV: production
+      NITRO_HOST: 0.0.0.0
+      NITRO_PORT: 3000
+    command: sh -c "npm run build && node .output/server/index.mjs"
 
 volumes:
-  backend_uploads:
+  postgres_data:

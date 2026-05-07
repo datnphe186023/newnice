@@ -71,7 +71,9 @@
               <td class="p-4 text-gray-600">{{ product.brand?.name || '-' }}</td>
               <td class="p-4">
                 <span v-if="product.is_contact_price" class="text-gray-500">Liên hệ</span>
-                <span v-else class="font-medium">{{ formatPrice(product.price) }}</span>
+                <span v-else class="font-medium">
+                  {{ formatPrice(product.price_sedan) }} / {{ formatPrice(product.price_suv) }}
+                </span>
               </td>
               <td class="p-4">
                 <span 

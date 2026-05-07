@@ -6,16 +6,20 @@ FastAPI backend for the AutoFilm automotive window film website.
 
 ```bash
 # Install dependencies
-pip install -e .
+pip install poetry
+poetry install
 
 # Create .env file
 cp .env.example .env
 
+# Run migrations
+poetry run alembic upgrade head
+
 # Run the server
-uvicorn app.main:app --reload
+poetry run uvicorn app.main:app --reload
 
 # Seed the database
-python -m app.seed
+poetry run python -m app.seed
 ```
 
 ## API Documentation

@@ -31,6 +31,35 @@ BANNER_SIZES = {
     "large": (1920, 900),
 }
 
+# Allowed subfolders for uploads
+ALLOWED_SUBFOLDERS = {"images", "products", "categories", "posts", "brands"}
+
+
+def validate_subfolder(subfolder: str) -> str:
+    """
+    Validate and sanitize the upload subfolder.
+    
+    Prevents path traversal attacks by only allowing whitelisted subfolders.
+    Raises HTTPException if subfolder is invalid.
+    """
+    if not subfolder:
+        return "images"  # Default safe subfolder
+    
+    # Remove any path traversal attempts
+    sanitized = subfolder.replace("..", "").replace("\\", "/").strip("/")
+    
+    # Check if sanitized subfolder is in allowed list
+    # Allow subfolders and nested paths like "images/temp" but only with safe base folders
+    base_folder = sanitized.split("/")[0]
+    
+    if not base_folder or base_folder not in ALLOWED_SUBFOLDERS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid subfolder '{subfolder}'. Allowed: {', '.join(ALLOWED_SUBFOLDERS)}"
+        )
+    
+    return sanitized
+
 
 def validate_image(file: UploadFile) -> None:
     """Validate uploaded file is an allowed image type and size."""
@@ -56,6 +85,39 @@ def generate_filename(original_filename: str) -> str:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     unique_id = uuid.uuid4().hex[:8]
     return f"{timestamp}_{unique_id}.{ext}"
+
+
+def get_safe_path(filename: str, subfolder: str = "") -> Path:
+    """
+    Get the full path for saving an uploaded file with security checks.
+    
+    Prevents path traversal attacks by:
+    1. Resolving the full path
+    2. Verifying it's within the uploads directory
+    3. Raising exception if path escapes the uploads directory
+    """
+    # Validate subfolder
+    safe_subfolder = validate_subfolder(subfolder) if subfolder else "images"
+    
+    # Construct the path
+    upload_dir = settings.UPLOAD_DIR.resolve()
+    target_dir = (upload_dir / safe_subfolder).resolve()
+    target_path = (target_dir / filename).resolve()
+    
+    # Security check: ensure the target path is within upload directory
+    try:
+        target_path.relative_to(upload_dir)
+    except ValueError:
+        # Path is outside upload directory - path traversal attempt
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid file path - potential path traversal attempt"
+        )
+    
+    # Create directory if it doesn't exist
+    target_dir.mkdir(parents=True, exist_ok=True)
+    
+    return target_path
 
 
 def get_upload_path(filename: str, subfolder: str = "") -> Path:
@@ -130,11 +192,11 @@ async def save_upload(
     # Generate unique filename
     filename = generate_filename(file.filename)
     
-    # Determine subfolder based on type
-    base_subfolder = subfolder or "images"
+    # Determine subfolder based on type with safety validation
+    base_subfolder = validate_subfolder(subfolder or "images")
     
-    # Save original file
-    original_path = get_upload_path(filename, base_subfolder)
+    # Save original file using secure path
+    original_path = get_safe_path(filename, base_subfolder)
     original_path.write_bytes(content)
     
     result = {
@@ -165,16 +227,19 @@ async def save_upload(
     srcset_parts = []
     
     for size_name, dimensions in sizes.items():
-        # Create subfolder for this size
+        # Create subfolder for this size with safety validation
         size_folder = f"{base_subfolder}/{size_name}"
-        size_path = get_upload_path(filename, size_folder)
+        safe_size_folder = validate_subfolder(size_folder)
+        
+        # Get safe path for variant
+        size_path = get_safe_path(filename, safe_size_folder)
         
         # Resize image
         resized = resize_image(image.copy(), dimensions)
         
         # Save as WebP
         webp_variant_path = convert_to_webp(resized, size_path)
-        variant_url = f"/uploads/{size_folder}/{webp_variant_path.name}"
+        variant_url = f"/uploads/{safe_size_folder}/{webp_variant_path.name}"
         
         result[size_name] = variant_url
         
@@ -197,6 +262,8 @@ async def save_upload(
 async def delete_image(image_url: str) -> bool:
     """
     Delete an image and all its variants.
+    
+    Uses secure path resolution to prevent path traversal attacks.
     Returns True if deletion was successful.
     """
     if not image_url or not image_url.startswith("/uploads/"):
@@ -205,30 +272,51 @@ async def delete_image(image_url: str) -> bool:
     # Extract relative path
     relative_path = image_url.replace("/uploads/", "")
     
-    # Try to determine base folder and filename
-    parts = relative_path.rsplit("/", 1)
-    if len(parts) == 2:
-        subfolder, filename = parts
-    else:
-        subfolder = ""
-        filename = parts[0]
+    # Parse the path components
+    parts = relative_path.split("/")
+    if len(parts) < 2:
+        return False
+    
+    # First component should be the subfolder
+    subfolder = parts[0]
+    
+    # Validate subfolder for security
+    try:
+        validate_subfolder(subfolder)
+    except HTTPException:
+        # Invalid subfolder - security check
+        return False
+    
+    # Get the filename (last component)
+    filename = parts[-1]
     
     # Get base filename without extension
     base_name = filename.rsplit(".", 1)[0]
     
+    # Construct the safe path for verification
+    upload_dir = settings.UPLOAD_DIR.resolve()
+    
     deleted_count = 0
     
-    # Delete original and variants
+    # Delete original and variants from all possible locations
     for size_name in list(IMAGE_SIZES.keys()) + list(BANNER_SIZES.keys()) + [""]:
         for ext in [".jpg", ".jpeg", ".png", ".webp", ".gif"]:
-            if size_name:
-                check_path = settings.UPLOAD_DIR / subfolder / size_name / f"{base_name}{ext}"
-            else:
-                check_path = settings.UPLOAD_DIR / subfolder / f"{base_name}{ext}"
-            
-            if check_path.exists():
-                check_path.unlink()
-                deleted_count += 1
+            try:
+                if size_name:
+                    check_path = (upload_dir / subfolder / size_name / f"{base_name}{ext}").resolve()
+                else:
+                    check_path = (upload_dir / subfolder / f"{base_name}{ext}").resolve()
+                
+                # Security check: ensure path is within upload directory
+                check_path.relative_to(upload_dir)
+                
+                # Safe to delete
+                if check_path.exists():
+                    check_path.unlink()
+                    deleted_count += 1
+            except (ValueError, OSError):
+                # Path is invalid or outside upload directory - skip
+                continue
     
     return deleted_count > 0
 

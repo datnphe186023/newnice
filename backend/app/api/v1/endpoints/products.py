@@ -3,12 +3,42 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from sqlalchemy.orm import selectinload
+from slugify import slugify
 
 from app.core.database import get_db
-from app.models import Product, Category, Brand
-from app.schemas import ProductResponse, ProductListResponse, PaginatedResponse
+from app.models import Product, Category, Brand, AdminUser
+from app.schemas import ProductResponse, ProductListResponse, PaginatedResponse, ProductCreate, ProductUpdate, MessageResponse
+from app.api.deps import get_current_user
 
 router = APIRouter(prefix="/products", tags=["Products"])
+
+
+async def _ensure_category_brand_exist(db: AsyncSession, category_id: Optional[int], brand_id: Optional[int]) -> None:
+    if category_id is not None:
+        category = (await db.execute(select(Category).where(Category.id == category_id))).scalar_one_or_none()
+        if not category:
+            raise HTTPException(status_code=400, detail="Category not found")
+
+    if brand_id is not None:
+        brand = (await db.execute(select(Brand).where(Brand.id == brand_id))).scalar_one_or_none()
+        if not brand:
+            raise HTTPException(status_code=400, detail="Brand not found")
+
+
+async def _build_unique_slug(db: AsyncSession, name: str, exclude_id: Optional[int] = None) -> str:
+    base_slug = slugify(name)
+    slug = base_slug
+    counter = 1
+
+    while True:
+        query = select(Product).where(Product.slug == slug)
+        if exclude_id is not None:
+            query = query.where(Product.id != exclude_id)
+        exists = (await db.execute(query)).scalar_one_or_none()
+        if not exists:
+            return slug
+        slug = f"{base_slug}-{counter}"
+        counter += 1
 
 
 @router.get("", response_model=PaginatedResponse[ProductListResponse])
@@ -89,6 +119,96 @@ async def get_products(
         page_size=page_size,
         total_pages=total_pages
     )
+
+
+@router.post("", response_model=ProductResponse, status_code=201)
+async def create_product(
+    data: ProductCreate,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _: Annotated[AdminUser, Depends(get_current_user)],
+):
+    await _ensure_category_brand_exist(db, data.category_id, data.brand_id)
+
+    payload = data.model_dump()
+    product = Product(**payload, slug=await _build_unique_slug(db, data.name))
+    db.add(product)
+    await db.commit()
+    await db.refresh(product)
+
+    loaded = (
+        await db.execute(
+            select(Product)
+            .where(Product.id == product.id)
+            .options(selectinload(Product.category), selectinload(Product.brand), selectinload(Product.images))
+        )
+    ).scalar_one()
+    return loaded
+
+
+@router.get("/admin/{product_id}", response_model=ProductResponse)
+async def admin_get_product_by_id(
+    product_id: int,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _: Annotated[AdminUser, Depends(get_current_user)],
+):
+    product = (
+        await db.execute(
+            select(Product)
+            .where(Product.id == product_id)
+            .options(selectinload(Product.category), selectinload(Product.brand), selectinload(Product.images))
+        )
+    ).scalar_one_or_none()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return product
+
+
+@router.put("/{product_id}", response_model=ProductResponse)
+async def update_product(
+    product_id: int,
+    data: ProductUpdate,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _: Annotated[AdminUser, Depends(get_current_user)],
+):
+    product = (await db.execute(select(Product).where(Product.id == product_id))).scalar_one_or_none()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    update_data = data.model_dump(exclude_unset=True)
+    await _ensure_category_brand_exist(db, update_data.get("category_id"), update_data.get("brand_id"))
+
+    if "name" in update_data and update_data["name"] and update_data["name"] != product.name:
+        update_data["slug"] = await _build_unique_slug(db, update_data["name"], exclude_id=product_id)
+
+    for field, value in update_data.items():
+        setattr(product, field, value)
+
+    await db.commit()
+    await db.refresh(product)
+
+    loaded = (
+        await db.execute(
+            select(Product)
+            .where(Product.id == product.id)
+            .options(selectinload(Product.category), selectinload(Product.brand), selectinload(Product.images))
+        )
+    ).scalar_one()
+    return loaded
+
+
+@router.delete("/{product_id}", response_model=MessageResponse)
+async def delete_product(
+    product_id: int,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _: Annotated[AdminUser, Depends(get_current_user)],
+):
+    product = (await db.execute(select(Product).where(Product.id == product_id))).scalar_one_or_none()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    await db.delete(product)
+    await db.commit()
+    return MessageResponse(message="Product deleted", success=True)
 
 
 @router.get("/featured", response_model=List[ProductListResponse])

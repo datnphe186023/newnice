@@ -210,11 +210,29 @@ const recentContacts = ref<any[]>([])
 
 // Fetch dashboard data
 onMounted(async () => {
+  authStore.initAuth()
   if (!authStore.isAuthenticated) return
   
   try {
-    // Fetch stats and recent data
-    // TODO: Add dashboard API endpoint
+    const headers = { Authorization: `Bearer ${authStore.token}` }
+
+    const [productsRes, quotesRes, contactsRes, postsRes] = await Promise.all([
+      $fetch<{ total: number }>(`${config.public.apiBase}/products?page=1&page_size=1`),
+      $fetch<{ total: number; items: any[] }>(`${config.public.apiBase}/quotes?page=1&page_size=5`, { headers }),
+      $fetch<{ total: number; items: any[] }>(`${config.public.apiBase}/contacts?page=1&page_size=5`, { headers }),
+      $fetch<{ total: number }>(`${config.public.apiBase}/admin/posts?page=1&page_size=1`, { headers }),
+    ])
+
+    stats.value = {
+      products: productsRes.total || 0,
+      quotes: quotesRes.total || 0,
+      pending_quotes: (quotesRes.items || []).filter((q) => q.status === 'pending').length,
+      posts: postsRes.total || 0,
+      contacts: contactsRes.total || 0,
+    }
+
+    recentQuotes.value = quotesRes.items || []
+    recentContacts.value = contactsRes.items || []
   } catch (err) {
     console.error('Failed to fetch dashboard data:', err)
   }

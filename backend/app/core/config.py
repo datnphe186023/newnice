@@ -1,13 +1,15 @@
 from pydantic_settings import BaseSettings
+from pydantic import model_validator, field_validator
 from functools import lru_cache
 from pathlib import Path
+import re
 
 
 class Settings(BaseSettings):
     # App
     APP_NAME: str = "Newnice API"
     APP_VERSION: str = "0.1.0"
-    DEBUG: bool = True
+    DEBUG: bool = False
 
     # Site URLs
     SITE_URL: str = "http://localhost:3000"
@@ -17,7 +19,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite+aiosqlite:///./autofilm.db"
 
     # Security
-    SECRET_KEY: str = "your-secret-key-change-in-production"
+    SECRET_KEY: str = ""
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
 
@@ -26,7 +28,7 @@ class Settings(BaseSettings):
     MAX_UPLOAD_SIZE: int = 10 * 1024 * 1024  # 10MB
     ALLOWED_EXTENSIONS: set = {"jpg", "jpeg", "png", "webp", "gif"}
 
-    # CORS
+    # CORS - comma-separated list or JSON array in environment
     CORS_ORIGINS: list = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
     # Email (SMTP) — leave EMAIL_HOST empty to disable all email sending
@@ -40,6 +42,47 @@ class Settings(BaseSettings):
     EMAIL_FROM_NAME: str = "Newnice"
     ADMIN_EMAIL: str = "admin@newnice.vn"  # Where new leads are sent
 
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, v):
+        """Parse CORS_ORIGINS from comma-separated string or list."""
+        if isinstance(v, str):
+            return [origin.strip() for origin in v.split(",")]
+        return v
+
+    @model_validator(mode="after")
+    def validate_security_settings(self):
+        """Validate security settings for production."""
+        insecure_keys = {
+            "",
+            "change-this-secret-key-in-production",
+            "your-secret-key-change-in-production",
+            "dev-secret-key-change-in-production",
+        }
+
+        if not self.DEBUG and self.SECRET_KEY in insecure_keys:
+            raise ValueError("SECRET_KEY must be set to a strong value when DEBUG is False")
+
+        # Ensure SECRET_KEY is strong enough (at least 32 characters)
+        if not self.DEBUG and len(self.SECRET_KEY) < 32:
+            raise ValueError("SECRET_KEY must be at least 32 characters long in production")
+
+        # Validate DATABASE_URL is not SQLite in production
+        if not self.DEBUG and "sqlite" in self.DATABASE_URL.lower():
+            raise ValueError("SQLite database is not allowed in production. Use PostgreSQL instead.")
+
+        # Validate URLs are HTTPS in production
+        if not self.DEBUG:
+            for url_name, url_value in [("SITE_URL", self.SITE_URL), ("ADMIN_URL", self.ADMIN_URL)]:
+                if not url_value.startswith("https://"):
+                    raise ValueError(f"{url_name} must use HTTPS in production")
+
+        # Validate CORS_ORIGINS - no wildcard in production
+        if not self.DEBUG and "*" in self.CORS_ORIGINS:
+            raise ValueError("CORS wildcard (*) is not allowed in production")
+
+        return self
+
     class Config:
         env_file = ".env"
         case_sensitive = True
@@ -51,3 +94,4 @@ def get_settings() -> Settings:
 
 
 settings = get_settings()
+

@@ -13,7 +13,14 @@ Automotive Window Film E-commerce Website built with FastAPI + Nuxt.js 3
 ### Option 1: Docker (Recommended)
 
 ```bash
-docker-compose up -d
+docker compose -f docker-compose.dev.yml up -d
+```
+
+Production profile:
+
+```bash
+# SECRET_KEY must be set in your shell/environment
+docker compose up -d
 ```
 
 - Frontend: http://localhost:3000
@@ -31,6 +38,7 @@ poetry install
 cp .env.example .env
 
 # Initialize database and seed data
+poetry run alembic upgrade head
 poetry run python -m app.seed
 
 # Run server

@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+from app.utils.sanitize import sanitize_html, sanitize_plain_text
 
 
 # Category Schemas
@@ -14,6 +15,18 @@ class CategoryBase(BaseModel):
     is_active: bool = True
     meta_title: Optional[str] = None
     meta_description: Optional[str] = None
+
+    @field_validator('description', mode='before')
+    @classmethod
+    def sanitize_description(cls, v: Optional[str]) -> Optional[str]:
+        """Sanitize HTML content to prevent XSS."""
+        return sanitize_html(v)
+    
+    @field_validator('name', 'meta_title', 'meta_description', mode='before')
+    @classmethod
+    def sanitize_text_fields(cls, v: Optional[str]) -> Optional[str]:
+        """Sanitize plain text fields."""
+        return sanitize_plain_text(v)
 
 
 class CategoryCreate(CategoryBase):
@@ -30,6 +43,18 @@ class CategoryUpdate(BaseModel):
     is_active: Optional[bool] = None
     meta_title: Optional[str] = None
     meta_description: Optional[str] = None
+
+    @field_validator('description', mode='before')
+    @classmethod
+    def sanitize_description(cls, v: Optional[str]) -> Optional[str]:
+        """Sanitize HTML content to prevent XSS."""
+        return sanitize_html(v)
+    
+    @field_validator('name', 'meta_title', 'meta_description', mode='before')
+    @classmethod
+    def sanitize_text_fields(cls, v: Optional[str]) -> Optional[str]:
+        """Sanitize plain text fields."""
+        return sanitize_plain_text(v)
 
 
 class CategoryResponse(CategoryBase):
@@ -54,6 +79,18 @@ class BrandBase(BaseModel):
     country: Optional[str] = None
     is_active: bool = True
 
+    @field_validator('description', mode='before')
+    @classmethod
+    def sanitize_description(cls, v: Optional[str]) -> Optional[str]:
+        """Sanitize HTML content to prevent XSS."""
+        return sanitize_html(v)
+    
+    @field_validator('name', 'country', mode='before')
+    @classmethod
+    def sanitize_text_fields(cls, v: Optional[str]) -> Optional[str]:
+        """Sanitize plain text fields."""
+        return sanitize_plain_text(v)
+
 
 class BrandCreate(BrandBase):
     pass
@@ -65,6 +102,18 @@ class BrandUpdate(BaseModel):
     description: Optional[str] = None
     country: Optional[str] = None
     is_active: Optional[bool] = None
+
+    @field_validator('description', mode='before')
+    @classmethod
+    def sanitize_description(cls, v: Optional[str]) -> Optional[str]:
+        """Sanitize HTML content to prevent XSS."""
+        return sanitize_html(v)
+    
+    @field_validator('name', 'country', mode='before')
+    @classmethod
+    def sanitize_text_fields(cls, v: Optional[str]) -> Optional[str]:
+        """Sanitize plain text fields."""
+        return sanitize_plain_text(v)
 
 
 class BrandResponse(BrandBase):
@@ -121,6 +170,18 @@ class ProductBase(BaseModel):
     meta_title: Optional[str] = None
     meta_description: Optional[str] = None
 
+    @field_validator('description', 'short_description', mode='before')
+    @classmethod
+    def sanitize_descriptions(cls, v: Optional[str]) -> Optional[str]:
+        """Sanitize HTML content to prevent XSS."""
+        return sanitize_html(v)
+    
+    @field_validator('name', 'sku', 'film_code', 'thickness', 'meta_title', 'meta_description', mode='before')
+    @classmethod
+    def sanitize_text_fields(cls, v: Optional[str]) -> Optional[str]:
+        """Sanitize plain text fields."""
+        return sanitize_plain_text(v)
+
 
 class ProductCreate(ProductBase):
     pass
@@ -149,6 +210,18 @@ class ProductUpdate(BaseModel):
     sort_order: Optional[int] = None
     meta_title: Optional[str] = None
     meta_description: Optional[str] = None
+
+    @field_validator('description', 'short_description', mode='before')
+    @classmethod
+    def sanitize_descriptions(cls, v: Optional[str]) -> Optional[str]:
+        """Sanitize HTML content to prevent XSS."""
+        return sanitize_html(v)
+    
+    @field_validator('name', 'sku', 'film_code', 'thickness', 'meta_title', 'meta_description', mode='before')
+    @classmethod
+    def sanitize_text_fields(cls, v: Optional[str]) -> Optional[str]:
+        """Sanitize plain text fields."""
+        return sanitize_plain_text(v)
 
 
 class ProductResponse(ProductBase):
