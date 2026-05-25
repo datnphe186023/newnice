@@ -4,6 +4,7 @@ Run with: python -m app.seed
 """
 import asyncio
 from slugify import slugify
+from sqlalchemy import select
 
 from app.core.database import async_session_maker, init_db
 from app.core.security import get_password_hash
@@ -24,13 +25,27 @@ async def seed_categories():
         },
     ]
     async with async_session_maker() as session:
+        seeded = 0
         for d in categories:
-            session.add(Category(
-                name=d["name"], slug=slugify(d["name"]),
-                description=d["description"], sort_order=d["sort_order"], is_active=True,
-            ))
+            slug = slugify(d["name"])
+            category = (await session.execute(
+                select(Category).where(Category.slug == slug)
+            )).scalar_one_or_none()
+
+            if category:
+                category.name = d["name"]
+                category.description = d["description"]
+                category.sort_order = d["sort_order"]
+                category.is_active = True
+            else:
+                session.add(Category(
+                    name=d["name"], slug=slug,
+                    description=d["description"], sort_order=d["sort_order"], is_active=True,
+                ))
+                seeded += 1
+
         await session.commit()
-        print(f"✓ Seeded {len(categories)} categories")
+        print(f"✓ Seeded {seeded} categories ({len(categories) - seeded} existing)")
 
 
 async def seed_brands():
@@ -38,13 +53,27 @@ async def seed_brands():
         {"name": "Newnice", "country": "Việt Nam", "description": "Thương hiệu phim cách nhiệt & PPF Việt Nam — chất lượng cao, giá tốt nhất"},
     ]
     async with async_session_maker() as session:
+        seeded = 0
         for d in brands:
-            session.add(Brand(
-                name=d["name"], slug=slugify(d["name"]),
-                country=d["country"], description=d["description"], is_active=True,
-            ))
+            slug = slugify(d["name"])
+            brand = (await session.execute(
+                select(Brand).where(Brand.slug == slug)
+            )).scalar_one_or_none()
+
+            if brand:
+                brand.name = d["name"]
+                brand.country = d["country"]
+                brand.description = d["description"]
+                brand.is_active = True
+            else:
+                session.add(Brand(
+                    name=d["name"], slug=slug,
+                    country=d["country"], description=d["description"], is_active=True,
+                ))
+                seeded += 1
+
         await session.commit()
-        print(f"✓ Seeded {len(brands)} brands")
+        print(f"✓ Seeded {seeded} brands ({len(brands) - seeded} existing)")
 
 
 async def seed_products():
@@ -114,41 +143,65 @@ async def seed_products():
     ]
 
     async with async_session_maker() as session:
-        from sqlalchemy import select
-
+        seeded = 0
         for d in products:
+            product_data = d.copy()
             cat = (await session.execute(
-                select(Category).where(Category.slug == d.pop("category_slug"))
+                select(Category).where(Category.slug == product_data.pop("category_slug"))
             )).scalar_one_or_none()
             brand = (await session.execute(
-                select(Brand).where(Brand.slug == d.pop("brand_slug"))
+                select(Brand).where(Brand.slug == product_data.pop("brand_slug"))
             )).scalar_one_or_none()
 
-            is_contact = d.pop("is_contact_price", False)
-            session.add(Product(
-                **d,
-                slug=slugify(d["name"]),
-                category_id=cat.id if cat else None,
-                brand_id=brand.id if brand else None,
-                is_contact_price=is_contact,
-                is_active=True,
-            ))
+            is_contact = product_data.pop("is_contact_price", False)
+            slug = slugify(product_data["name"])
+            product = (await session.execute(
+                select(Product).where(Product.slug == slug)
+            )).scalar_one_or_none()
+
+            values = {
+                **product_data,
+                "category_id": cat.id if cat else None,
+                "brand_id": brand.id if brand else None,
+                "is_contact_price": is_contact,
+                "is_active": True,
+            }
+
+            if product:
+                for field, value in values.items():
+                    setattr(product, field, value)
+            else:
+                session.add(Product(**values, slug=slug))
+                seeded += 1
 
         await session.commit()
-        print(f"✓ Seeded {len(products)} products")
+        print(f"✓ Seeded {seeded} products ({len(products) - seeded} existing)")
 
 
 async def seed_admin():
     async with async_session_maker() as session:
-        session.add(AdminUser(
-            email="admin@newnice.vn",
-            password_hash=get_password_hash("admin123"),
-            full_name="Administrator",
-            role="super_admin",
-            is_active=True,
-        ))
+        email = "admin@newnice.vn"
+        admin = (await session.execute(
+            select(AdminUser).where(AdminUser.email == email)
+        )).scalar_one_or_none()
+
+        if admin:
+            admin.full_name = admin.full_name or "Administrator"
+            admin.role = admin.role or "super_admin"
+            admin.is_active = True
+            message = "✓ Admin user already exists (admin@newnice.vn)"
+        else:
+            session.add(AdminUser(
+                email=email,
+                password_hash=get_password_hash("admin123"),
+                full_name="Administrator",
+                role="super_admin",
+                is_active=True,
+            ))
+            message = "✓ Seeded admin user (admin@newnice.vn / admin123)"
+
         await session.commit()
-        print("✓ Seeded admin user (admin@newnice.vn / admin123)")
+        print(message)
 
 
 async def main():
