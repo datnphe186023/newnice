@@ -11,6 +11,13 @@ from app.schemas.quote import (
 from app.schemas.user import Token, TokenData, UserLogin, UserCreate, UserResponse
 from app.schemas.post import PostBase, PostCreate, PostUpdate, PostResponse, PostListResponse
 from app.schemas.common import PaginatedResponse, MessageResponse
+from app.schemas.warranty import (
+    DealerCreate, DealerResponse, DealerUpdate,
+    FilmPackageCreate, FilmPackageResponse, FilmPackageUpdate,
+    SerialGenerateRequest, SerialGenerateResponse,
+    WarrantyActivationCreate, WarrantyAdminResponse, WarrantyAdminUpdate,
+    WarrantyLookupResponse,
+)
 
 __all__ = [
     # Product
@@ -27,4 +34,10 @@ __all__ = [
     "PostBase", "PostCreate", "PostUpdate", "PostResponse", "PostListResponse",
     # Common
     "PaginatedResponse", "MessageResponse",
+    # Warranty
+    "DealerCreate", "DealerResponse", "DealerUpdate",
+    "FilmPackageCreate", "FilmPackageResponse", "FilmPackageUpdate",
+    "SerialGenerateRequest", "SerialGenerateResponse",
+    "WarrantyActivationCreate", "WarrantyAdminResponse", "WarrantyAdminUpdate",
+    "WarrantyLookupResponse",
 ]

@@ -2,6 +2,7 @@ from app.models.product import Category, Brand, Product, ProductImage
 from app.models.quote import QuoteRequest, Contact, QuoteStatus
 from app.models.user import AdminUser, UserRole
 from app.models.content import Post, SiteSetting
+from app.models.warranty import Dealer, FilmPackage, WarrantySerial
 
 __all__ = [
     "Category",
@@ -15,4 +16,7 @@ __all__ = [
     "UserRole",
     "Post",
     "SiteSetting",
+    "Dealer",
+    "FilmPackage",
+    "WarrantySerial",
 ]

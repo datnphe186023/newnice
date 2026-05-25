@@ -70,6 +70,17 @@
             Yêu cầu báo giá
           </NuxtLink>
 
+          <NuxtLink
+            to="/admin/warranties"
+            class="nav-link"
+            :class="{ 'active': route.path.startsWith('/admin/warranties') }"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.5 3.75h9l3 3v6.75a7.5 7.5 0 01-15 0V6.75l3-3z" />
+            </svg>
+            Bảo hành
+          </NuxtLink>
+
           <NuxtLink 
             to="/admin/posts"
             class="nav-link"
