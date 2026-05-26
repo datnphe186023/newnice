@@ -4,9 +4,9 @@ Automotive Window Film E-commerce Website built with FastAPI + Nuxt.js 3
 
 ## Tech Stack
 
-- **Backend**: FastAPI, SQLAlchemy, SQLite
+- **Backend**: FastAPI, SQLAlchemy
 - **Frontend**: Nuxt.js 3, Vue.js 3, Tailwind CSS
-- **Database**: SQLite (simple, no server needed)
+- **Database**: PostgreSQL 16.10 Alpine 3.22 via Docker Compose
 
 ## Quick Start
 
@@ -16,12 +16,20 @@ Automotive Window Film E-commerce Website built with FastAPI + Nuxt.js 3
 docker compose -f docker-compose.dev.yml up -d
 ```
 
+The development profile starts PostgreSQL automatically, waits for it to be
+healthy, then runs Alembic migrations before the API starts.
+
 Production profile:
 
 ```bash
-# SECRET_KEY must be set in your shell/environment
+# SECRET_KEY, POSTGRES_PASSWORD, SITE_URL, ADMIN_URL, and public Nuxt URLs
+# must be set in your shell/environment or .env file
 docker compose up -d
 ```
+
+Docker data is persisted in named volumes:
+- `postgres_data` stores PostgreSQL data, including warranty records
+- `backend_data` remains available for backend file data
 
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:8000

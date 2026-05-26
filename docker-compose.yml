@@ -1,17 +1,15 @@
-version: "3.8"
-
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:16.10-alpine3.22
     restart: unless-stopped
     environment:
-      POSTGRES_DB: autofilm
-      POSTGRES_USER: autofilm
-      POSTGRES_PASSWORD: autofilm
+      POSTGRES_DB: ${POSTGRES_DB:-autofilm}
+      POSTGRES_USER: ${POSTGRES_USER:-autofilm}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-autofilm}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U autofilm -d autofilm"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-autofilm} -d ${POSTGRES_DB:-autofilm}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,6 +22,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    volumes:
+      - backend_data:/app/data
     ports:
       - "8000:8000"
     environment:
@@ -32,7 +32,7 @@ services:
       DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://autofilm:autofilm@postgres:5432/autofilm}
       SITE_URL: ${SITE_URL:-http://localhost:3000}
       ADMIN_URL: ${ADMIN_URL:-http://localhost:3000}
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
 
   frontend:
     build:
@@ -52,4 +52,5 @@ services:
     command: sh -c "npm run build && node .output/server/index.mjs"
 
 volumes:
+  backend_data:
   postgres_data:

@@ -19,8 +19,8 @@ This project uses **Alembic** for database schema management. All database chang
 # Ensure dependencies are installed
 poetry install
 
-# Set database URL (PostgreSQL recommended for production)
-export DATABASE_URL="postgresql+asyncpg://user:password@localhost:5432/autofilm"
+# Set database URL (Docker dev compose exposes PostgreSQL on localhost:5432)
+export DATABASE_URL="postgresql+asyncpg://autofilm:autofilm@localhost:5432/autofilm"
 ```
 
 ### Common Tasks
@@ -158,7 +158,7 @@ def downgrade() -> None:
 # Reset to clean state (DEV ONLY!)
 alembic downgrade base
 # Or check database connection
-export DATABASE_URL="postgresql+asyncpg://user:pass@localhost/autofilm"
+export DATABASE_URL="postgresql+asyncpg://autofilm:autofilm@localhost:5432/autofilm"
 alembic current
 ```
 

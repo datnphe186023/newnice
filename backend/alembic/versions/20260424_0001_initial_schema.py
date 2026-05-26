@@ -7,9 +7,9 @@ Create Date: 2026-04-24 00:00:00.000000
 
 from typing import Sequence, Union
 
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "20260424_0001"
@@ -26,7 +26,7 @@ def upgrade() -> None:
         sa.Column("password_hash", sa.String(length=255), nullable=False),
         sa.Column("full_name", sa.String(length=255), nullable=False),
         sa.Column("role", sa.String(length=20), nullable=False, server_default="admin"),
-        sa.Column("is_active", sa.Boolean(), nullable=False, server_default=sa.text("1")),
+        sa.Column("is_active", sa.Boolean(), nullable=False, server_default=sa.true()),
         sa.Column("last_login", sa.DateTime(), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=False),
         sa.Column("updated_at", sa.DateTime(), nullable=False),
@@ -41,7 +41,7 @@ def upgrade() -> None:
         sa.Column("logo", sa.String(length=500), nullable=True),
         sa.Column("description", sa.Text(), nullable=True),
         sa.Column("country", sa.String(length=100), nullable=True),
-        sa.Column("is_active", sa.Boolean(), nullable=False, server_default=sa.text("1")),
+        sa.Column("is_active", sa.Boolean(), nullable=False, server_default=sa.true()),
         sa.Column("created_at", sa.DateTime(), nullable=False),
         sa.Column("updated_at", sa.DateTime(), nullable=False),
     )
@@ -57,7 +57,7 @@ def upgrade() -> None:
         sa.Column("banner_image", sa.String(length=500), nullable=True),
         sa.Column("parent_id", sa.Integer(), sa.ForeignKey("categories.id"), nullable=True),
         sa.Column("sort_order", sa.Integer(), nullable=False, server_default="0"),
-        sa.Column("is_active", sa.Boolean(), nullable=False, server_default=sa.text("1")),
+        sa.Column("is_active", sa.Boolean(), nullable=False, server_default=sa.true()),
         sa.Column("meta_title", sa.String(length=255), nullable=True),
         sa.Column("meta_description", sa.Text(), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=False),
@@ -73,7 +73,7 @@ def upgrade() -> None:
         sa.Column("email", sa.String(length=255), nullable=False),
         sa.Column("subject", sa.String(length=255), nullable=True),
         sa.Column("message", sa.Text(), nullable=False),
-        sa.Column("is_read", sa.Boolean(), nullable=False, server_default=sa.text("0")),
+        sa.Column("is_read", sa.Boolean(), nullable=False, server_default=sa.false()),
         sa.Column("created_at", sa.DateTime(), nullable=False),
     )
 
@@ -111,7 +111,7 @@ def upgrade() -> None:
         sa.Column("content", sa.Text(), nullable=True),
         sa.Column("thumbnail", sa.String(length=500), nullable=True),
         sa.Column("author_id", sa.Integer(), sa.ForeignKey("admin_users.id"), nullable=True),
-        sa.Column("is_published", sa.Boolean(), nullable=False, server_default=sa.text("0")),
+        sa.Column("is_published", sa.Boolean(), nullable=False, server_default=sa.false()),
         sa.Column("published_at", sa.DateTime(), nullable=True),
         sa.Column("meta_title", sa.String(length=255), nullable=True),
         sa.Column("meta_description", sa.Text(), nullable=True),
@@ -133,7 +133,7 @@ def upgrade() -> None:
         sa.Column("description", sa.Text(), nullable=True),
         sa.Column("price_sedan", sa.Integer(), nullable=True),
         sa.Column("price_suv", sa.Integer(), nullable=True),
-        sa.Column("is_contact_price", sa.Boolean(), nullable=False, server_default=sa.text("0")),
+        sa.Column("is_contact_price", sa.Boolean(), nullable=False, server_default=sa.false()),
         sa.Column("thumbnail", sa.String(length=500), nullable=True),
         sa.Column("vlt", sa.Integer(), nullable=True),
         sa.Column("uv_rejection", sa.Integer(), nullable=True),
@@ -141,8 +141,8 @@ def upgrade() -> None:
         sa.Column("heat_rejection", sa.Integer(), nullable=True),
         sa.Column("thickness", sa.String(length=50), nullable=True),
         sa.Column("warranty_years", sa.Integer(), nullable=True),
-        sa.Column("is_featured", sa.Boolean(), nullable=False, server_default=sa.text("0")),
-        sa.Column("is_active", sa.Boolean(), nullable=False, server_default=sa.text("1")),
+        sa.Column("is_featured", sa.Boolean(), nullable=False, server_default=sa.false()),
+        sa.Column("is_active", sa.Boolean(), nullable=False, server_default=sa.true()),
         sa.Column("sort_order", sa.Integer(), nullable=False, server_default="0"),
         sa.Column("meta_title", sa.String(length=255), nullable=True),
         sa.Column("meta_description", sa.Text(), nullable=True),

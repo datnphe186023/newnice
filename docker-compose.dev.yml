@@ -1,23 +1,43 @@
-version: "3.8"
-
 services:
+  postgres:
+    image: postgres:16.10-alpine3.22
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_DB: autofilm
+      POSTGRES_USER: autofilm
+      POSTGRES_PASSWORD: autofilm
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U autofilm -d autofilm"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
       target: development
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
+      - ./backend:/app:rw
+      # Persist uploaded files and local DB in named volumes so dev containers
+      # survive restarts and are consistent with production layout.
       - backend_uploads:/app/uploads
+      - backend_data:/app/data
     environment:
       - DEBUG=True
-      - DATABASE_URL=sqlite+aiosqlite:///./autofilm.db
+      - DATABASE_URL=postgresql+asyncpg://autofilm:autofilm@postgres:5432/autofilm
       - SECRET_KEY=dev-secret-key-change-in-production
       - SITE_URL=http://localhost:3000
       - ADMIN_URL=http://localhost:3000
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 
   frontend:
     build:
@@ -38,3 +58,5 @@ services:
 
 volumes:
   backend_uploads:
+  backend_data:
+  postgres_data:
