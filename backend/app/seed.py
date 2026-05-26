@@ -1,279 +1,275 @@
 """
-Seed script to populate initial data for Newnice website.
-Run with: python -m app.seed
+Reset and seed baseline data for the Newnice website.
+
+Run with:
+    python -m app.seed
+
+This script resets seed-owned catalog/admin data only:
+- admin_users
+- product_images
+- products
+- categories
+- brands
+
+It intentionally does not delete quotes, contacts, warranty records, dealers,
+film packages, posts, or site settings.
 """
 import asyncio
 
 from slugify import slugify
-from sqlalchemy import select
+from sqlalchemy import delete, select
 
 from app.core.database import async_session_maker, init_db
 from app.core.security import get_password_hash
-from app.models import AdminUser, Brand, Category, Product
+from app.models import AdminUser, Brand, Category, Product, ProductImage
+
+
+ADMIN_EMAIL = "admin@newnice.vn"
+ADMIN_PASSWORD = "007584"
+
+
+CATEGORIES = [
+    {
+        "name": "Phim cách nhiệt Newnice",
+        "slug": "phim-cach-nhiet-newnice",
+        "description": "Các dòng phim cách nhiệt ô tô Newnice - Eco, Premium, Crystal, Royal.",
+        "sort_order": 1,
+    },
+    {
+        "name": "PPF Newnice",
+        "slug": "ppf-newnice",
+        "description": "Phim bảo vệ sơn PPF Newnice - bảo vệ toàn diện, chống trầy xước.",
+        "sort_order": 2,
+    },
+    {
+        "name": "Film cách nhiệt nhà kính",
+        "slug": "film-cach-nhiet-nha-kinh",
+        "description": "Film cách nhiệt dành cho nhà kính, văn phòng và công trình dân dụng.",
+        "sort_order": 3,
+    },
+]
+
+
+BRANDS = [
+    {
+        "name": "Newnice",
+        "slug": "newnice",
+        "country": "Việt Nam",
+        "description": "Thương hiệu phim cách nhiệt & PPF Việt Nam - chất lượng cao, giá tốt.",
+    },
+]
+
+
+PRODUCTS = [
+    {
+        "name": "Newnice Eco",
+        "film_code": "NE",
+        "short_description": "Gói phim cách nhiệt Newnice Eco - tiết kiệm, hiệu quả cơ bản.",
+        "price_sedan": 5_800_000,
+        "price_suv": 7_000_000,
+        "vlt": 75,
+        "uv_rejection": 99,
+        "ir_rejection": 80,
+        "heat_rejection": 45,
+        "warranty_years": 5,
+        "is_featured": True,
+        "sort_order": 1,
+        "category_slug": "phim-cach-nhiet-newnice",
+        "brand_slug": "newnice",
+    },
+    {
+        "name": "Newnice Premium",
+        "film_code": "NP",
+        "short_description": "Gói phim cách nhiệt Newnice Premium - cân bằng giữa giá và chất lượng.",
+        "price_sedan": 10_500_000,
+        "price_suv": 11_500_000,
+        "vlt": 70,
+        "uv_rejection": 99,
+        "ir_rejection": 90,
+        "heat_rejection": 55,
+        "warranty_years": 7,
+        "is_featured": True,
+        "sort_order": 2,
+        "category_slug": "phim-cach-nhiet-newnice",
+        "brand_slug": "newnice",
+    },
+    {
+        "name": "Newnice Crystal",
+        "film_code": "NC",
+        "short_description": "Gói phim cách nhiệt Newnice Crystal - độ trong cao, cách nhiệt vượt trội.",
+        "price_sedan": 12_500_000,
+        "price_suv": 14_500_000,
+        "vlt": 65,
+        "uv_rejection": 99,
+        "ir_rejection": 95,
+        "heat_rejection": 62,
+        "warranty_years": 7,
+        "is_featured": True,
+        "sort_order": 3,
+        "category_slug": "phim-cach-nhiet-newnice",
+        "brand_slug": "newnice",
+    },
+    {
+        "name": "Newnice Royal",
+        "film_code": "NR",
+        "short_description": "Gói phim cách nhiệt Newnice Royal - cao cấp nhất, cách nhiệt tối đa.",
+        "price_sedan": 15_500_000,
+        "price_suv": 17_500_000,
+        "vlt": 60,
+        "uv_rejection": 99,
+        "ir_rejection": 97,
+        "heat_rejection": 68,
+        "warranty_years": 10,
+        "is_featured": True,
+        "sort_order": 4,
+        "category_slug": "phim-cach-nhiet-newnice",
+        "brand_slug": "newnice",
+    },
+    {
+        "name": "Newnice PPF Standard",
+        "film_code": "PPF-STD",
+        "short_description": "Phim PPF Newnice Standard - bảo vệ sơn xe khỏi trầy xước, đá bắn.",
+        "price_sedan": None,
+        "price_suv": None,
+        "is_contact_price": True,
+        "warranty_years": 5,
+        "is_featured": True,
+        "sort_order": 5,
+        "category_slug": "ppf-newnice",
+        "brand_slug": "newnice",
+    },
+    {
+        "name": "Newnice PPF Premium",
+        "film_code": "PPF-PRE",
+        "short_description": "Phim PPF Newnice Premium - tự phục hồi vết xước nhỏ, bảo vệ toàn diện.",
+        "price_sedan": None,
+        "price_suv": None,
+        "is_contact_price": True,
+        "warranty_years": 7,
+        "is_featured": True,
+        "sort_order": 6,
+        "category_slug": "ppf-newnice",
+        "brand_slug": "newnice",
+    },
+    {
+        "name": "Newnice PPF Crystal",
+        "film_code": "PPF-CRY",
+        "short_description": "Phim PPF Newnice Crystal - trong suốt, giữ màu sơn gốc hoàn hảo.",
+        "price_sedan": None,
+        "price_suv": None,
+        "is_contact_price": True,
+        "warranty_years": 10,
+        "is_featured": False,
+        "sort_order": 7,
+        "category_slug": "ppf-newnice",
+        "brand_slug": "newnice",
+    },
+]
+
+
+async def reset_seed_data():
+    async with async_session_maker() as session:
+        await session.execute(delete(ProductImage))
+        await session.execute(delete(Product))
+        await session.execute(delete(Category))
+        await session.execute(delete(Brand))
+        await session.execute(delete(AdminUser))
+        await session.commit()
+        print("✓ Cleared seed-owned admin and catalog data")
 
 
 async def seed_categories():
-    categories = [
-        {
-            "name": "Phim cách nhiệt Newnice",
-            "slug": "phim-cach-nhiet-newnice",
-            "legacy_slugs": ["phim-c-ch-nhi-t-newnice"],
-            "description": "Các dòng phim cách nhiệt thương hiệu Newnice - Eco, Premium, Crystal, Royal",
-            "sort_order": 1,
-        },
-        {
-            "name": "PPF Newnice",
-            "slug": "ppf-newnice",
-            "legacy_slugs": [],
-            "description": "Phim bảo vệ sơn PPF thương hiệu Newnice - bảo vệ toàn diện, chống trầy xước",
-            "sort_order": 2,
-        },
-    ]
     async with async_session_maker() as session:
-        seeded = 0
-        for data in categories:
-            slug = data.get("slug") or slugify(data["name"])
-            category = (
-                await session.execute(select(Category).where(Category.slug == slug))
-            ).scalar_one_or_none()
-
-            if not category:
-                legacy_slugs = data.get("legacy_slugs", [])
-                if legacy_slugs:
-                    category = (
-                        await session.execute(select(Category).where(Category.slug.in_(legacy_slugs)))
-                    ).scalar_one_or_none()
-                    if category:
-                        category.slug = slug
-
-            if category:
-                category.name = data["name"]
-                category.description = data["description"]
-                category.sort_order = data["sort_order"]
-                category.is_active = True
-            else:
-                session.add(
-                    Category(
-                        name=data["name"],
-                        slug=slug,
-                        description=data["description"],
-                        sort_order=data["sort_order"],
-                        is_active=True,
-                    )
+        for data in CATEGORIES:
+            session.add(
+                Category(
+                    name=data["name"],
+                    slug=data["slug"],
+                    description=data["description"],
+                    sort_order=data["sort_order"],
+                    is_active=True,
                 )
-                seeded += 1
+            )
 
         await session.commit()
-        print(f"✓ Seeded {seeded} categories ({len(categories) - seeded} existing)")
+        print(f"✓ Seeded {len(CATEGORIES)} categories")
 
 
 async def seed_brands():
-    brands = [
-        {
-            "name": "Newnice",
-            "slug": "newnice",
-            "country": "Việt Nam",
-            "description": "Thương hiệu phim cách nhiệt & PPF Việt Nam - chất lượng cao, giá tốt nhất",
-        },
-    ]
     async with async_session_maker() as session:
-        seeded = 0
-        for data in brands:
-            slug = data.get("slug") or slugify(data["name"])
-            brand = (
-                await session.execute(select(Brand).where(Brand.slug == slug))
-            ).scalar_one_or_none()
-
-            if brand:
-                brand.name = data["name"]
-                brand.country = data["country"]
-                brand.description = data["description"]
-                brand.is_active = True
-            else:
-                session.add(
-                    Brand(
-                        name=data["name"],
-                        slug=slug,
-                        country=data["country"],
-                        description=data["description"],
-                        is_active=True,
-                    )
+        for data in BRANDS:
+            session.add(
+                Brand(
+                    name=data["name"],
+                    slug=data["slug"],
+                    country=data["country"],
+                    description=data["description"],
+                    is_active=True,
                 )
-                seeded += 1
+            )
 
         await session.commit()
-        print(f"✓ Seeded {seeded} brands ({len(brands) - seeded} existing)")
+        print(f"✓ Seeded {len(BRANDS)} brands")
 
 
 async def seed_products():
-    products = [
-        {
-            "name": "Newnice Eco",
-            "film_code": "NE",
-            "short_description": "Gói phim cách nhiệt Newnice Eco - tiết kiệm, hiệu quả cơ bản",
-            "price_sedan": 5_800_000,
-            "price_suv": 7_000_000,
-            "vlt": 75,
-            "uv_rejection": 99,
-            "ir_rejection": 80,
-            "heat_rejection": 45,
-            "warranty_years": 5,
-            "is_featured": True,
-            "category_slug": "phim-cach-nhiet-newnice",
-            "brand_slug": "newnice",
-        },
-        {
-            "name": "Newnice Premium",
-            "film_code": "NP",
-            "short_description": "Gói phim cách nhiệt Newnice Premium - cân bằng hoàn hảo giữa giá và chất lượng",
-            "price_sedan": 10_500_000,
-            "price_suv": 11_500_000,
-            "vlt": 70,
-            "uv_rejection": 99,
-            "ir_rejection": 90,
-            "heat_rejection": 55,
-            "warranty_years": 7,
-            "is_featured": True,
-            "category_slug": "phim-cach-nhiet-newnice",
-            "brand_slug": "newnice",
-        },
-        {
-            "name": "Newnice Crystal",
-            "film_code": "NC",
-            "short_description": "Gói phim cách nhiệt Newnice Crystal - độ trong cao, cách nhiệt vượt trội",
-            "price_sedan": 12_500_000,
-            "price_suv": 14_500_000,
-            "vlt": 65,
-            "uv_rejection": 99,
-            "ir_rejection": 95,
-            "heat_rejection": 62,
-            "warranty_years": 7,
-            "is_featured": True,
-            "category_slug": "phim-cach-nhiet-newnice",
-            "brand_slug": "newnice",
-        },
-        {
-            "name": "Newnice Royal",
-            "film_code": "NR",
-            "short_description": "Gói phim cách nhiệt Newnice Royal - dòng cao cấp nhất, cách nhiệt tối đa",
-            "price_sedan": 15_500_000,
-            "price_suv": 17_500_000,
-            "vlt": 60,
-            "uv_rejection": 99,
-            "ir_rejection": 97,
-            "heat_rejection": 68,
-            "warranty_years": 10,
-            "is_featured": True,
-            "category_slug": "phim-cach-nhiet-newnice",
-            "brand_slug": "newnice",
-        },
-        {
-            "name": "Newnice PPF Standard",
-            "film_code": "PPF-STD",
-            "short_description": "Phim PPF Newnice Standard - bảo vệ sơn xe khỏi trầy xước, đá bắn",
-            "price_sedan": None,
-            "price_suv": None,
-            "is_contact_price": True,
-            "warranty_years": 5,
-            "is_featured": True,
-            "category_slug": "ppf-newnice",
-            "brand_slug": "newnice",
-        },
-        {
-            "name": "Newnice PPF Premium",
-            "film_code": "PPF-PRE",
-            "short_description": "Phim PPF Newnice Premium - tự phục hồi vết xước nhỏ, bảo vệ toàn diện",
-            "price_sedan": None,
-            "price_suv": None,
-            "is_contact_price": True,
-            "warranty_years": 7,
-            "is_featured": True,
-            "category_slug": "ppf-newnice",
-            "brand_slug": "newnice",
-        },
-        {
-            "name": "Newnice PPF Crystal",
-            "film_code": "PPF-CRY",
-            "short_description": "Phim PPF Newnice Crystal - trong suốt tuyệt đối, giữ màu sơn gốc hoàn hảo",
-            "price_sedan": None,
-            "price_suv": None,
-            "is_contact_price": True,
-            "warranty_years": 10,
-            "is_featured": False,
-            "category_slug": "ppf-newnice",
-            "brand_slug": "newnice",
-        },
-    ]
-
     async with async_session_maker() as session:
-        seeded = 0
-        for data in products:
+        categories = {
+            row.slug: row
+            for row in (await session.execute(select(Category))).scalars().all()
+        }
+        brands = {
+            row.slug: row
+            for row in (await session.execute(select(Brand))).scalars().all()
+        }
+
+        for data in PRODUCTS:
             product_data = data.copy()
             category_slug = product_data.pop("category_slug")
             brand_slug = product_data.pop("brand_slug")
-            category = (
-                await session.execute(select(Category).where(Category.slug == category_slug))
-            ).scalar_one_or_none()
-            brand = (
-                await session.execute(select(Brand).where(Brand.slug == brand_slug))
-            ).scalar_one_or_none()
+            category = categories.get(category_slug)
+            brand = brands.get(brand_slug)
 
-            is_contact = product_data.pop("is_contact_price", False)
-            slug = slugify(product_data["name"])
-            product = (
-                await session.execute(select(Product).where(Product.slug == slug))
-            ).scalar_one_or_none()
+            if not category:
+                raise RuntimeError(f"Missing category for product seed: {category_slug}")
+            if not brand:
+                raise RuntimeError(f"Missing brand for product seed: {brand_slug}")
 
-            values = {
-                **product_data,
-                "category_id": category.id if category else None,
-                "brand_id": brand.id if brand else None,
-                "is_contact_price": is_contact,
-                "is_active": True,
-            }
-
-            if product:
-                for field, value in values.items():
-                    setattr(product, field, value)
-            else:
-                session.add(Product(**values, slug=slug))
-                seeded += 1
+            is_contact_price = product_data.pop("is_contact_price", False)
+            session.add(
+                Product(
+                    **product_data,
+                    slug=slugify(product_data["name"]),
+                    category_id=category.id,
+                    brand_id=brand.id,
+                    is_contact_price=is_contact_price,
+                    is_active=True,
+                )
+            )
 
         await session.commit()
-        print(f"✓ Seeded {seeded} products ({len(products) - seeded} existing)")
+        print(f"✓ Seeded {len(PRODUCTS)} products")
 
 
 async def seed_admin():
     async with async_session_maker() as session:
-        email = "admin@newnice.vn"
-        admin = (
-            await session.execute(select(AdminUser).where(AdminUser.email == email))
-        ).scalar_one_or_none()
-
-        if admin:
-            admin.full_name = admin.full_name or "Administrator"
-            admin.role = admin.role or "super_admin"
-            admin.is_active = True
-            message = "✓ Admin user already exists (admin@newnice.vn)"
-        else:
-            session.add(
-                AdminUser(
-                    email=email,
-                    password_hash=get_password_hash("007584"),
-                    full_name="Administrator",
-                    role="super_admin",
-                    is_active=True,
-                )
+        session.add(
+            AdminUser(
+                email=ADMIN_EMAIL,
+                password_hash=get_password_hash(ADMIN_PASSWORD),
+                full_name="Administrator",
+                role="super_admin",
+                is_active=True,
             )
-            message = "✓ Seeded admin user (admin@newnice.vn / 007584)"
-
+        )
         await session.commit()
-        print(message)
+        print(f"✓ Seeded admin user ({ADMIN_EMAIL} / {ADMIN_PASSWORD})")
 
 
 async def main():
-    print("🌱 Seeding database...")
+    print("🌱 Resetting and seeding database...")
     await init_db()
+    await reset_seed_data()
     await seed_categories()
     await seed_brands()
     await seed_products()
