@@ -87,7 +87,7 @@ newnice-website/
 
 After running seed script:
 - Email: admin@newnice.vn
-- Password: admin123
+- Password: 007584
 
 ## API Endpoints
 

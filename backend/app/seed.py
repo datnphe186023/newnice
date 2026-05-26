@@ -193,12 +193,12 @@ async def seed_admin():
         else:
             session.add(AdminUser(
                 email=email,
-                password_hash=get_password_hash("admin123"),
+                password_hash=get_password_hash("007584"),
                 full_name="Administrator",
                 role="super_admin",
                 is_active=True,
             ))
-            message = "✓ Seeded admin user (admin@newnice.vn / admin123)"
+            message = "✓ Seeded admin user (admin@newnice.vn / 007584)"
 
         await session.commit()
         print(message)
