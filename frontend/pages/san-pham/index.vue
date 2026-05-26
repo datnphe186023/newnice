@@ -137,7 +137,7 @@ const route = useRoute()
 const config = useRuntimeConfig()
 
 // Filters
-const currentPage = ref(1)
+const currentPage = ref(Number(route.query.page) || 1)
 const selectedCategory = ref((route.query.category as string) || '')
 const selectedBrand = ref((route.query.brand as string) || '')
 const searchQuery = ref((route.query.search as string) || '')
@@ -169,8 +169,18 @@ const { data: products, pending, refresh } = await useFetch<PaginatedResponse<Pr
   () => `${config.public.apiBase}/products?${queryParams.value}`
 )
 
+watch(
+  () => route.query,
+  (query) => {
+    selectedCategory.value = (query.category as string) || ''
+    selectedBrand.value = (query.brand as string) || ''
+    searchQuery.value = (query.search as string) || ''
+    currentPage.value = Number(query.page) || 1
+  },
+)
+
 // Watch for filter changes
-watch([selectedCategory, selectedBrand, currentPage], () => {
+watch([selectedCategory, selectedBrand, searchQuery, currentPage], () => {
   refresh()
 })
 
