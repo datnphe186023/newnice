@@ -35,6 +35,10 @@ env/
 # Environment
 .env
 .env.local
+.env.prod
+
+# Local deploy keys
+newnice_deploy_key*
 
 # Database
 *.db
