@@ -24,7 +24,7 @@
               <ul class="space-y-2">
                 <li v-for="cat in categories" :key="cat.slug">
                   <button 
-                    @click="selectedCategory = selectedCategory === cat.slug ? '' : cat.slug"
+                    @click="setCategoryFilter(cat.slug)"
                     class="text-sm w-full text-left py-1 hover:text-primary-600 transition-colors"
                     :class="{ 'text-primary-600 font-medium': selectedCategory === cat.slug }"
                   >
@@ -40,7 +40,7 @@
               <ul class="space-y-2">
                 <li v-for="brand in brands" :key="brand.slug">
                   <button 
-                    @click="selectedBrand = selectedBrand === brand.slug ? '' : brand.slug"
+                    @click="setBrandFilter(brand.slug)"
                     class="text-sm w-full text-left py-1 hover:text-primary-600 transition-colors"
                     :class="{ 'text-primary-600 font-medium': selectedBrand === brand.slug }"
                   >
@@ -104,7 +104,7 @@
             <button 
               v-for="p in products.total_pages" 
               :key="p"
-              @click="currentPage = p"
+              @click="setPage(p)"
               class="w-10 h-10 rounded-lg font-medium transition-colors"
               :class="currentPage === p ? 'bg-primary-600 text-white' : 'bg-gray-100 hover:bg-gray-200'"
             >
@@ -134,6 +134,7 @@ useJsonLd(buildBreadcrumbSchema([
 useCanonical('/san-pham')
 
 const route = useRoute()
+const router = useRouter()
 const config = useRuntimeConfig()
 
 // Filters
@@ -169,6 +170,26 @@ const { data: products, pending, refresh } = await useFetch<PaginatedResponse<Pr
   () => `${config.public.apiBase}/products?${queryParams.value}`
 )
 
+const navigateWithFilters = (filters: {
+  category?: string
+  brand?: string
+  search?: string
+  page?: number
+}) => {
+  const nextCategory = filters.category ?? selectedCategory.value
+  const nextBrand = filters.brand ?? selectedBrand.value
+  const nextSearch = filters.search ?? searchQuery.value
+  const nextPage = filters.page ?? currentPage.value
+  const query: Record<string, string> = {}
+
+  if (nextCategory) query.category = nextCategory
+  if (nextBrand) query.brand = nextBrand
+  if (nextSearch) query.search = nextSearch
+  if (nextPage > 1) query.page = String(nextPage)
+
+  return router.push({ path: '/san-pham', query })
+}
+
 watch(
   () => route.query,
   (query) => {
@@ -184,10 +205,21 @@ watch([selectedCategory, selectedBrand, searchQuery, currentPage], () => {
   refresh()
 })
 
+const setCategoryFilter = (slug: string) => {
+  const nextCategory = selectedCategory.value === slug ? '' : slug
+  navigateWithFilters({ category: nextCategory, page: 1 })
+}
+
+const setBrandFilter = (slug: string) => {
+  const nextBrand = selectedBrand.value === slug ? '' : slug
+  navigateWithFilters({ brand: nextBrand, page: 1 })
+}
+
+const setPage = (page: number) => {
+  navigateWithFilters({ page })
+}
+
 const clearFilters = () => {
-  selectedCategory.value = ''
-  selectedBrand.value = ''
-  searchQuery.value = ''
-  currentPage.value = 1
+  navigateWithFilters({ category: '', brand: '', search: '', page: 1 })
 }
 </script>
