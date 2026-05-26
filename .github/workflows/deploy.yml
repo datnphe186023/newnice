@@ -32,10 +32,11 @@ jobs:
           script: |
             set -e
             cd /opt/autofilm-website
+            COMPOSE_FILE="${{ vars.DEPLOY_COMPOSE_FILE || 'docker-compose.staging.yml' }}"
             git fetch --prune origin
             git checkout main
             git pull --ff-only origin main
-            docker compose --env-file .env.prod -f docker-compose.prod.yml build
-            docker compose --env-file .env.prod -f docker-compose.prod.yml up -d
+            docker compose --env-file .env.prod -f "$COMPOSE_FILE" build
+            docker compose --env-file .env.prod -f "$COMPOSE_FILE" up -d --remove-orphans
             docker image prune -f
-            docker compose --env-file .env.prod -f docker-compose.prod.yml ps
+            docker compose --env-file .env.prod -f "$COMPOSE_FILE" ps
