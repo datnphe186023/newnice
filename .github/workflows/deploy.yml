@@ -32,7 +32,7 @@ jobs:
           script: |
             set -e
             cd /opt/autofilm-website
-            COMPOSE_FILE="${{ vars.DEPLOY_COMPOSE_FILE || 'docker-compose.staging.yml' }}"
+            COMPOSE_FILE="${{ vars.DEPLOY_COMPOSE_FILE || 'docker-compose.prod.yml' }}"
             git fetch --prune origin
             git checkout main
             git pull --ff-only origin main
