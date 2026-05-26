@@ -111,6 +111,7 @@ async def _get_warranty_by_serial(db: AsyncSession, serial: str) -> WarrantySeri
             select(WarrantySerial)
             .options(selectinload(WarrantySerial.dealer), selectinload(WarrantySerial.film_package))
             .where(WarrantySerial.serial == _normalize_serial(serial))
+            .execution_options(populate_existing=True)
         )
     ).scalar_one_or_none()
 
@@ -186,11 +187,13 @@ async def activate_warranty(serial: str, payload: WarrantyActivationCreate, db: 
     row.status = "activated"
     row.activated_at = datetime.utcnow()
     row.dealer_id = dealer.id
+    row.dealer = dealer
     row.customer_name = payload.customer_name.strip()
     row.customer_phone = payload.customer_phone.strip()
     row.vehicle_plate = payload.vehicle_plate.strip().upper()
     row.vehicle_model = payload.vehicle_model.strip()
     row.film_package_id = package.id
+    row.film_package = package
     row.front_windshield_film_code = payload.front_windshield_film_code.strip()
     row.rear_windshield_film_code = payload.rear_windshield_film_code.strip()
     row.side_window_film_code = payload.side_window_film_code.strip()
