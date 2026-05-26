@@ -1,0 +1,76 @@
+
+[43m[30m WARN [39m[49m You seem to be using yup, but you have not installed @vee-validate/yup. Please install it to use yup with vee-validate.
+
+
+[43m[30m WARN [39m[49m You seem to be using zod, but you have not installed @vee-validate/zod. Please install it to use zod with vee-validate.
+
+
+[43m[30m WARN [39m[49m Slow module [36m@nuxt/devtools[39m took [36m10111.37ms[39m to setup.
+
+
+[41m[30m ERROR [39m[49m Pre-transform error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=52223e3e". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/datng/projects/autofilm-website/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=52223e3e[39m:12:22
+[33m  10 |    }
+  11 |    if (false) {
+  12 |      manifest = import("#app-manifest");
+     |                        ^
+  13 |    } else {
+  14 |      manifest = $fetch(buildAssetsURL([36mbuilds/meta/${useRuntimeConfig().app.buildId}.json[39m), {[39m
+
+
+[41m[30m ERROR [39m[49m Pre-transform error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=52223e3e". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/datng/projects/autofilm-website/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=52223e3e[39m:12:22
+[33m  10 |    }
+  11 |    if (false) {
+  12 |      manifest = import("#app-manifest");
+     |                        ^
+  13 |    } else {
+  14 |      manifest = $fetch(buildAssetsURL([36mbuilds/meta/${useRuntimeConfig().app.buildId}.json[39m), {[39m[2m (x2)[22m
+
+
+[41m[30m ERROR [39m[49m Pre-transform error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=52223e3e". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/datng/projects/autofilm-website/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=52223e3e[39m:12:22
+[33m  10 |    }
+  11 |    if (false) {
+  12 |      manifest = import("#app-manifest");
+     |                        ^
+  13 |    } else {
+  14 |      manifest = $fetch(buildAssetsURL([36mbuilds/meta/${useRuntimeConfig().app.buildId}.json[39m), {[39m[2m (x3)[22m
+
+
+[41m[30m ERROR [39m[49m Pre-transform error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=52223e3e". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/datng/projects/autofilm-website/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=52223e3e[39m:12:22
+[33m  10 |    }
+  11 |    if (false) {
+  12 |      manifest = import("#app-manifest");
+     |                        ^
+  13 |    } else {
+  14 |      manifest = $fetch(buildAssetsURL([36mbuilds/meta/${useRuntimeConfig().app.buildId}.json[39m), {[39m[2m (x4)[22m
+
+
+[41m[30m ERROR [39m[49m Pre-transform error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=52223e3e". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/datng/projects/autofilm-website/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=52223e3e[39m:12:22
+[33m  10 |    }
+  11 |    if (false) {
+  12 |      manifest = import("#app-manifest");
+     |                        ^
+  13 |    } else {
+  14 |      manifest = $fetch(buildAssetsURL([36mbuilds/meta/${useRuntimeConfig().app.buildId}.json[39m), {[39m[2m (x5)[22m
+
+
+[41m[30m ERROR [39m[49m Pre-transform error: Failed to resolve import "#app-manifest" from "node_modules/nuxt/dist/app/composables/manifest.js?v=52223e3e". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/datng/projects/autofilm-website/frontend/node_modules/nuxt/dist/app/composables/manifest.js?v=52223e3e[39m:12:22
+[33m  10 |    }
+  11 |    if (false) {
+  12 |      manifest = import("#app-manifest");
+     |                        ^
+  13 |    } else {
+  14 |      manifest = $fetch(buildAssetsURL([36mbuilds/meta/${useRuntimeConfig().app.buildId}.json[39m), {[39m[2m (x6)[22m
+
+npm error A complete log of this run can be found in: C:\Users\datng\AppData\Local\npm-cache\_logs\2026-05-14T03_16_47_577Z-debug-0.log

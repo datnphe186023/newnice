@@ -227,3 +227,23 @@ For each task, assign:
 - Implement missing admin pages or remove links until implemented
 - Switch production config to secure env-only settings
 - Add one smoke test per critical flow before further feature work
+
+## Appendix: SQLite Go‑Live Checklist
+
+This checklist is tailored to deploying this application with a persisted SQLite file (`autofilm.db`). Use it as the minimal launch gate for small-scale or single-instance deployments.
+
+- **Environment:** Set `DEBUG=False` and provide `SECRET_KEY` (>=32 chars) via environment only.
+- **Database URL:** Set `DATABASE_URL=sqlite+aiosqlite:////app/data/autofilm.db` in production containers and mount a named volume to `/app/data`.
+- **Migrations:** Run `alembic upgrade head` against the production DB file prior to starting the app.
+- **Seed Admin:** Run `python -m app.seed` once to create the initial admin user; confirm the account exists and disable open registration.
+- **Backups:** Configure an automated backup of the `autofilm.db` file (daily or more frequent), keep offsite copies, and test restore to a staging instance.
+- **File permissions:** Ensure the runtime user can read/write `/app/data` and `/app/uploads`, and that volumes are not world-writable.
+- **Healthchecks:** Verify `/health` and readiness endpoints respond correctly and are included in your orchestration (container restart on failure).
+- **Static assets:** Build frontend (`npm run build`) and serve via a reverse proxy; in containers, do not mount source folders in production images.
+- **TLS & Proxy:** Terminate TLS at the proxy (Nginx/Cloud LB) and set security headers (HSTS, X-Frame-Options, CSP, X-Content-Type-Options).
+- **Monitoring & Logs:** Ship logs to an external system, enable error alerting, and monitor DB file size/growth (SQLite can become a bottleneck).
+- **Scale & Limitations:** Document that SQLite is single-writer and not suitable for multi-replica writes; plan migration to Postgres for higher scale.
+- **Rollback:** Keep a pre-migration DB snapshot to restore in case of migration issues; test the restore procedure as part of pre-launch checks.
+- **Operational Runbook:** Add short runbook steps for: "migrate", "seed admin", "backup rotate", "restore from backup", and "rebuild frontend".
+
+Follow this checklist before flipping DNS to the new instance. For production with moderate traffic or multiple replicas, replace SQLite with a managed Postgres instance and update the deployment manifests accordingly.

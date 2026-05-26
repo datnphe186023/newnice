@@ -1,101 +1,74 @@
 <template>
   <div>
-    <!-- Header -->
-    <div class="mb-8">
-      <NuxtLink to="/admin/posts" class="text-blue-600 hover:text-blue-800">
-        ← Quay lại danh sách
+    <div class="mb-8 flex items-center justify-between gap-4">
+      <div>
+        <NuxtLink to="/admin/posts" class="text-sm text-gray-500 hover:text-gray-700">
+          ← Quay lại danh sách
+        </NuxtLink>
+        <h1 class="mt-2 text-2xl font-bold text-gray-900">Chỉnh sửa bài viết</h1>
+      </div>
+      <NuxtLink to="/admin/posts/new" class="text-sm text-gray-600 hover:text-gray-900">
+        Tạo bài viết mới
       </NuxtLink>
-      <h1 class="text-2xl font-bold text-gray-900 mt-2">Cập nhật bài viết</h1>
     </div>
 
-    <!-- Form -->
-    <div class="bg-white rounded-xl shadow-sm p-6">
-      <form @submit.prevent="handleSubmit">
-        <div class="space-y-6">
-          <!-- Title -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Tiêu đề</label>
-            <input 
-              v-model="form.title"
-              type="text"
-              required
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              placeholder="Nhập tiêu đề bài viết"
-            />
+    <div v-if="loading" class="rounded-xl bg-white p-6 shadow-sm text-gray-500">
+      Đang tải...
+    </div>
+
+    <div v-else class="rounded-xl bg-white p-6 shadow-sm">
+      <form class="space-y-6" @submit.prevent="savePost">
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div class="md:col-span-2">
+            <label class="mb-1 block text-sm font-medium text-gray-700">Tiêu đề</label>
+            <input v-model="form.title" type="text" required class="input" />
           </div>
 
-          <!-- Content -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Nội dung</label>
-            <textarea 
-              v-model="form.content"
-              rows="10"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              placeholder="Nhập nội dung bài viết"
-            />
+          <div class="md:col-span-2">
+            <label class="mb-1 block text-sm font-medium text-gray-700">Slug</label>
+            <input v-model="form.slug" type="text" class="input" />
           </div>
 
-          <!-- Excerpt -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Tóm tắt</label>
-            <textarea 
-              v-model="form.excerpt"
-              rows="3"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              placeholder="Tóm tắt bài viết (hiển thị trong danh sách)"
-            />
+          <div class="md:col-span-2">
+            <label class="mb-1 block text-sm font-medium text-gray-700">Mô tả ngắn</label>
+            <textarea v-model="form.excerpt" rows="3" class="input resize-none"></textarea>
           </div>
 
-          <!-- Meta Title -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Meta Title (SEO)</label>
-            <input 
-              v-model="form.meta_title"
-              type="text"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              placeholder="Tiêu đề cho search engines"
-            />
+          <div class="md:col-span-2">
+            <label class="mb-1 block text-sm font-medium text-gray-700">Nội dung</label>
+            <textarea v-model="form.content" rows="12" class="input resize-none font-mono text-sm"></textarea>
           </div>
 
-          <!-- Meta Description -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Meta Description (SEO)</label>
-            <textarea 
-              v-model="form.meta_description"
-              rows="2"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              placeholder="Mô tả cho search engines"
-            />
+          <div class="md:col-span-2">
+            <label class="mb-1 block text-sm font-medium text-gray-700">Ảnh đại diện URL</label>
+            <input v-model="form.thumbnail" type="url" class="input" />
           </div>
 
-          <!-- Status -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Trạng thái</label>
-            <select 
-              v-model="form.is_active"
-              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            >
-              <option :value="true">Xuất bản</option>
-              <option :value="false">Bản nháp</option>
-            </select>
+            <label class="mb-1 block text-sm font-medium text-gray-700">Meta title</label>
+            <input v-model="form.meta_title" type="text" class="input" />
           </div>
 
-          <!-- Buttons -->
-          <div class="flex gap-4">
-            <button
-              type="submit"
-              :disabled="loading"
-              class="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
-            >
-              {{ loading ? 'Đang lưu...' : 'Lưu' }}
-            </button>
-            <NuxtLink 
-              to="/admin/posts"
-              class="px-6 py-2 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300"
-            >
-              Hủy
-            </NuxtLink>
+          <div>
+            <label class="mb-1 block text-sm font-medium text-gray-700">Meta description</label>
+            <input v-model="form.meta_description" type="text" class="input" />
           </div>
+        </div>
+
+        <label class="flex items-center gap-2 text-sm text-gray-700">
+          <input v-model="form.is_published" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
+          Xuất bản ngay
+        </label>
+
+        <p v-if="error" class="rounded-lg bg-red-50 p-3 text-sm text-red-700">{{ error }}</p>
+
+        <div class="flex justify-end gap-3">
+          <NuxtLink to="/admin/posts" class="rounded-lg px-4 py-2 text-gray-600 hover:bg-gray-100">
+            Hủy
+          </NuxtLink>
+          <button :disabled="saving" class="rounded-lg bg-primary-600 px-4 py-2 text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60">
+            {{ saving ? 'Đang lưu...' : 'Lưu thay đổi' }}
+          </button>
         </div>
       </form>
     </div>
@@ -103,49 +76,87 @@
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from '~/stores/auth'
+import type { Post } from '~/types'
+
 definePageMeta({
   layout: 'admin',
   middleware: 'auth',
-});
+})
 
-const route = useRoute();
-const router = useRouter();
-const postId = parseInt(route.params.id as string);
+useSeoMeta({
+  title: 'Chỉnh sửa bài viết | Newnice Admin',
+  robots: 'noindex, nofollow',
+})
 
-const loading = ref(false);
+const config = useRuntimeConfig()
+const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
+
+const postId = computed(() => Number(route.params.id))
+const loading = ref(true)
+const saving = ref(false)
+const error = ref('')
+
 const form = reactive({
   title: '',
-  content: '',
+  slug: '',
   excerpt: '',
+  content: '',
+  thumbnail: '',
   meta_title: '',
   meta_description: '',
-  is_active: true,
-});
+  is_published: false,
+})
 
-// Load post on mount
+const headers = computed(() => ({ Authorization: `Bearer ${authStore.token}` }))
+
 onMounted(async () => {
   try {
-    // TODO: Fetch post from API
-    // const post = await $fetch(`/api/v1/admin/posts/${postId}`);
-    // Object.assign(form, post);
-  } catch (error) {
-    console.error('Error loading post:', error);
-  }
-});
+    const post = await $fetch<Post>(`${config.public.apiBase}/admin/posts/${postId.value}`, {
+      headers: headers.value,
+    })
 
-const handleSubmit = async () => {
-  loading.value = true;
-  try {
-    // TODO: Submit form to API
-    // await $fetch(`/api/v1/admin/posts/${postId}`, {
-    //   method: 'PATCH',
-    //   body: form,
-    // });
-    // await router.push('/admin/posts');
-  } catch (error) {
-    console.error('Error saving post:', error);
+    form.title = post.title
+    form.slug = post.slug
+    form.excerpt = post.excerpt || ''
+    form.content = post.content || ''
+    form.thumbnail = post.thumbnail || ''
+    form.meta_title = post.meta_title || ''
+    form.meta_description = post.meta_description || ''
+    form.is_published = post.is_published
+  } catch (err: any) {
+    error.value = err?.data?.detail || 'Không thể tải bài viết'
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+})
+
+const savePost = async () => {
+  saving.value = true
+  error.value = ''
+
+  try {
+    await $fetch(`${config.public.apiBase}/admin/posts/${postId.value}`, {
+      method: 'PATCH',
+      headers: headers.value,
+      body: {
+        ...form,
+        slug: form.slug || undefined,
+        excerpt: form.excerpt || undefined,
+        content: form.content || undefined,
+        thumbnail: form.thumbnail || undefined,
+        meta_title: form.meta_title || undefined,
+        meta_description: form.meta_description || undefined,
+      },
+    })
+
+    await router.push('/admin/posts')
+  } catch (err: any) {
+    error.value = err?.data?.detail || 'Không thể cập nhật bài viết'
+  } finally {
+    saving.value = false
+  }
+}
 </script>

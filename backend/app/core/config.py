@@ -67,10 +67,6 @@ class Settings(BaseSettings):
         if not self.DEBUG and len(self.SECRET_KEY) < 32:
             raise ValueError("SECRET_KEY must be at least 32 characters long in production")
 
-        # Validate DATABASE_URL is not SQLite in production
-        if not self.DEBUG and "sqlite" in self.DATABASE_URL.lower():
-            raise ValueError("SQLite database is not allowed in production. Use PostgreSQL instead.")
-
         # Validate URLs are HTTPS in production
         if not self.DEBUG:
             for url_name, url_value in [("SITE_URL", self.SITE_URL), ("ADMIN_URL", self.ADMIN_URL)]:
