@@ -85,6 +85,11 @@
             </div>
           </div>
 
+          <!-- Error state -->
+          <div v-else-if="productsError" class="text-center py-12">
+            <p class="text-red-500">Không tải được danh sách sản phẩm. Vui lòng thử lại.</p>
+          </div>
+
           <!-- Products grid -->
           <div v-else-if="products?.items.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <ProductCard 
@@ -138,10 +143,10 @@ const router = useRouter()
 const config = useRuntimeConfig()
 
 // Filters
-const currentPage = ref(Number(route.query.page) || 1)
-const selectedCategory = ref((route.query.category as string) || '')
-const selectedBrand = ref((route.query.brand as string) || '')
-const searchQuery = ref((route.query.search as string) || '')
+const currentPage = computed(() => Number(route.query.page) || 1)
+const selectedCategory = computed(() => (route.query.category as string) || '')
+const selectedBrand = computed(() => (route.query.brand as string) || '')
+const searchQuery = computed(() => (route.query.search as string) || '')
 
 // Page title
 const pageTitle = computed(() => {
@@ -166,8 +171,20 @@ const queryParams = computed(() => {
   return params.toString()
 })
 
-const { data: products, pending, refresh } = await useFetch<PaginatedResponse<Product>>(
-  () => `${config.public.apiBase}/products?${queryParams.value}`
+const productsUrl = computed(() => `${config.public.apiBase}/products?${queryParams.value}`)
+
+const { data: products, pending, error: productsError } = await useFetch<PaginatedResponse<Product>>(
+  productsUrl,
+  {
+    key: computed(() => `products:${queryParams.value}`),
+    default: () => ({
+      items: [],
+      total: 0,
+      page: currentPage.value,
+      page_size: 12,
+      total_pages: 0,
+    }),
+  }
 )
 
 const navigateWithFilters = (filters: {
@@ -189,21 +206,6 @@ const navigateWithFilters = (filters: {
 
   return router.push({ path: '/san-pham', query })
 }
-
-watch(
-  () => route.query,
-  (query) => {
-    selectedCategory.value = (query.category as string) || ''
-    selectedBrand.value = (query.brand as string) || ''
-    searchQuery.value = (query.search as string) || ''
-    currentPage.value = Number(query.page) || 1
-  },
-)
-
-// Watch for filter changes
-watch([selectedCategory, selectedBrand, searchQuery, currentPage], () => {
-  refresh()
-})
 
 const setCategoryFilter = (slug: string) => {
   const nextCategory = selectedCategory.value === slug ? '' : slug
