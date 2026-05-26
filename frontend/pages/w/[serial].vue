@@ -4,7 +4,7 @@
       <header class="flex items-center justify-between border-b border-white/10 pb-5">
         <img src="/logo.png" alt="Newnice" class="h-10 w-auto" />
         <span class="rounded-full border border-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-zinc-300">
-          Warranty
+          Bảo hành
         </span>
       </header>
 
@@ -245,10 +245,29 @@ const activate = async () => {
     })
     await refresh()
   } catch (err: any) {
-    submitError.value = err?.data?.detail || 'Không thể kích hoạt bảo hành. Vui lòng kiểm tra lại thông tin.'
+    submitError.value = warrantyErrorMessage(err)
   } finally {
     submitting.value = false
   }
+}
+
+const warrantyErrorMessage = (err: any) => {
+  const detail = err?.data?.detail
+  const fallback = 'Không thể kích hoạt bảo hành. Vui lòng kiểm tra lại thông tin.'
+
+  if (Array.isArray(detail)) {
+    return 'Thông tin nhập chưa hợp lệ. Vui lòng kiểm tra lại các trường bắt buộc.'
+  }
+
+  const messages: Record<string, string> = {
+    'Serial not found': 'Không tìm thấy serial bảo hành.',
+    'Serial has already been used': 'Serial này đã được kích hoạt trước đó.',
+    'Invalid dealer activation code': 'Mã kích hoạt đại lý không hợp lệ.',
+    'Invalid film package': 'Gói film đã chọn không hợp lệ.',
+    'Warranty data is incomplete': 'Thông tin bảo hành chưa đầy đủ. Vui lòng liên hệ hotline để được hỗ trợ.',
+  }
+
+  return typeof detail === 'string' ? messages[detail] || detail || fallback : fallback
 }
 
 const formatDate = (value: string) => new Date(value).toLocaleDateString('vi-VN')
