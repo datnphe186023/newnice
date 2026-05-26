@@ -3,11 +3,12 @@ export default defineNuxtConfig({
   devtools: { enabled: process.env.NODE_ENV !== 'production' },
   
   modules: [
-    '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
     '@vueuse/nuxt',
     '@vee-validate/nuxt',
   ],
+
+  css: ['~/assets/css/main.css'],
 
   runtimeConfig: {
     public: {
@@ -48,8 +49,11 @@ export default defineNuxtConfig({
     }
   },
 
-  tailwindcss: {
-    cssPath: '~/assets/css/main.css',
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
   },
 
   veeValidate: {

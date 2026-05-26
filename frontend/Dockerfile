@@ -1,12 +1,17 @@
-FROM node:20-alpine AS base
+FROM node:22-alpine AS base
 
 WORKDIR /app
+
+ENV NPM_CONFIG_AUDIT=false \
+    NPM_CONFIG_FUND=false \
+    NPM_CONFIG_LOGLEVEL=error \
+    NPM_CONFIG_UPDATE_NOTIFIER=false
 
 # Copy package files
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm ci
 
 # Copy application
 COPY . .
@@ -22,7 +27,7 @@ FROM base AS builder
 RUN npm run build
 
 # Production runtime stage
-FROM node:20-alpine AS production
+FROM node:22-alpine AS production
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=builder /app/.output ./.output
