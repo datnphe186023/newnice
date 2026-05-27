@@ -126,12 +126,14 @@
 <script setup lang="ts">
 import { PhoneIcon, ShieldCheckIcon, StarIcon } from '@heroicons/vue/24/outline'
 import type { Product } from '~/types'
+import { buildBreadcrumbSchema, buildProductSchema, useJsonLd } from '~/composables/useJsonLd'
+import { useCanonical } from '~/composables/useCanonical'
 import { usePhoneTracking } from '~/composables/usePhoneTracking'
 
 const route = useRoute()
 const config = useRuntimeConfig()
 const slug = route.params.slug as string
-const { $gtag } = useNuxtApp()
+const nuxtApp = useNuxtApp()
 const { trackPhoneClick } = usePhoneTracking()
 
 // Fetch product
@@ -204,8 +206,8 @@ if (product.value) {
 
 // GA4: track product view on mount
 onMounted(() => {
-  if (product.value) {
-    $gtag('event', 'view_item', {
+  if (product.value && typeof nuxtApp.$gtag === 'function') {
+    nuxtApp.$gtag('event', 'view_item', {
       item_id: String(product.value.id),
       item_name: product.value.name,
       item_category: product.value.category?.name,

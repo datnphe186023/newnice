@@ -7,7 +7,19 @@ export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
   const gaId = config.public.gaId as string
 
-  if (!gaId || import.meta.server) return
+  const trackGtag = (...args: unknown[]) => {
+    if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+      ;(window as any).gtag(...args)
+    }
+  }
+
+  if (!gaId || import.meta.server) {
+    return {
+      provide: {
+        gtag: trackGtag,
+      },
+    }
+  }
 
   // Inject the gtag script
   useHead({
@@ -30,21 +42,15 @@ export default defineNuxtPlugin(() => {
   // Track page views on route change
   const router = useRouter()
   router.afterEach((to) => {
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      ;(window as any).gtag('event', 'page_view', {
-        page_path: to.fullPath,
-        page_title: document.title,
-      })
-    }
+    trackGtag('event', 'page_view', {
+      page_path: to.fullPath,
+      page_title: document.title,
+    })
   })
 
   return {
     provide: {
-      gtag: (...args: any[]) => {
-        if (typeof window !== 'undefined' && (window as any).gtag) {
-          ;(window as any).gtag(...args)
-        }
-      },
+      gtag: trackGtag,
     },
   }
 })

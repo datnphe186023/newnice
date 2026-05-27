@@ -248,7 +248,9 @@ const submit = async () => {
     // GA4: track quote request
     if (import.meta.client) {
       const { $gtag } = useNuxtApp()
-      $gtag('event', 'generate_lead', { form_type: 'quote' })
+      if (typeof $gtag === 'function') {
+        $gtag('event', 'generate_lead', { form_type: 'quote' })
+      }
     }
   } catch (err: unknown) {
     const e = err as { data?: { detail?: string } }

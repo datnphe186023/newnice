@@ -172,7 +172,9 @@ const submit = async () => {
     // GA4: track contact form submission
     if (import.meta.client) {
       const { $gtag } = useNuxtApp()
-      $gtag('event', 'contact', { form_type: 'contact' })
+      if (typeof $gtag === 'function') {
+        $gtag('event', 'contact', { form_type: 'contact' })
+      }
     }
   } catch (err: unknown) {
     const e = err as { data?: { detail?: string } }

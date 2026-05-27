@@ -7,7 +7,7 @@ export function usePhoneTracking() {
 
   return {
     trackPhoneClick(phoneNumber: string): void {
-      if (typeof window !== 'undefined' && $gtag) {
+      if (typeof window !== 'undefined' && typeof $gtag === 'function') {
         $gtag('event', 'phone_click', { phone_number: phoneNumber })
       }
     },
