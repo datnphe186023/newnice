@@ -3,6 +3,21 @@
     <!-- Hero Slider -->
     <HomeHeroSlider />
 
+    <!-- Official brand intro -->
+    <section class="bg-white py-10 border-b border-gray-100">
+      <div class="container">
+        <div class="max-w-4xl">
+          <p class="text-primary-600 font-semibold text-sm uppercase tracking-wider mb-3">Website chính thức</p>
+          <h1 class="text-2xl md:text-4xl font-bold text-gray-900 leading-tight">
+            Newnice là website chính thức của thương hiệu phim cách nhiệt, PPF và giải pháp bảo vệ kính tại Việt Nam.
+          </h1>
+          <p class="mt-4 text-gray-600 text-base md:text-lg leading-relaxed">
+            Tìm hiểu sản phẩm Newnice, xem báo giá và tra cứu chính sách bảo hành chính hãng cho ô tô, nhà kính và bề mặt cần bảo vệ.
+          </p>
+        </div>
+      </div>
+    </section>
+
     <!-- Categories -->
     <HomeCategoryGrid />
 
@@ -152,10 +167,10 @@ const config = useRuntimeConfig()
 
 // SEO
 useSeoMeta({
-  title: 'Newnice - Phim Cách Nhiệt Ô Tô Cao Cấp',
-  description: 'Newnice - Chuyên cung cấp và thi công phim cách nhiệt ô tô Newnice, 3M, phim đổi màu xe, phim cách nhiệt nhà kính cao cấp tại Hà Nội',
-  ogTitle: 'Newnice - Phim Cách Nhiệt Ô Tô Cao Cấp',
-  ogDescription: 'Chuyên cung cấp và thi công phim cách nhiệt ô tô, phim đổi màu xe, phim cách nhiệt nhà kính cao cấp',
+  title: 'Newnice - Website chính thức | Phim cách nhiệt, PPF và Film nhà kính',
+  description: 'Newnice là thương hiệu phim cách nhiệt, PPF bảo vệ bề mặt và giải pháp film nhà kính tại Việt Nam. Xem sản phẩm, báo giá và chính sách bảo hành chính hãng.',
+  ogTitle: 'Newnice - Website chính thức | Phim cách nhiệt, PPF và Film nhà kính',
+  ogDescription: 'Newnice là thương hiệu phim cách nhiệt, PPF bảo vệ bề mặt và giải pháp film nhà kính tại Việt Nam. Xem sản phẩm, báo giá và chính sách bảo hành chính hãng.',
 })
 useJsonLd(buildOrganizationSchema())
 useCanonical('/')

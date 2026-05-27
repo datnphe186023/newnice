@@ -15,7 +15,7 @@ export default defineNuxtConfig({
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000/api/v1',
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
       siteName: 'Newnice',
-      siteDescription: 'Phim cách nhiệt ô tô cao cấp tại Hà Nội - Phim đổi màu xe - Phim cách nhiệt nhà kính chuyên nghiệp',
+      siteDescription: 'Newnice là thương hiệu phim cách nhiệt, PPF bảo vệ bề mặt và giải pháp film nhà kính tại Việt Nam.',
       gaId: process.env.NUXT_PUBLIC_GA_ID || '',                   // GA4 measurement ID e.g. G-XXXXXXXXXX
       gscVerification: process.env.NUXT_PUBLIC_GSC_VERIFICATION || '', // Google Search Console verification token
     }
@@ -26,7 +26,7 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: 'vi'
       },
-      title: 'Newnice - Phim Cách Nhiệt Ô Tô Cao Cấp',
+      title: 'Newnice - Website chính thức | Phim cách nhiệt, PPF và Film nhà kính',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
