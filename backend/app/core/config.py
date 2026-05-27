@@ -25,8 +25,17 @@ class Settings(BaseSettings):
 
     # Upload
     UPLOAD_DIR: Path = Path("uploads")
+    UPLOAD_STORAGE: str = "local"  # local | r2
     MAX_UPLOAD_SIZE: int = 10 * 1024 * 1024  # 10MB
     ALLOWED_EXTENSIONS: set = {"jpg", "jpeg", "png", "webp", "gif"}
+
+    # Cloudflare R2 (S3-compatible)
+    R2_ACCOUNT_ID: str = ""
+    R2_ACCESS_KEY_ID: str = ""
+    R2_SECRET_ACCESS_KEY: str = ""
+    R2_BUCKET_NAME: str = ""
+    R2_PUBLIC_URL: str = ""
+    R2_ENDPOINT_URL: str = ""
 
     # CORS - comma-separated list or JSON array in environment
     CORS_ORIGINS: list = ["http://localhost:3000", "http://127.0.0.1:3000"]
@@ -76,6 +85,21 @@ class Settings(BaseSettings):
         # Validate CORS_ORIGINS - no wildcard in production
         if not self.DEBUG and "*" in self.CORS_ORIGINS:
             raise ValueError("CORS wildcard (*) is not allowed in production")
+
+        if self.UPLOAD_STORAGE not in {"local", "r2"}:
+            raise ValueError("UPLOAD_STORAGE must be either 'local' or 'r2'")
+
+        if self.UPLOAD_STORAGE == "r2":
+            required_r2_fields = {
+                "R2_ACCOUNT_ID": self.R2_ACCOUNT_ID,
+                "R2_ACCESS_KEY_ID": self.R2_ACCESS_KEY_ID,
+                "R2_SECRET_ACCESS_KEY": self.R2_SECRET_ACCESS_KEY,
+                "R2_BUCKET_NAME": self.R2_BUCKET_NAME,
+                "R2_PUBLIC_URL": self.R2_PUBLIC_URL,
+            }
+            missing = [name for name, value in required_r2_fields.items() if not value]
+            if missing:
+                raise ValueError(f"Missing required R2 settings: {', '.join(missing)}")
 
         return self
 

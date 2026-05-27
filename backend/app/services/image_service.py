@@ -3,12 +3,17 @@ Image upload and optimization service.
 Handles file uploads, resizing, WebP conversion, and responsive srcset generation.
 """
 
+import asyncio
+import io
 import uuid
 import hashlib
+from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 from datetime import datetime
+from urllib.parse import urlparse
 
+import boto3
 from PIL import Image
 from fastapi import UploadFile, HTTPException
 
@@ -158,6 +163,159 @@ def convert_to_webp(image: Image.Image, output_path: Path, quality: int = 85) ->
     return webp_path
 
 
+def image_to_webp_bytes(image: Image.Image, quality: int = 85) -> bytes:
+    """Convert an image to WebP bytes."""
+    output = io.BytesIO()
+    if image.mode in ("RGBA", "P"):
+        image.save(output, "WEBP", quality=quality, method=6)
+    else:
+        if image.mode != "RGB":
+            image = image.convert("RGB")
+        image.save(output, "WEBP", quality=quality, method=6)
+    return output.getvalue()
+
+
+def is_r2_enabled() -> bool:
+    return settings.UPLOAD_STORAGE == "r2"
+
+
+def get_r2_endpoint_url() -> str:
+    if settings.R2_ENDPOINT_URL:
+        return settings.R2_ENDPOINT_URL.rstrip("/")
+    return f"https://{settings.R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
+
+
+@lru_cache(maxsize=1)
+def get_r2_client():
+    return boto3.client(
+        "s3",
+        endpoint_url=get_r2_endpoint_url(),
+        aws_access_key_id=settings.R2_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.R2_SECRET_ACCESS_KEY,
+        region_name="auto",
+    )
+
+
+def build_r2_key(*parts: str) -> str:
+    return "/".join(part.strip("/") for part in parts if part.strip("/"))
+
+
+def build_r2_public_url(key: str) -> str:
+    return f"{settings.R2_PUBLIC_URL.rstrip('/')}/{key.lstrip('/')}"
+
+
+async def upload_r2_object(key: str, content: bytes, content_type: str) -> None:
+    client = get_r2_client()
+    await asyncio.to_thread(
+        client.put_object,
+        Bucket=settings.R2_BUCKET_NAME,
+        Key=key,
+        Body=content,
+        ContentType=content_type,
+        CacheControl="public, max-age=31536000, immutable",
+    )
+
+
+async def delete_r2_object(key: str) -> bool:
+    client = get_r2_client()
+    await asyncio.to_thread(
+        client.delete_object,
+        Bucket=settings.R2_BUCKET_NAME,
+        Key=key,
+    )
+    return True
+
+
+def extract_r2_key(image_url: str) -> Optional[str]:
+    if not image_url:
+        return None
+
+    if image_url.startswith("/uploads/"):
+        return image_url.lstrip("/")
+
+    public_url = settings.R2_PUBLIC_URL.rstrip("/")
+    if public_url and image_url.startswith(f"{public_url}/"):
+        return image_url[len(public_url) + 1 :].lstrip("/")
+
+    parsed = urlparse(image_url)
+    if parsed.scheme in {"http", "https"} and parsed.netloc == urlparse(public_url).netloc:
+        return parsed.path.lstrip("/")
+
+    return None
+
+
+async def save_upload_to_r2(
+    file: UploadFile,
+    subfolder: str = "",
+    generate_variants: bool = True,
+    is_banner: bool = False,
+) -> dict:
+    validate_image(file)
+
+    content = await file.read()
+
+    if len(content) > settings.MAX_UPLOAD_SIZE:
+        raise HTTPException(
+            status_code=400,
+            detail=f"File too large. Maximum size: {settings.MAX_UPLOAD_SIZE // (1024*1024)}MB",
+        )
+
+    filename = generate_filename(file.filename)
+    base_subfolder = validate_subfolder(subfolder or "images")
+    original_key = build_r2_key("uploads", base_subfolder, filename)
+
+    await upload_r2_object(
+        key=original_key,
+        content=content,
+        content_type=file.content_type or "application/octet-stream",
+    )
+
+    result = {
+        "original": build_r2_public_url(original_key),
+        "filename": filename,
+    }
+
+    if not generate_variants:
+        return result
+
+    result["original_size_bytes"] = len(content)
+
+    try:
+        image = Image.open(io.BytesIO(content))
+    except Exception as e:
+        await delete_r2_object(original_key)
+        raise HTTPException(status_code=400, detail=f"Invalid image file: {str(e)}")
+
+    webp_content = image_to_webp_bytes(image.copy())
+    webp_filename = f"{Path(filename).stem}.webp"
+    webp_key = build_r2_key("uploads", base_subfolder, webp_filename)
+    await upload_r2_object(webp_key, webp_content, "image/webp")
+    result["webp"] = build_r2_public_url(webp_key)
+    result["webp_size_bytes"] = len(webp_content)
+
+    sizes = BANNER_SIZES if is_banner else IMAGE_SIZES
+    srcset_parts = []
+
+    for size_name, dimensions in sizes.items():
+        size_folder = validate_subfolder(f"{base_subfolder}/{size_name}")
+        resized = resize_image(image.copy(), dimensions)
+        variant_content = image_to_webp_bytes(resized)
+        variant_key = build_r2_key("uploads", size_folder, webp_filename)
+        await upload_r2_object(variant_key, variant_content, "image/webp")
+
+        variant_url = build_r2_public_url(variant_key)
+        result[size_name] = variant_url
+        srcset_parts.append(f"{variant_url} {dimensions[0]}w")
+
+    result["srcset"] = ", ".join(srcset_parts)
+    if is_banner:
+        result["sizes"] = "(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px"
+    else:
+        result["sizes"] = "(max-width: 320px) 320px, (max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px"
+
+    return result
+
+
 async def save_upload(
     file: UploadFile,
     subfolder: str = "",
@@ -177,6 +335,14 @@ async def save_upload(
         "srcset": "url 320w, url 640w, ..."
     }
     """
+    if is_r2_enabled():
+        return await save_upload_to_r2(
+            file=file,
+            subfolder=subfolder,
+            generate_variants=generate_variants,
+            is_banner=is_banner,
+        )
+
     validate_image(file)
     
     # Read file content
@@ -266,6 +432,40 @@ async def delete_image(image_url: str) -> bool:
     Uses secure path resolution to prevent path traversal attacks.
     Returns True if deletion was successful.
     """
+    if is_r2_enabled():
+        key = extract_r2_key(image_url)
+        if not key or not key.startswith("uploads/"):
+            return False
+
+        parts = key.split("/")
+        if len(parts) < 3:
+            return False
+
+        filename = parts[-1]
+        size_names = set(IMAGE_SIZES.keys()) | set(BANNER_SIZES.keys())
+        subfolder_parts = parts[1:-2] if len(parts) > 3 and parts[-2] in size_names else parts[1:-1]
+        subfolder = "/".join(subfolder_parts)
+
+        try:
+            validate_subfolder(subfolder)
+        except HTTPException:
+            return False
+
+        base_name = filename.rsplit(".", 1)[0]
+        deleted_count = 0
+
+        for size_name in list(IMAGE_SIZES.keys()) + list(BANNER_SIZES.keys()) + [""]:
+            for ext in [".jpg", ".jpeg", ".png", ".webp", ".gif"]:
+                object_key = (
+                    build_r2_key("uploads", subfolder, size_name, f"{base_name}{ext}")
+                    if size_name
+                    else build_r2_key("uploads", subfolder, f"{base_name}{ext}")
+                )
+                await delete_r2_object(object_key)
+                deleted_count += 1
+
+        return deleted_count > 0
+
     if not image_url or not image_url.startswith("/uploads/"):
         return False
     

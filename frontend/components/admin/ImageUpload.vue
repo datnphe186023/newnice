@@ -240,7 +240,7 @@ async function uploadFile(file: File) {
   try {
     const apiBase = config.public.apiBase || 'http://localhost:8000'
     
-    const response = await fetch(`${apiBase}/api/v1/admin/upload`, {
+    const response = await fetch(`${apiBase}/admin/upload`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${authStore.token}`,
@@ -289,7 +289,7 @@ async function removeImage() {
   try {
     const apiBase = config.public.apiBase || 'http://localhost:8000'
     
-    const response = await fetch(`${apiBase}/api/v1/admin/upload?image_url=${encodeURIComponent(props.modelValue)}`, {
+    const response = await fetch(`${apiBase}/admin/upload?image_url=${encodeURIComponent(props.modelValue)}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${authStore.token}`,

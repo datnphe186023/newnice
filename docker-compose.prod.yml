@@ -34,6 +34,15 @@ services:
       SITE_URL: ${SITE_URL:?Set SITE_URL in environment}
       ADMIN_URL: ${ADMIN_URL:?Set ADMIN_URL in environment}
       CORS_ORIGINS: ${CORS_ORIGINS:-https://yourdomain.com}
+      UPLOAD_STORAGE: ${UPLOAD_STORAGE:-local}
+      UPLOAD_DIR: ${UPLOAD_DIR:-/app/data/uploads}
+      MAX_UPLOAD_SIZE: ${MAX_UPLOAD_SIZE:-10485760}
+      R2_ACCOUNT_ID: ${R2_ACCOUNT_ID:-}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
+      R2_BUCKET_NAME: ${R2_BUCKET_NAME:-}
+      R2_PUBLIC_URL: ${R2_PUBLIC_URL:-}
+      R2_ENDPOINT_URL: ${R2_ENDPOINT_URL:-}
       EMAIL_HOST: ${EMAIL_HOST:-}
       EMAIL_PORT: ${EMAIL_PORT:-587}
       EMAIL_USE_STARTTLS: ${EMAIL_USE_STARTTLS:-True}

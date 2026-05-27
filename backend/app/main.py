@@ -15,7 +15,8 @@ async def lifespan(app: FastAPI):
     await init_db()
     
     # Create upload directory
-    settings.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    if settings.UPLOAD_STORAGE == "local":
+        settings.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     
     yield
     # Shutdown
@@ -40,8 +41,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Static files for uploads
-if settings.UPLOAD_DIR.exists():
+# Static files for local uploads
+if settings.UPLOAD_STORAGE == "local":
+    settings.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     app.mount("/uploads", StaticFiles(directory=str(settings.UPLOAD_DIR)), name="uploads")
 
 # Include API router
