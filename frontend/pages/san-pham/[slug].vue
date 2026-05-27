@@ -105,7 +105,7 @@
       <!-- Related products -->
       <div v-if="relatedProducts?.length">
         <h2 class="text-2xl font-bold mb-6">Sản phẩm liên quan</h2>
-        <ProductProductGrid :products="relatedProducts" :columns="4" />
+        <ProductGrid :products="relatedProducts" :columns="4" />
       </div>
     </div>
 
