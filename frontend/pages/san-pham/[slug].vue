@@ -151,8 +151,8 @@ const hasSpecs = computed(() => {
 const productPriceLines = computed(() => {
   if (!product.value) return []
   const prices = [product.value.price_sedan, product.value.price_suv]
-    .map((price) => price?.trim())
-    .filter(Boolean) as string[]
+    .map(normalizePriceText)
+    .filter(Boolean)
 
   if (prices.length === 2 && isUnitOnlyPriceSuffix(prices[1])) {
     return [`${prices[0]}${formatPriceUnitSuffix(prices[1])}`]
@@ -161,12 +161,16 @@ const productPriceLines = computed(() => {
   return prices
 })
 
-const isUnitOnlyPriceSuffix = (value: string) => {
+function normalizePriceText(value: unknown): string {
+  return String(value ?? '').trim()
+}
+
+function isUnitOnlyPriceSuffix(value: string) {
   const normalized = value.toLowerCase().replace(/\s+/g, '')
   return ['m', '/m', 'm2', '/m2', 'm²', '/m²', 'met', '/met', 'mét', '/mét'].includes(normalized)
 }
 
-const formatPriceUnitSuffix = (value: string) => {
+function formatPriceUnitSuffix(value: string) {
   const normalized = value.trim()
   return normalized.startsWith('/') ? normalized : `/${normalized}`
 }

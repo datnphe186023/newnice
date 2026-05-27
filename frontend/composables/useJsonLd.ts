@@ -81,8 +81,8 @@ export function buildProductSchema(product: {
   name: string
   slug: string
   short_description?: string
-  price_sedan?: string
-  price_suv?: string
+  price_sedan?: string | number | null
+  price_suv?: string | number | null
   is_contact_price?: boolean
   thumbnail?: string
   brand?: { name: string }
@@ -91,8 +91,8 @@ export function buildProductSchema(product: {
   const siteUrl = getSiteUrl()
   const url = `${siteUrl}/san-pham/${product.slug}`
   const priceAmount = [product.price_sedan, product.price_suv]
+    .map((price) => String(price ?? '').replace(/\D/g, ''))
     .filter(Boolean)
-    .map((price) => price?.replace(/\D/g, ''))
     .find(Boolean)
 
   const schema: Record<string, unknown> = {
