@@ -141,6 +141,7 @@ useCanonical('/san-pham')
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
+const apiBase = process.client ? '/api/v1' : config.public.apiBase
 
 // Filters
 const currentPage = computed(() => Number(route.query.page) || 1)
@@ -155,10 +156,10 @@ const pageTitle = computed(() => {
 })
 
 // Fetch categories
-const { data: categories } = await useFetch<Category[]>(`${config.public.apiBase}/categories`)
+const { data: categories } = await useFetch<Category[]>(`${apiBase}/categories`)
 
 // Fetch brands
-const { data: brands } = await useFetch<Brand[]>(`${config.public.apiBase}/brands`)
+const { data: brands } = await useFetch<Brand[]>(`${apiBase}/brands`)
 
 // Fetch products
 const queryParams = computed(() => {
@@ -171,7 +172,7 @@ const queryParams = computed(() => {
   return params.toString()
 })
 
-const productsUrl = computed(() => `${config.public.apiBase}/products?${queryParams.value}`)
+const productsUrl = computed(() => `${apiBase}/products?${queryParams.value}`)
 
 const { data: products, pending, error: productsError } = await useFetch<PaginatedResponse<Product>>(
   productsUrl,
