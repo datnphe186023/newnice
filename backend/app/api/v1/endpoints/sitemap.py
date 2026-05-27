@@ -43,6 +43,17 @@ def _now() -> str:
 @router.get("/sitemap.xml", response_class=Response)
 async def sitemap(db: Annotated[AsyncSession, Depends(get_db)]):
     """Generate XML sitemap for the website."""
+    xml = await _build_sitemap_xml(db)
+    return Response(content=xml, media_type="application/xml")
+
+
+@router.head("/sitemap.xml", response_class=Response)
+async def sitemap_head():
+    """Allow HEAD checks for sitemap monitors and crawlers."""
+    return Response(status_code=200, media_type="application/xml")
+
+
+async def _build_sitemap_xml(db: AsyncSession) -> str:
     urls: list[str] = []
 
     # --- Static pages ---
@@ -81,10 +92,9 @@ async def sitemap(db: Annotated[AsyncSession, Depends(get_db)]):
         lastmod = updated_at.strftime("%Y-%m-%d") if updated_at else today
         urls.append(_url(f"/tin-tuc/{slug}", lastmod, "weekly", "0.7"))
 
-    xml = (
+    return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         + "".join(urls)
         + "</urlset>"
     )
-    return Response(content=xml, media_type="application/xml")
