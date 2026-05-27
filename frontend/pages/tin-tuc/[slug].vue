@@ -134,7 +134,7 @@ if (error.value) {
 
 // SEO
 useSeoMeta({
-  title: () => post.value?.meta_title || `${post.value?.title} | AutoFilm`,
+  title: () => post.value?.meta_title || `${post.value?.title} | Newnice`,
   description: () => post.value?.meta_description || post.value?.excerpt || '',
   ogTitle: () => post.value?.meta_title || post.value?.title,
   ogDescription: () => post.value?.meta_description || post.value?.excerpt,
@@ -143,6 +143,7 @@ useSeoMeta({
   articlePublishedTime: () => post.value?.published_at,
   articleModifiedTime: () => post.value?.updated_at,
 })
+useCanonical(route.path)
 
 // JSON-LD structured data
 if (post.value) {

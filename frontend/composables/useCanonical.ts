@@ -8,7 +8,7 @@
  *   useCanonical('/san-pham/phim-3m')
  *   useCanonical(useRoute().path)  // for dynamic pages
  *
- * Production: set NUXT_PUBLIC_SITE_URL=https://newnice.vn
+ * Production: set NUXT_PUBLIC_SITE_URL=https://newnice.net
  */
 export function useCanonical(path: string): void {
   const config = useRuntimeConfig()

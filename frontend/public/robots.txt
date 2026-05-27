@@ -4,4 +4,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 
-Sitemap: https://newnice.vn/sitemap.xml
+Sitemap: https://newnice.net/sitemap.xml

@@ -160,12 +160,13 @@ const { data: relatedProducts } = await useFetch<Product[]>(
 
 // SEO
 useSeoMeta({
-  title: () => product.value?.meta_title || `${product.value?.name} | AutoFilm`,
+  title: () => product.value?.meta_title || `${product.value?.name} | Newnice`,
   description: () => product.value?.meta_description || product.value?.short_description,
   ogTitle: () => product.value?.name,
   ogDescription: () => product.value?.short_description,
   ogImage: () => product.value?.thumbnail,
 })
+useCanonical(route.path)
 
 // JSON-LD structured data
 if (product.value) {

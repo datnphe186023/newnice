@@ -7,9 +7,21 @@
  *   useJsonLd(buildOrganizationSchema())
  */
 
-const SITE_URL = 'https://newnice.vn'
+const DEFAULT_SITE_URL = 'https://newnice.net'
 const ORG_NAME = 'Newnice'
 const ORG_PHONE = '+84869418104'
+
+function getSiteUrl(): string {
+  const config = useRuntimeConfig()
+  return ((config.public.siteUrl as string) || DEFAULT_SITE_URL).replace(/\/$/, '')
+}
+
+function absoluteUrl(url?: string): string | undefined {
+  if (!url) return undefined
+  if (/^https?:\/\//i.test(url)) return url
+  const siteUrl = getSiteUrl()
+  return `${siteUrl}${url.startsWith('/') ? url : `/${url}`}`
+}
 const ORG_ADDRESS = '311 Phúc Diễn, Nam Từ Liêm, Hà Nội, Việt Nam'
 
 // ---------------------------------------------------------------------------
@@ -31,12 +43,13 @@ export function useJsonLd(schema: Record<string, unknown> | Record<string, unkno
 // ---------------------------------------------------------------------------
 
 export function buildOrganizationSchema() {
+  const siteUrl = getSiteUrl()
   return {
     '@context': 'https://schema.org',
     '@type': 'AutoRepair',  // More specific than Organization for a car service biz
     name: ORG_NAME,
-    url: SITE_URL,
-    logo: `${SITE_URL}/logo.png`,
+    url: siteUrl,
+    logo: `${siteUrl}/logo.png`,
     telephone: ORG_PHONE,
     address: {
       '@type': 'PostalAddress',
@@ -75,7 +88,8 @@ export function buildProductSchema(product: {
   brand?: { name: string }
   warranty_years?: number
 }) {
-  const url = `${SITE_URL}/san-pham/${product.slug}`
+  const siteUrl = getSiteUrl()
+  const url = `${siteUrl}/san-pham/${product.slug}`
   const priceAmount = [product.price_sedan, product.price_suv]
     .filter(Boolean)
     .map((price) => price?.replace(/\D/g, ''))
@@ -87,7 +101,7 @@ export function buildProductSchema(product: {
     name: product.name,
     url,
     description: product.short_description,
-    image: product.thumbnail ? [product.thumbnail] : undefined,
+    image: product.thumbnail ? [absoluteUrl(product.thumbnail)] : undefined,
     brand: product.brand
       ? { '@type': 'Brand', name: product.brand.name }
       : undefined,
@@ -122,20 +136,21 @@ export function buildArticleSchema(post: {
   created_at: string
   updated_at: string
 }) {
+  const siteUrl = getSiteUrl()
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: post.title,
     description: post.excerpt,
-    image: post.thumbnail ? [post.thumbnail] : undefined,
-    url: `${SITE_URL}/tin-tuc/${post.slug}`,
+    image: post.thumbnail ? [absoluteUrl(post.thumbnail)] : undefined,
+    url: `${siteUrl}/tin-tuc/${post.slug}`,
     datePublished: post.published_at || post.created_at,
     dateModified: post.updated_at,
-    author: { '@type': 'Organization', name: ORG_NAME, url: SITE_URL },
+    author: { '@type': 'Organization', name: ORG_NAME, url: siteUrl },
     publisher: {
       '@type': 'Organization',
       name: ORG_NAME,
-      logo: { '@type': 'ImageObject', url: `${SITE_URL}/logo.png` },
+      logo: { '@type': 'ImageObject', url: `${siteUrl}/logo.png` },
     },
   }
 }
@@ -145,6 +160,7 @@ export function buildArticleSchema(post: {
 // ---------------------------------------------------------------------------
 
 export function buildBreadcrumbSchema(items: Array<{ name: string; url: string }>) {
+  const siteUrl = getSiteUrl()
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -152,7 +168,7 @@ export function buildBreadcrumbSchema(items: Array<{ name: string; url: string }
       '@type': 'ListItem',
       position: i + 1,
       name: item.name,
-      item: `${SITE_URL}${item.url}`,
+      item: `${siteUrl}${item.url}`,
     })),
   }
 }
@@ -162,12 +178,13 @@ export function buildBreadcrumbSchema(items: Array<{ name: string; url: string }
 // ---------------------------------------------------------------------------
 
 export function buildLocalBusinessSchema() {
+  const siteUrl = getSiteUrl()
   return {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     name: ORG_NAME,
-    image: `${SITE_URL}/logo.png`,
-    url: SITE_URL,
+    image: `${siteUrl}/logo.png`,
+    url: siteUrl,
     telephone: ORG_PHONE,
     address: {
       '@type': 'PostalAddress',
