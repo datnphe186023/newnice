@@ -125,7 +125,7 @@
 
 <script setup lang="ts">
 import { PhoneIcon, ShieldCheckIcon, StarIcon } from '@heroicons/vue/24/outline'
-import type { Product } from '~/types'
+import type { PaginatedResponse, Product } from '~/types'
 import { buildBreadcrumbSchema, buildProductSchema, useJsonLd } from '~/composables/useJsonLd'
 import { useCanonical } from '~/composables/useCanonical'
 import { usePhoneTracking } from '~/composables/usePhoneTracking'
@@ -178,8 +178,25 @@ function formatPriceUnitSuffix(value: string) {
 }
 
 // Related products
-const { data: relatedProducts } = await useFetch<Product[]>(
-  () => `${config.public.apiBase}/products/featured?limit=4`
+const { data: relatedProductsData } = await useFetch<PaginatedResponse<Product>>(
+  () => {
+    const categorySlug = product.value?.category?.slug
+    if (!categorySlug) return null
+
+    const params = new URLSearchParams({
+      page: '1',
+      page_size: '5',
+      category_slug: categorySlug,
+    })
+
+    return `${config.public.apiBase}/products?${params.toString()}`
+  }
+)
+
+const relatedProducts = computed(() =>
+  (relatedProductsData.value?.items || [])
+    .filter((item) => item.slug !== product.value?.slug)
+    .slice(0, 4),
 )
 
 // SEO
