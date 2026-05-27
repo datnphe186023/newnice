@@ -8,17 +8,17 @@
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         loading="lazy"
       />
-      
+
       <!-- Featured badge -->
-      <span 
+      <span
         v-if="product.is_featured"
         class="absolute top-3 left-3 bg-accent text-white text-xs font-semibold px-2 py-1 rounded"
       >
         Nổi bật
       </span>
-      
+
       <!-- Brand badge -->
-      <span 
+      <span
         v-if="product.brand"
         class="absolute top-3 right-3 bg-white/90 text-gray-800 text-xs font-semibold px-2 py-1 rounded"
       >
@@ -32,7 +32,7 @@
       <p v-if="product.category" class="text-sm text-gray-500 mb-1">
         {{ product.category.name }}
       </p>
-      
+
       <!-- Name -->
       <h3 class="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-2 mb-2">
         {{ product.name }}
@@ -52,15 +52,15 @@
       </div>
 
       <!-- Price -->
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between gap-3">
         <span v-if="product.is_contact_price" class="text-primary-600 font-semibold">
           Liên hệ
         </span>
-        <span v-else class="text-primary-600 font-semibold">
-          {{ formatPrice(product.price) }}
+        <span v-else class="text-primary-600 font-semibold line-clamp-1">
+          {{ primaryPrice }}
         </span>
-        
-        <span class="text-sm text-gray-400 group-hover:text-primary-600 transition-colors">
+
+        <span class="text-sm text-gray-400 group-hover:text-primary-600 transition-colors whitespace-nowrap">
           Xem chi tiết →
         </span>
       </div>
@@ -71,15 +71,9 @@
 <script setup lang="ts">
 import type { Product } from '~/types'
 
-defineProps<{
+const props = defineProps<{
   product: Product
 }>()
 
-const formatPrice = (price?: number) => {
-  if (!price) return 'Liên hệ'
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND'
-  }).format(price)
-}
+const primaryPrice = computed(() => props.product.price_sedan || props.product.price_suv || 'Liên hệ')
 </script>

@@ -7,8 +7,8 @@ export interface Product {
   film_code?: string
   short_description?: string
   description?: string
-  price_sedan?: number
-  price_suv?: number
+  price_sedan?: string
+  price_suv?: string
   is_contact_price: boolean
   thumbnail?: string
   vlt?: number

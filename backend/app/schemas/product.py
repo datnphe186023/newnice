@@ -154,8 +154,8 @@ class ProductBase(BaseModel):
     brand_id: Optional[int] = None
     short_description: Optional[str] = None
     description: Optional[str] = None
-    price_sedan: Optional[int] = None        # VND
-    price_suv: Optional[int] = None          # VND
+    price_sedan: Optional[str] = Field(None, max_length=120)
+    price_suv: Optional[str] = Field(None, max_length=120)
     is_contact_price: bool = False
     thumbnail: Optional[str] = None
     vlt: Optional[int] = Field(None, ge=0, le=100)
@@ -176,7 +176,7 @@ class ProductBase(BaseModel):
         """Sanitize HTML content to prevent XSS."""
         return sanitize_html(v)
     
-    @field_validator('name', 'sku', 'film_code', 'thickness', 'meta_title', 'meta_description', mode='before')
+    @field_validator('name', 'sku', 'film_code', 'price_sedan', 'price_suv', 'thickness', 'meta_title', 'meta_description', mode='before')
     @classmethod
     def sanitize_text_fields(cls, v: Optional[str]) -> Optional[str]:
         """Sanitize plain text fields."""
@@ -195,8 +195,8 @@ class ProductUpdate(BaseModel):
     brand_id: Optional[int] = None
     short_description: Optional[str] = None
     description: Optional[str] = None
-    price_sedan: Optional[int] = None
-    price_suv: Optional[int] = None
+    price_sedan: Optional[str] = Field(None, max_length=120)
+    price_suv: Optional[str] = Field(None, max_length=120)
     is_contact_price: Optional[bool] = None
     thumbnail: Optional[str] = None
     vlt: Optional[int] = Field(None, ge=0, le=100)
@@ -217,7 +217,7 @@ class ProductUpdate(BaseModel):
         """Sanitize HTML content to prevent XSS."""
         return sanitize_html(v)
     
-    @field_validator('name', 'sku', 'film_code', 'thickness', 'meta_title', 'meta_description', mode='before')
+    @field_validator('name', 'sku', 'film_code', 'price_sedan', 'price_suv', 'thickness', 'meta_title', 'meta_description', mode='before')
     @classmethod
     def sanitize_text_fields(cls, v: Optional[str]) -> Optional[str]:
         """Sanitize plain text fields."""
@@ -243,8 +243,8 @@ class ProductListResponse(BaseModel):
     slug: str
     film_code: Optional[str] = None
     thumbnail: Optional[str] = None
-    price_sedan: Optional[int] = None
-    price_suv: Optional[int] = None
+    price_sedan: Optional[str] = None
+    price_suv: Optional[str] = None
     is_contact_price: bool
     vlt: Optional[int] = None
     uv_rejection: Optional[int] = None

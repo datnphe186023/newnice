@@ -68,13 +68,19 @@ export function buildProductSchema(product: {
   name: string
   slug: string
   short_description?: string
-  price?: number
+  price_sedan?: string
+  price_suv?: string
   is_contact_price?: boolean
   thumbnail?: string
   brand?: { name: string }
   warranty_years?: number
 }) {
   const url = `${SITE_URL}/san-pham/${product.slug}`
+  const priceAmount = [product.price_sedan, product.price_suv]
+    .filter(Boolean)
+    .map((price) => price?.replace(/\D/g, ''))
+    .find(Boolean)
+
   const schema: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -92,9 +98,9 @@ export function buildProductSchema(product: {
       priceCurrency: 'VND',
       availability: 'https://schema.org/InStock',
       seller: { '@type': 'Organization', name: ORG_NAME },
-      ...(product.is_contact_price || !product.price
+      ...(product.is_contact_price || !priceAmount
         ? { price: '0', priceSpecification: { '@type': 'UnitPriceSpecification', name: 'Liên hệ báo giá' } }
-        : { price: String(product.price) }),
+        : { price: priceAmount }),
     },
     ...(product.warranty_years
       ? { warranty: { '@type': 'WarrantyPromise', durationOfWarranty: { '@type': 'QuantitativeValue', value: product.warranty_years, unitCode: 'ANN' } } }

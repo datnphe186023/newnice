@@ -72,7 +72,7 @@
               <td class="p-4">
                 <span v-if="product.is_contact_price" class="text-gray-500">Liên hệ</span>
                 <span v-else class="font-medium">
-                  {{ formatPrice(product.price_sedan) }} / {{ formatPrice(product.price_suv) }}
+                  {{ formatPriceText(product.price_sedan, product.price_suv) }}
                 </span>
               </td>
               <td class="p-4">
@@ -216,12 +216,8 @@ watch([categoryFilter, brandFilter, currentPage], () => {
   refresh()
 })
 
-const formatPrice = (price?: number) => {
-  if (!price) return '-'
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND'
-  }).format(price)
+const formatPriceText = (primary?: string, secondary?: string) => {
+  return [primary, secondary].filter(Boolean).join(' / ') || '-'
 }
 
 const confirmDelete = (product: Product) => {

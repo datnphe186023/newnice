@@ -6,7 +6,7 @@
     </div>
 
     <div class="bg-white rounded-xl shadow-sm p-6">
-      <form @submit.prevent="createProduct" class="space-y-5">
+      <form class="space-y-5" @submit.prevent="createProduct">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
             <label class="block text-sm text-gray-700 mb-1">Tên sản phẩm *</label>
@@ -31,12 +31,24 @@
             </select>
           </div>
           <div>
-            <label class="block text-sm text-gray-700 mb-1">Giá Sedan</label>
-            <input v-model.number="form.price_sedan" type="number" min="0" class="w-full px-4 py-2 border rounded-lg" />
+            <label class="block text-sm text-gray-700 mb-1">Giá hiển thị 1</label>
+            <input
+              v-model="form.price_sedan"
+              type="text"
+              maxlength="120"
+              placeholder="VD: Sedan: 5.800.000đ hoặc Theo mét: 450.000đ/m²"
+              class="w-full px-4 py-2 border rounded-lg"
+            />
           </div>
           <div>
-            <label class="block text-sm text-gray-700 mb-1">Giá SUV</label>
-            <input v-model.number="form.price_suv" type="number" min="0" class="w-full px-4 py-2 border rounded-lg" />
+            <label class="block text-sm text-gray-700 mb-1">Giá hiển thị 2</label>
+            <input
+              v-model="form.price_suv"
+              type="text"
+              maxlength="120"
+              placeholder="VD: SUV: 7.000.000đ hoặc Thi công: liên hệ"
+              class="w-full px-4 py-2 border rounded-lg"
+            />
           </div>
           <div class="md:col-span-2">
             <label class="block text-sm text-gray-700 mb-1">Mô tả ngắn</label>
@@ -94,8 +106,8 @@ type ProductForm = {
   brand_id: number | null
   short_description: string
   description: string
-  price_sedan: number | null
-  price_suv: number | null
+  price_sedan: string
+  price_suv: string
   is_contact_price: boolean
   is_featured: boolean
   is_active: boolean
@@ -108,8 +120,8 @@ const form = ref<ProductForm>({
   brand_id: null,
   short_description: '',
   description: '',
-  price_sedan: null,
-  price_suv: null,
+  price_sedan: '',
+  price_suv: '',
   is_contact_price: false,
   is_featured: false,
   is_active: true,
@@ -134,6 +146,15 @@ onMounted(async () => {
   brands.value = brandRes
 })
 
+const buildPayload = () => ({
+  ...form.value,
+  sku: form.value.sku || null,
+  short_description: form.value.short_description || null,
+  description: form.value.description || null,
+  price_sedan: form.value.price_sedan.trim() || null,
+  price_suv: form.value.price_suv.trim() || null,
+})
+
 const createProduct = async () => {
   saving.value = true
   error.value = ''
@@ -141,12 +162,7 @@ const createProduct = async () => {
     await $fetch(`${config.public.apiBase}/products`, {
       method: 'POST',
       headers: headers.value,
-      body: {
-        ...form.value,
-        sku: form.value.sku || null,
-        short_description: form.value.short_description || null,
-        description: form.value.description || null,
-      },
+      body: buildPayload(),
     })
     router.push('/admin/products')
   } catch (err: any) {

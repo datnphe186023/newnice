@@ -32,9 +32,9 @@
               • {{ product.category.name }}
             </span>
           </div>
-          
+
           <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ product.name }}</h1>
-          
+
           <p v-if="product.short_description" class="text-gray-600 mb-6 leading-relaxed">
             {{ product.short_description }}
           </p>
@@ -58,19 +58,16 @@
               Liên hệ báo giá
             </div>
             <div v-else class="space-y-2">
-              <div class="flex items-center gap-4">
-                <span class="w-16 text-sm text-gray-500 font-medium">SEDAN</span>
-                <span class="text-2xl font-bold text-primary-600">
-                  {{ formatPrice(product.price_sedan) }}
-                </span>
+              <div
+                v-for="price in productPriceLines"
+                :key="price"
+                class="text-2xl font-bold text-primary-600"
+              >
+                {{ price }}
               </div>
-              <div class="flex items-center gap-4">
-                <span class="w-16 text-sm text-gray-500 font-medium">SUV</span>
-                <span class="text-2xl font-bold text-primary-600">
-                  {{ formatPrice(product.price_suv) }}
-                </span>
-              </div>
-              <p class="text-xs text-gray-400 mt-1">Giá đã bao gồm VAT, chưa bao gồm cửa sổ trời</p>
+              <p v-if="productPriceLines.length" class="text-xs text-gray-400 mt-1">
+                Giá tham khảo, chi tiết theo hạng mục thi công thực tế.
+              </p>
             </div>
           </div>
 
@@ -145,17 +142,16 @@ const { data: product } = await useFetch<Product>(
 // Has specs
 const hasSpecs = computed(() => {
   if (!product.value) return false
-  return product.value.vlt || product.value.uv_rejection || 
+  return product.value.vlt || product.value.uv_rejection ||
          product.value.ir_rejection || product.value.heat_rejection ||
          product.value.thickness || product.value.warranty_years ||
          product.value.film_type
 })
 
-// Format price
-const formatPrice = (price?: number) => {
-  if (!price) return 'Liên hệ'
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price)
-}
+const productPriceLines = computed(() => {
+  if (!product.value) return []
+  return [product.value.price_sedan, product.value.price_suv].filter(Boolean)
+})
 
 // Related products
 const { data: relatedProducts } = await useFetch<Product[]>(

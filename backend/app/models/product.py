@@ -56,9 +56,9 @@ class Product(Base):
     short_description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    # Pricing per vehicle type (VND)
-    price_sedan: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
-    price_suv: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    # Flexible display pricing. Keep legacy column names for API compatibility.
+    price_sedan: Mapped[Optional[str]] = mapped_column(String(120), nullable=True)
+    price_suv: Mapped[Optional[str]] = mapped_column(String(120), nullable=True)
     is_contact_price: Mapped[bool] = mapped_column(Boolean, default=False)
 
     thumbnail: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
