@@ -42,7 +42,7 @@
               class="input pr-12"
               @keyup.enter="handleSearch"
             />
-            <button 
+            <button
               class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-500 hover:text-primary-600"
               @click="handleSearch"
             >
@@ -57,13 +57,13 @@
             <PhoneIcon class="w-5 h-5" />
             <span class="hidden lg:inline">0869 418 104</span>
           </a>
-          
+
           <NuxtLink to="/bao-gia" class="btn-accent hidden sm:flex">
             Báo giá ngay
           </NuxtLink>
 
           <!-- Mobile menu button -->
-          <button 
+          <button
             class="md:hidden p-2 text-white"
             @click="isMobileMenuOpen = true"
           >
@@ -77,9 +77,62 @@
     <nav class="bg-accent hidden md:block">
       <div class="container">
         <ul class="flex items-center gap-1">
-          <li v-for="item in menuItems" :key="item.href">
-            <NuxtLink 
-              :to="item.href" 
+          <li v-for="item in primaryMenuItems" :key="item.href">
+            <NuxtLink
+              :to="item.href"
+              class="block px-4 py-3 text-white font-medium hover:bg-accent-600 transition-colors text-sm tracking-wide uppercase"
+              :class="{ 'bg-accent-600': isActiveRoute(item.href) }"
+            >
+              {{ item.label }}
+            </NuxtLink>
+          </li>
+
+          <li
+            class="relative"
+            @mouseenter="isCategoryMenuOpen = true"
+            @mouseleave="isCategoryMenuOpen = false"
+          >
+            <button
+              type="button"
+              class="flex items-center gap-1 px-4 py-3 text-white font-medium hover:bg-accent-600 transition-colors text-sm tracking-wide uppercase"
+              :class="{ 'bg-accent-600': isActiveRoute('/danh-muc') }"
+              @click="isCategoryMenuOpen = !isCategoryMenuOpen"
+              @focus="isCategoryMenuOpen = true"
+              @keydown.escape="isCategoryMenuOpen = false"
+            >
+              Danh mục
+              <ChevronDownIcon
+                class="h-4 w-4 transition-transform"
+                :class="{ 'rotate-180': isCategoryMenuOpen }"
+              />
+            </button>
+
+            <div
+              v-show="isCategoryMenuOpen"
+              class="absolute left-0 top-full min-w-64 rounded-b bg-white py-2 shadow-xl ring-1 ring-black/5"
+            >
+              <NuxtLink
+                v-for="category in categoryMenuItems"
+                :key="category.href"
+                :to="category.href"
+                class="block px-4 py-2.5 text-sm font-semibold text-gray-800 hover:bg-gray-100 hover:text-primary-600"
+                :class="{ 'bg-gray-100 text-primary-600': isActiveRoute(category.href) }"
+                @click="isCategoryMenuOpen = false"
+              >
+                {{ category.label }}
+              </NuxtLink>
+              <div
+                v-if="!categoryMenuItems.length"
+                class="px-4 py-2.5 text-sm text-gray-500"
+              >
+                Chưa có danh mục
+              </div>
+            </div>
+          </li>
+
+          <li v-for="item in secondaryMenuItems" :key="item.href">
+            <NuxtLink
+              :to="item.href"
               class="block px-4 py-3 text-white font-medium hover:bg-accent-600 transition-colors text-sm tracking-wide uppercase"
               :class="{ 'bg-accent-600': isActiveRoute(item.href) }"
             >
@@ -91,36 +144,60 @@
     </nav>
 
     <!-- Mobile Menu -->
-    <CommonMobileMenu 
-      :is-open="isMobileMenuOpen" 
+    <CommonMobileMenu
+      :is-open="isMobileMenuOpen"
       :menu-items="menuItems"
-      @close="isMobileMenuOpen = false" 
+      :category-items="categoryMenuItems"
+      @close="isMobileMenuOpen = false"
     />
   </header>
 </template>
 
 <script setup lang="ts">
-import { 
-  PhoneIcon, 
-  MapPinIcon, 
+import {
+  PhoneIcon,
+  MapPinIcon,
   MagnifyingGlassIcon,
-  Bars3Icon 
+  Bars3Icon,
+  ChevronDownIcon,
 } from '@heroicons/vue/24/outline'
+import type { Category } from '~/types'
 
 const route = useRoute()
 const router = useRouter()
+const config = useRuntimeConfig()
 
 const searchQuery = ref('')
 const isMobileMenuOpen = ref(false)
+const isCategoryMenuOpen = ref(false)
 
-const menuItems = [
+const { data: categories } = await useFetch<Category[]>(`${config.public.apiBase}/categories`, {
+  key: 'header-categories',
+  default: () => [],
+})
+
+const primaryMenuItems = [
   { label: 'Trang chủ', href: '/' },
-  { label: 'Phim cách nhiệt Newnice', href: '/danh-muc/phim-cach-nhiet-newnice' },
-  { label: 'PPF Newnice', href: '/danh-muc/ppf-newnice' },
+]
+
+const secondaryMenuItems = [
   { label: 'Tất cả sản phẩm', href: '/san-pham' },
   { label: 'Tin tức', href: '/tin-tuc' },
   { label: 'Liên hệ', href: '/lien-he' },
 ]
+
+const menuItems = [...primaryMenuItems, ...secondaryMenuItems]
+
+const categoryMenuItems = computed(() =>
+  (categories.value || [])
+    .filter((category) => category.is_active)
+    .slice()
+    .sort((left, right) => left.sort_order - right.sort_order)
+    .map((category) => ({
+      label: category.name,
+      href: `/danh-muc/${category.slug}`,
+    })),
+)
 
 const isActiveRoute = (href: string) => {
   if (href === '/') return route.path === '/'
