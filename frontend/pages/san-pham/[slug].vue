@@ -35,7 +35,7 @@
 
           <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ product.name }}</h1>
 
-          <p v-if="product.short_description" class="text-gray-600 mb-6 leading-relaxed">
+          <p v-if="product.short_description" class="text-gray-600 mb-6 leading-relaxed whitespace-pre-line">
             {{ product.short_description }}
           </p>
 
@@ -61,7 +61,7 @@
               <div
                 v-for="price in productPriceLines"
                 :key="price"
-                class="text-2xl font-bold text-primary-600"
+                class="text-2xl font-bold text-primary-600 leading-tight whitespace-nowrap"
               >
                 {{ price }}
               </div>
@@ -99,7 +99,7 @@
       <!-- Description -->
       <div v-if="product.description" class="card p-8 mb-12">
         <h2 class="text-2xl font-bold mb-6">Mô tả sản phẩm</h2>
-        <div class="prose max-w-none" v-html="product.description" />
+        <div class="prose max-w-none whitespace-pre-line" v-html="product.description" />
       </div>
 
       <!-- Related products -->
@@ -150,8 +150,26 @@ const hasSpecs = computed(() => {
 
 const productPriceLines = computed(() => {
   if (!product.value) return []
-  return [product.value.price_sedan, product.value.price_suv].filter(Boolean)
+  const prices = [product.value.price_sedan, product.value.price_suv]
+    .map((price) => price?.trim())
+    .filter(Boolean) as string[]
+
+  if (prices.length === 2 && isUnitOnlyPriceSuffix(prices[1])) {
+    return [`${prices[0]}${formatPriceUnitSuffix(prices[1])}`]
+  }
+
+  return prices
 })
+
+const isUnitOnlyPriceSuffix = (value: string) => {
+  const normalized = value.toLowerCase().replace(/\s+/g, '')
+  return ['m', '/m', 'm2', '/m2', 'm²', '/m²', 'met', '/met', 'mét', '/mét'].includes(normalized)
+}
+
+const formatPriceUnitSuffix = (value: string) => {
+  const normalized = value.trim()
+  return normalized.startsWith('/') ? normalized : `/${normalized}`
+}
 
 // Related products
 const { data: relatedProducts } = await useFetch<Product[]>(
