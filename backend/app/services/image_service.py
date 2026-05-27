@@ -244,6 +244,38 @@ def extract_r2_key(image_url: str) -> Optional[str]:
     return None
 
 
+def extract_upload_relative_path(image_url: str) -> Optional[str]:
+    """Extract an uploads-relative path from a relative or absolute image URL."""
+    if not image_url:
+        return None
+
+    if image_url.startswith("/uploads/"):
+        return image_url.replace("/uploads/", "", 1)
+
+    parsed = urlparse(image_url)
+    if parsed.scheme in {"http", "https"} and parsed.path.startswith("/uploads/"):
+        return parsed.path.replace("/uploads/", "", 1)
+
+    return None
+
+
+def split_upload_relative_path(relative_path: str) -> tuple[str, str] | None:
+    """Return the base upload subfolder and filename from an uploads-relative path."""
+    parts = relative_path.split("/")
+    if len(parts) < 2:
+        return None
+
+    size_names = set(IMAGE_SIZES.keys()) | set(BANNER_SIZES.keys())
+    subfolder_parts = parts[:-2] if len(parts) > 2 and parts[-2] in size_names else parts[:-1]
+    subfolder = "/".join(subfolder_parts)
+    filename = parts[-1]
+
+    if not subfolder or not filename:
+        return None
+
+    return subfolder, filename
+
+
 async def save_upload_to_r2(
     file: UploadFile,
     subfolder: str = "",
@@ -437,14 +469,12 @@ async def delete_image(image_url: str) -> bool:
         if not key or not key.startswith("uploads/"):
             return False
 
-        parts = key.split("/")
-        if len(parts) < 3:
+        relative_path = key.replace("uploads/", "", 1)
+        split_path = split_upload_relative_path(relative_path)
+        if not split_path:
             return False
 
-        filename = parts[-1]
-        size_names = set(IMAGE_SIZES.keys()) | set(BANNER_SIZES.keys())
-        subfolder_parts = parts[1:-2] if len(parts) > 3 and parts[-2] in size_names else parts[1:-1]
-        subfolder = "/".join(subfolder_parts)
+        subfolder, filename = split_path
 
         try:
             validate_subfolder(subfolder)
@@ -466,19 +496,15 @@ async def delete_image(image_url: str) -> bool:
 
         return deleted_count > 0
 
-    if not image_url or not image_url.startswith("/uploads/"):
+    relative_path = extract_upload_relative_path(image_url)
+    if not relative_path:
         return False
-    
-    # Extract relative path
-    relative_path = image_url.replace("/uploads/", "")
-    
-    # Parse the path components
-    parts = relative_path.split("/")
-    if len(parts) < 2:
+
+    split_path = split_upload_relative_path(relative_path)
+    if not split_path:
         return False
-    
-    # First component should be the subfolder
-    subfolder = parts[0]
+
+    subfolder, filename = split_path
     
     # Validate subfolder for security
     try:
@@ -486,9 +512,6 @@ async def delete_image(image_url: str) -> bool:
     except HTTPException:
         # Invalid subfolder - security check
         return False
-    
-    # Get the filename (last component)
-    filename = parts[-1]
     
     # Get base filename without extension
     base_name = filename.rsplit(".", 1)[0]

@@ -30,6 +30,14 @@
               <option v-for="brand in brands" :key="brand.id" :value="brand.id">{{ brand.name }}</option>
             </select>
           </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm text-gray-700 mb-2">Ảnh sản phẩm</label>
+            <AdminImageUpload
+              v-model="form.thumbnail"
+              subfolder="products"
+              :preview-class="'max-h-56 object-cover'"
+            />
+          </div>
           <div>
             <label class="block text-sm text-gray-700 mb-1">Giá hiển thị 1</label>
             <input
@@ -106,6 +114,7 @@ type ProductForm = {
   brand_id: number | null
   short_description: string
   description: string
+  thumbnail: string | null
   price_sedan: string
   price_suv: string
   is_contact_price: boolean
@@ -120,6 +129,7 @@ const form = ref<ProductForm>({
   brand_id: null,
   short_description: '',
   description: '',
+  thumbnail: null,
   price_sedan: '',
   price_suv: '',
   is_contact_price: false,
@@ -151,6 +161,7 @@ const buildPayload = () => ({
   sku: form.value.sku || null,
   short_description: form.value.short_description || null,
   description: form.value.description || null,
+  thumbnail: form.value.thumbnail || null,
   price_sedan: form.value.price_sedan.trim() || null,
   price_suv: form.value.price_suv.trim() || null,
 })

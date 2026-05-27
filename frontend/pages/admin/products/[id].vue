@@ -32,6 +32,14 @@
               <option v-for="brand in brands" :key="brand.id" :value="brand.id">{{ brand.name }}</option>
             </select>
           </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm text-gray-700 mb-2">Ảnh sản phẩm</label>
+            <AdminImageUpload
+              v-model="form.thumbnail"
+              subfolder="products"
+              :preview-class="'max-h-56 object-cover'"
+            />
+          </div>
           <div>
             <label class="block text-sm text-gray-700 mb-1">Giá hiển thị 1</label>
             <input
@@ -118,6 +126,7 @@ const form = ref({
   brand_id: null as number | null,
   short_description: '',
   description: '',
+  thumbnail: null as string | null,
   price_sedan: '',
   price_suv: '',
   is_contact_price: false,
@@ -148,6 +157,7 @@ onMounted(async () => {
       brand_id: product.brand?.id || null,
       short_description: product.short_description || '',
       description: product.description || '',
+      thumbnail: product.thumbnail || null,
       price_sedan: product.price_sedan || '',
       price_suv: product.price_suv || '',
       is_contact_price: product.is_contact_price,
@@ -166,6 +176,7 @@ const buildPayload = () => ({
   sku: form.value.sku || null,
   short_description: form.value.short_description || null,
   description: form.value.description || null,
+  thumbnail: form.value.thumbnail || null,
   price_sedan: form.value.price_sedan.trim() || null,
   price_suv: form.value.price_suv.trim() || null,
 })
