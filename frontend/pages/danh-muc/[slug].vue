@@ -159,7 +159,7 @@
 
 <script setup lang="ts">
 import type { Product, Category, Brand, PaginatedResponse } from '~/types'
-import { buildBreadcrumbSchema, useJsonLd } from '~/composables/useJsonLd'
+import { buildBreadcrumbSchema, buildServiceSchemaForCategorySlug, useJsonLd } from '~/composables/useJsonLd'
 import { useCanonical } from '~/composables/useCanonical'
 
 const route = useRoute()
@@ -190,11 +190,16 @@ useSeoMeta({
 })
 useCanonical(route.path)
 if (category.value) {
-  useJsonLd(buildBreadcrumbSchema([
-    { name: 'Trang chủ', url: '/' },
-    { name: 'Sản phẩm', url: '/san-pham' },
-    { name: category.value.name, url: `/danh-muc/${category.value.slug}` },
-  ]))
+  const schemas = [
+    buildBreadcrumbSchema([
+      { name: 'Trang chủ', url: '/' },
+      { name: 'Sản phẩm', url: '/san-pham' },
+      { name: category.value.name, url: `/danh-muc/${category.value.slug}` },
+    ]),
+    buildServiceSchemaForCategorySlug(category.value.slug, route.path),
+  ].filter(Boolean) as Record<string, unknown>[]
+
+  useJsonLd(schemas)
 }
 
 // Filters

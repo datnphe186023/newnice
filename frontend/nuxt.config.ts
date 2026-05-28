@@ -13,7 +13,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000/api/v1',
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://newnice.net',
       siteName: 'Newnice',
       siteDescription: 'Newnice là thương hiệu phim cách nhiệt, PPF bảo vệ bề mặt và giải pháp film nhà kính tại Việt Nam.',
       gaId: process.env.NUXT_PUBLIC_GA_ID || '',                   // GA4 measurement ID e.g. G-XXXXXXXXXX
