@@ -38,5 +38,8 @@ jobs:
             git pull --ff-only origin main
             docker compose --env-file .env.prod -f "$COMPOSE_FILE" build
             docker compose --env-file .env.prod -f "$COMPOSE_FILE" up -d --remove-orphans
+            docker compose --env-file .env.prod -f "$COMPOSE_FILE" up -d --no-deps --force-recreate nginx
+            docker compose --env-file .env.prod -f "$COMPOSE_FILE" exec -T nginx nginx -t
+            docker compose --env-file .env.prod -f "$COMPOSE_FILE" exec -T nginx nginx -s reload
             docker image prune -f
             docker compose --env-file .env.prod -f "$COMPOSE_FILE" ps
