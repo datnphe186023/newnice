@@ -168,7 +168,7 @@
 </template>
 
 <script setup lang="ts">
-import { renderSVG } from 'uqr'
+import { encode, renderSVG } from 'uqr'
 
 definePageMeta({
   layout: false,
@@ -331,11 +331,12 @@ const generateWarrantyQrImage = async () => {
 
   try {
     if (qrPngUrl.value) {
-      URL.revokeObjectURL(qrPngUrl.value)
+      if (qrPngUrl.value.startsWith('blob:')) {
+        URL.revokeObjectURL(qrPngUrl.value)
+      }
       qrPngUrl.value = ''
     }
 
-    const qrImage = await loadSvgImage(qrSvg.value)
     const canvas = document.createElement('canvas')
     const width = 900
     const height = 1100
@@ -364,7 +365,7 @@ const generateWarrantyQrImage = async () => {
     roundRect(context, 120, 235, 660, 660, 28)
     context.fill()
 
-    context.drawImage(qrImage, (width - qrSize) / 2, 285, qrSize, qrSize)
+    drawQrToCanvas(context, warrantyInfoUrl.value, (width - qrSize) / 2, 285, qrSize)
 
     context.fillStyle = '#18181b'
     context.font = '700 34px Arial, sans-serif'
@@ -374,34 +375,57 @@ const generateWarrantyQrImage = async () => {
     context.font = '24px Arial, sans-serif'
     wrapText(context, warrantyInfoUrl.value, width / 2, 1000, 760, 32)
 
-    const blob = await new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob((result) => {
-        if (result) resolve(result)
-        else reject(new Error('Cannot export QR image'))
-      }, 'image/png')
-    })
-
-    qrPngUrl.value = URL.createObjectURL(blob)
+    qrPngUrl.value = await exportCanvasImage(canvas)
   } catch (err) {
     qrError.value = 'Không thể tạo ảnh QR. Vui lòng tải lại trang và thử lại.'
   }
 }
 
-const loadSvgImage = (svg: string) =>
-  new Promise<HTMLImageElement>((resolve, reject) => {
-    const image = new Image()
-    const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
+const drawQrToCanvas = (
+  context: CanvasRenderingContext2D,
+  value: string,
+  x: number,
+  y: number,
+  maxSize: number,
+) => {
+  const qr = encode(value, { ecc: 'M', border: 2 })
+  const moduleSize = Math.max(1, Math.floor(maxSize / qr.size))
+  const drawSize = moduleSize * qr.size
+  const offsetX = x + Math.floor((maxSize - drawSize) / 2)
+  const offsetY = y + Math.floor((maxSize - drawSize) / 2)
 
-    image.onload = () => {
-      URL.revokeObjectURL(url)
-      resolve(image)
+  context.fillStyle = '#ffffff'
+  context.fillRect(x, y, maxSize, maxSize)
+  context.fillStyle = '#09090b'
+
+  for (let row = 0; row < qr.size; row += 1) {
+    for (let col = 0; col < qr.size; col += 1) {
+      if (qr.data[row]?.[col]) {
+        context.fillRect(offsetX + col * moduleSize, offsetY + row * moduleSize, moduleSize, moduleSize)
+      }
     }
-    image.onerror = () => {
-      URL.revokeObjectURL(url)
-      reject(new Error('Cannot load QR SVG'))
+  }
+}
+
+const exportCanvasImage = (canvas: HTMLCanvasElement) =>
+  new Promise<string>((resolve, reject) => {
+    if (!canvas.toBlob) {
+      resolve(canvas.toDataURL('image/png'))
+      return
     }
-    image.src = url
+
+    canvas.toBlob((result) => {
+      if (result) {
+        resolve(URL.createObjectURL(result))
+        return
+      }
+
+      try {
+        resolve(canvas.toDataURL('image/png'))
+      } catch (err) {
+        reject(new Error('Cannot export QR image'))
+      }
+    }, 'image/png')
   })
 
 const roundRect = (
@@ -481,7 +505,7 @@ watch(
 )
 
 onBeforeUnmount(() => {
-  if (qrPngUrl.value) {
+  if (qrPngUrl.value.startsWith('blob:')) {
     URL.revokeObjectURL(qrPngUrl.value)
   }
 })
