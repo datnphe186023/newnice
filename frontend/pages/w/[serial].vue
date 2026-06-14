@@ -53,7 +53,7 @@
             <a href="tel:0869418104" class="rounded-lg bg-white px-4 py-3 text-center font-semibold text-zinc-950">
               Hotline
             </a>
-            <a href="https://zalo.me/0705410751" target="_blank" class="rounded-lg border border-white/20 px-4 py-3 text-center font-semibold text-white">
+            <a href="https://zalo.me/0869418104" target="_blank" class="rounded-lg border border-white/20 px-4 py-3 text-center font-semibold text-white">
               Zalo
             </a>
           </div>

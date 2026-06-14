@@ -17,7 +17,7 @@ const ORG_LOGO_PATH = '/logo.png'
 const ORG_DESCRIPTION =
   'Newnice là thương hiệu cung cấp phim cách nhiệt ô tô, phim cách nhiệt nhà kính, PPF bảo vệ bề mặt và các giải pháp bảo vệ kính/bề mặt tại Việt Nam. Newnice tập trung vào sản phẩm rõ phân khúc, tư vấn đúng nhu cầu, thi công chỉn chu và chính sách bảo hành minh bạch.'
 const FACEBOOK_URL = 'https://facebook.com/newnicevn'
-const ZALO_URL = 'https://zalo.me/0705410751'
+const ZALO_URL = 'https://zalo.me/0869418104'
 const GOOGLE_MAPS_URL = 'https://maps.app.goo.gl/fHQ8vCRVPCXhySnP9'
 const ORG_ADDRESS = {
   streetAddress: '311 Phúc Diễn',
