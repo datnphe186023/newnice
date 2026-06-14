@@ -51,8 +51,8 @@
 
           <div class="rounded-lg border border-white/10 bg-white p-5 text-zinc-950 shadow-2xl">
             <div class="flex flex-col gap-5 sm:flex-row sm:items-center">
-              <div class="mx-auto flex h-44 w-44 flex-shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white p-3 sm:mx-0">
-                <img :src="qrPreviewSrc" :alt="`QR thông tin bảo hành ${lookup.serial}`" class="h-full w-full" />
+              <div class="mx-auto flex aspect-[9/11] w-44 flex-shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white p-3 sm:mx-0">
+                <img :src="qrPreviewSrc" :alt="`QR thông tin bảo hành ${lookup.serial}`" class="h-full w-full object-contain" />
               </div>
               <div class="min-w-0 flex-1">
                 <p class="text-xs font-semibold uppercase tracking-wide text-zinc-500">QR thông tin bảo hành</p>
