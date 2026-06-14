@@ -89,7 +89,6 @@
               <td class="px-4 py-3 text-gray-600 font-medium">{{ row.position }}</td>
               <td v-for="pkg in priceTable.packages" :key="pkg.name" class="px-3 py-3 text-center">
                 <div v-if="row.cells[pkg.name]">
-                  <div class="text-xs text-gray-500">{{ row.cells[pkg.name].code }}</div>
                   <div class="font-semibold text-red-600 text-sm">
                     {{ formatVND(row.cells[pkg.name].price) }}
                   </div>
@@ -270,46 +269,46 @@ const formatVND = (n?: number) =>
 
 const priceTable = {
   packages: [
-    { name: 'Eco',     sedan:  5_800_000, suv:  7_000_000 },
-    { name: 'Premium', sedan: 10_500_000, suv: 11_500_000 },
-    { name: 'Crystal', sedan: 12_500_000, suv: 14_500_000 },
-    { name: 'Royal',   sedan: 15_500_000, suv: 17_500_000 },
+    { name: 'Eco',   sedan:  5_500_000, suv:  6_700_000 },
+    { name: 'Plus',  sedan:  7_500_000, suv:  8_700_000 },
+    { name: 'Pro',   sedan: 11_500_000, suv: 12_900_000 },
+    { name: 'Royal', sedan: 14_000_000, suv: 15_500_000 },
   ],
   rows: [
     {
       position: 'Kính lái',
       cells: {
-        'Eco':     { code: 'NE75',       price: 2_500_000 },
-        'Premium': { code: 'NP62/NP66',  price: 3_600_000 },
-        'Crystal': { code: 'HD/NC60-70', price: 5_500_000 },
-        'Royal':   { code: 'NR/60-70',   price: 5_500_000 },
+        'Eco':   { price: 2_000_000 },
+        'Plus':  { price: 3_500_000 },
+        'Pro':   { price: 3_500_000 },
+        'Royal': { price: 5_500_000 },
       },
     },
     {
-      position: 'Kính sườn (trước)',
+      position: 'Kính sườn trước x2',
       cells: {
-        'Eco':     { code: 'NE25',      price: 500_000   },
-        'Premium': { code: 'NP40/NP25', price: 1_000_000 },
-        'Crystal': { code: 'NC40/NC25', price: 1_600_000 },
-        'Royal':   { code: 'NR40/NR25', price: 1_600_000 },
+        'Eco':   { price: 1_400_000 },
+        'Plus':  { price: 1_400_000 },
+        'Pro':   { price: 2_800_000 },
+        'Royal': { price: 2_800_000 },
       },
     },
     {
-      position: 'Kính sườn (sau)',
+      position: 'Kính sườn sau x2',
       cells: {
-        'Eco':     { code: 'NE25',      price: 500_000   },
-        'Premium': { code: 'NP40/NP25', price: 1_050_000 },
-        'Crystal': { code: 'NC40/NC25', price: 1_600_000 },
-        'Royal':   { code: 'NR40/NR25', price: 1_600_000 },
+        'Eco':   { price: 1_600_000 },
+        'Plus':  { price: 1_600_000 },
+        'Pro':   { price: 3_200_000 },
+        'Royal': { price: 3_200_000 },
       },
     },
     {
       position: 'Kính hậu',
       cells: {
-        'Eco':     { code: 'NE25', price: 1_200_000 },
-        'Premium': { code: 'NP15', price: 1_800_000 },
-        'Crystal': { code: 'NC15', price: 1_800_000 },
-        'Royal':   { code: 'NR40/NR25', price: 3_800_000 },
+        'Eco':   { price: 1_500_000 },
+        'Plus':  { price: 1_500_000 },
+        'Pro':   { price: 3_000_000 },
+        'Royal': { price: 3_000_000 },
       },
     },
   ],

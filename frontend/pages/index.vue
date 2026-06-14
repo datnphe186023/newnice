@@ -121,7 +121,6 @@
                 <td class="px-4 py-3 text-left text-gray-600 font-medium">{{ row.position }}</td>
                 <td v-for="pkg in newnicePrices.packages" :key="pkg.name + row.position"
                     class="px-4 py-3 border-l border-gray-100">
-                  <div class="text-xs text-gray-500">{{ row.codes[pkg.name] }}</div>
                   <div class="font-semibold text-accent">{{ formatVND(row.prices[pkg.name]) }}</div>
                 </td>
               </tr>
@@ -189,31 +188,27 @@ const formatVND = (n?: number) =>
 
 const newnicePrices = {
   packages: [
-    { name: 'NewNice Eco',     sedan:  5_800_000, suv:  7_000_000 },
-    { name: 'NewNice Premium', sedan: 10_500_000, suv: 11_500_000 },
-    { name: 'NewNice Crystal', sedan: 12_500_000, suv: 14_500_000 },
-    { name: 'NewNice Royal',   sedan: 15_500_000, suv: 17_500_000 },
+    { name: 'NewNice Eco',   sedan:  5_500_000, suv:  6_700_000 },
+    { name: 'NewNice Plus',  sedan:  7_500_000, suv:  8_700_000 },
+    { name: 'NewNice Pro',   sedan: 11_500_000, suv: 12_900_000 },
+    { name: 'NewNice Royal', sedan: 14_000_000, suv: 15_500_000 },
   ],
   rows: [
     {
       position: 'Kính lái',
-      codes:  { 'NewNice Eco': 'NE75',        'NewNice Premium': 'NP62/NP66',  'NewNice Crystal': 'HD/NC60-70', 'NewNice Royal': 'NR/60-70'   },
-      prices: { 'NewNice Eco': 2_500_000,     'NewNice Premium': 3_600_000,    'NewNice Crystal': 5_500_000,    'NewNice Royal': 5_500_000    },
+      prices: { 'NewNice Eco': 2_000_000, 'NewNice Plus': 3_500_000, 'NewNice Pro': 3_500_000, 'NewNice Royal': 5_500_000 },
     },
     {
-      position: 'Kính sườn (trước)',
-      codes:  { 'NewNice Eco': 'NE25',        'NewNice Premium': 'NP40/NP25',  'NewNice Crystal': 'NC40/NC25',  'NewNice Royal': 'NR40/NR25'  },
-      prices: { 'NewNice Eco': 500_000,       'NewNice Premium': 1_000_000,    'NewNice Crystal': 1_600_000,    'NewNice Royal': 1_600_000    },
+      position: 'Kính sườn trước x2',
+      prices: { 'NewNice Eco': 1_400_000, 'NewNice Plus': 1_400_000, 'NewNice Pro': 2_800_000, 'NewNice Royal': 2_800_000 },
     },
     {
-      position: 'Kính sườn (sau)',
-      codes:  { 'NewNice Eco': 'NE25',        'NewNice Premium': 'NP40/NP25',  'NewNice Crystal': 'NC40/NC25',  'NewNice Royal': 'NR40/NR25'  },
-      prices: { 'NewNice Eco': 500_000,       'NewNice Premium': 1_050_000,    'NewNice Crystal': 1_600_000,    'NewNice Royal': 1_600_000    },
+      position: 'Kính sườn sau x2',
+      prices: { 'NewNice Eco': 1_600_000, 'NewNice Plus': 1_600_000, 'NewNice Pro': 3_200_000, 'NewNice Royal': 3_200_000 },
     },
     {
       position: 'Kính hậu',
-      codes:  { 'NewNice Eco': 'NE25',        'NewNice Premium': 'NP15',       'NewNice Crystal': 'NC15',       'NewNice Royal': 'NR40/NR25'  },
-      prices: { 'NewNice Eco': 1_200_000,     'NewNice Premium': 1_800_000,    'NewNice Crystal': 1_800_000,    'NewNice Royal': 3_800_000    },
+      prices: { 'NewNice Eco': 1_500_000, 'NewNice Plus': 1_500_000, 'NewNice Pro': 3_000_000, 'NewNice Royal': 3_000_000 },
     },
   ],
 }
