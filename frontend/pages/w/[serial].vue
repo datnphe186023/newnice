@@ -228,23 +228,27 @@ const form = reactive({
   activation_code: '',
 })
 
-const { pending, refresh } = await useAsyncData(
+const syncLookup = (data: WarrantyLookup | null | undefined) => {
+  lookup.value = data || null
+  loadError.value = !data
+
+  if (data?.status === 'unused' && data.film_packages.length && !form.film_package_id) {
+    form.film_package_id = data.film_packages[0].id
+  }
+}
+
+const { data: lookupData, pending, refresh } = await useAsyncData<WarrantyLookup | null>(
   `warranty-${serial.value}`,
   async () => {
-    loadError.value = false
     try {
-      const data = await $fetch<WarrantyLookup>(`${config.public.apiBase}/warranties/${serial.value}`)
-      lookup.value = data
-      if (data.status === 'unused' && data.film_packages.length && !form.film_package_id) {
-        form.film_package_id = data.film_packages[0].id
-      }
-      return data
+      return await $fetch<WarrantyLookup>(`${config.public.apiBase}/warranties/${serial.value}`)
     } catch (err) {
-      loadError.value = true
       return null
     }
   },
 )
+
+watch(lookupData, syncLookup, { immediate: true })
 
 const warrantyRows = computed(() => {
   if (!lookup.value?.warranty) return []
