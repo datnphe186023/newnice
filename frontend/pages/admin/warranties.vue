@@ -161,7 +161,16 @@
       </form>
 
       <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-        <table class="w-full">
+        <div v-if="dealersPending" class="p-8 text-center text-sm text-gray-500">
+          Đang tải danh sách đại lý...
+        </div>
+        <div v-else-if="dealersLoadError" class="p-8 text-center">
+          <p class="text-sm font-medium text-red-600">Không thể tải danh sách đại lý.</p>
+          <button type="button" class="mt-3 rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white" @click="refreshDealers">
+            Tải lại
+          </button>
+        </div>
+        <table v-else-if="dealers.length" class="w-full">
           <thead class="border-b bg-gray-50">
             <tr>
               <th class="p-4 text-left text-sm font-semibold text-gray-600">Đại lý</th>
@@ -186,6 +195,9 @@
             </tr>
           </tbody>
         </table>
+        <div v-else class="p-8 text-center text-sm text-gray-500">
+          Chưa có đại lý nào. Thêm đại lý mới ở form bên trái.
+        </div>
       </div>
     </section>
 
@@ -430,7 +442,7 @@ const { data: warranties, refresh: refreshWarranties } = await useFetch<Paginate
   { headers: authHeaders },
 )
 
-const { data: dealersData, refresh: refreshDealers } = await useFetch<Dealer[]>(
+const { data: dealersData, pending: dealersPending, error: dealersLoadError, refresh: refreshDealers } = await useFetch<Dealer[]>(
   () => `${config.public.apiBase}/admin/dealers`,
   { headers: authHeaders },
 )
@@ -447,6 +459,11 @@ watch([statusFilter, currentPage], () => refreshWarranties())
 watch(search, () => {
   currentPage.value = 1
   refreshWarranties()
+})
+watch(activeTab, (tab) => {
+  if (tab === 'dealers') refreshDealers()
+  if (tab === 'packages') refreshPackages()
+  if (tab === 'warranties') refreshWarranties()
 })
 
 const apiFetch = async <T>(path: string, options: any = {}) => {
