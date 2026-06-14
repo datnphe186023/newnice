@@ -172,6 +172,8 @@ async def activate_warranty(serial: str, payload: WarrantyActivationCreate, db: 
     ).scalar_one_or_none()
     if not dealer:
         raise HTTPException(status_code=400, detail="Invalid dealer activation code")
+    if row.dealer_id and row.dealer_id != dealer.id:
+        raise HTTPException(status_code=400, detail="Dealer activation code does not match this serial")
 
     package = (
         await db.execute(
@@ -272,6 +274,21 @@ async def update_warranty(warranty_id: str, payload: WarrantyAdminUpdate, db: Db
     update_data = payload.model_dump(exclude_unset=True)
     if "status" in update_data and update_data["status"] not in VALID_SERIAL_STATUSES:
         raise HTTPException(status_code=400, detail="Invalid warranty status")
+    if "dealer_id" in update_data:
+        dealer_id = update_data["dealer_id"]
+        if row.dealer_id and dealer_id != row.dealer_id:
+            raise HTTPException(status_code=400, detail="Serial is already assigned to another dealer")
+        if dealer_id:
+            dealer = (
+                await db.execute(
+                    select(Dealer).where(
+                        Dealer.id == dealer_id,
+                        Dealer.status == "active",
+                    )
+                )
+            ).scalar_one_or_none()
+            if not dealer:
+                raise HTTPException(status_code=400, detail="Invalid dealer")
 
     for field, value in update_data.items():
         setattr(row, field, value)
@@ -291,6 +308,16 @@ async def update_warranty(warranty_id: str, payload: WarrantyAdminUpdate, db: Db
 async def generate_warranty_serials(payload: SerialGenerateRequest, db: Db, _: CurrentUser):
     created: list[WarrantySerial] = []
     base_url = payload.qr_base_url.rstrip("/") if payload.qr_base_url else None
+    dealer = (
+        await db.execute(
+            select(Dealer).where(
+                Dealer.id == payload.dealer_id,
+                Dealer.status == "active",
+            )
+        )
+    ).scalar_one_or_none()
+    if not dealer:
+        raise HTTPException(status_code=400, detail="Invalid dealer")
 
     while len(created) < payload.count:
         serial = _generate_serial(payload.prefix)
@@ -303,15 +330,24 @@ async def generate_warranty_serials(payload: SerialGenerateRequest, db: Db, _: C
         row = WarrantySerial(
             serial=serial,
             qr_url=f"{base_url}/w/{serial}" if base_url else f"/w/{serial}",
+            dealer_id=dealer.id,
+            dealer=dealer,
         )
         db.add(row)
         created.append(row)
 
     await db.commit()
-    for row in created:
-        await db.refresh(row)
+    serials = [row.serial for row in created]
+    rows = (
+        await db.execute(
+            select(WarrantySerial)
+            .options(selectinload(WarrantySerial.dealer), selectinload(WarrantySerial.film_package))
+            .where(WarrantySerial.serial.in_(serials))
+            .order_by(WarrantySerial.created_at.desc())
+        )
+    ).scalars().all()
 
-    return SerialGenerateResponse(items=[_serialize_warranty(row) for row in created])
+    return SerialGenerateResponse(items=[_serialize_warranty(row) for row in rows])
 
 
 @router.get("/admin/warranty-serials/export")
@@ -348,7 +384,19 @@ async def export_warranty_serials(db: Db, _: CurrentUser):
 
 @router.get("/admin/dealers", response_model=list[DealerResponse])
 async def list_dealers(db: Db, _: CurrentUser):
-    return (await db.execute(select(Dealer).order_by(Dealer.dealer_name))).scalars().all()
+    rows = (
+        await db.execute(
+            select(Dealer, func.count(WarrantySerial.id).label("serial_count"))
+            .outerjoin(WarrantySerial, WarrantySerial.dealer_id == Dealer.id)
+            .group_by(Dealer.id)
+            .order_by(Dealer.dealer_name)
+        )
+    ).all()
+
+    return [
+        DealerResponse.model_validate(dealer).model_copy(update={"serial_count": serial_count})
+        for dealer, serial_count in rows
+    ]
 
 
 @router.post("/admin/dealers", response_model=DealerResponse, status_code=201)

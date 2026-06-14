@@ -315,6 +315,7 @@ const warrantyErrorMessage = (err: any) => {
     'Serial not found': 'Không tìm thấy serial bảo hành.',
     'Serial has already been used': 'Serial này đã được kích hoạt trước đó.',
     'Invalid dealer activation code': 'Mã kích hoạt đại lý không hợp lệ.',
+    'Dealer activation code does not match this serial': 'Mã kích hoạt không thuộc đại lý được gán cho serial này.',
     'Invalid film package': 'Gói film đã chọn không hợp lệ.',
     'Warranty data is incomplete': 'Thông tin bảo hành chưa đầy đủ. Vui lòng liên hệ hotline để được hỗ trợ.',
   }

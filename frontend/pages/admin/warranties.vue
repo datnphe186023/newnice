@@ -50,6 +50,7 @@
             <thead class="border-b bg-gray-50">
               <tr>
                 <th class="p-4 text-left text-sm font-semibold text-gray-600">Serial</th>
+                <th class="p-4 text-left text-sm font-semibold text-gray-600">Đại lý</th>
                 <th class="p-4 text-left text-sm font-semibold text-gray-600">Khách hàng</th>
                 <th class="p-4 text-left text-sm font-semibold text-gray-600">Xe</th>
                 <th class="p-4 text-left text-sm font-semibold text-gray-600">Gói film</th>
@@ -62,6 +63,9 @@
                 <td class="p-4">
                   <p class="font-mono text-sm font-semibold text-gray-900">{{ item.serial }}</p>
                   <p class="text-xs text-gray-500">{{ item.qr_url }}</p>
+                </td>
+                <td class="p-4 text-sm text-gray-600">
+                  {{ item.dealer_name || '-' }}
                 </td>
                 <td class="p-4 text-sm">
                   <p class="font-medium text-gray-900">{{ item.customer_name || '-' }}</p>
@@ -117,6 +121,13 @@
             <input v-model.number="generateForm.count" min="1" max="1000" type="number" class="input" />
           </div>
           <div>
+            <label class="label">Đại lý nhận serial</label>
+            <select v-model="generateForm.dealer_id" required class="input">
+              <option value="">Chọn đại lý</option>
+              <option v-for="dealer in activeDealers" :key="dealer.id" :value="dealer.id">{{ dealer.dealer_name }}</option>
+            </select>
+          </div>
+          <div>
             <label class="label">Prefix</label>
             <input v-model="generateForm.prefix" class="input uppercase" />
           </div>
@@ -135,6 +146,7 @@
         <div class="grid gap-3 md:grid-cols-2">
           <div v-for="item in generatedSerials" :key="item.id" class="rounded-lg border p-3">
             <p class="font-mono text-sm font-semibold">{{ item.serial }}</p>
+            <p class="mt-1 text-xs text-gray-600">Đại lý: {{ item.dealer_name || '-' }}</p>
             <p class="mt-1 break-all text-xs text-gray-500">{{ item.qr_url }}</p>
           </div>
         </div>
@@ -175,6 +187,7 @@
             <tr>
               <th class="p-4 text-left text-sm font-semibold text-gray-600">Đại lý</th>
               <th class="p-4 text-left text-sm font-semibold text-gray-600">Mã kích hoạt</th>
+              <th class="p-4 text-left text-sm font-semibold text-gray-600">Serial đã gán</th>
               <th class="p-4 text-left text-sm font-semibold text-gray-600">Trạng thái</th>
             </tr>
           </thead>
@@ -185,6 +198,9 @@
               </td>
               <td class="p-4">
                 <input v-model="dealer.activation_code" class="w-full rounded-lg border px-3 py-2" @change="updateDealer(dealer)" />
+              </td>
+              <td class="p-4 text-sm font-semibold text-gray-700">
+                {{ dealer.serial_count || 0 }}
               </td>
               <td class="p-4">
                 <select v-model="dealer.status" class="rounded-lg border px-3 py-2" @change="updateDealer(dealer)">
@@ -377,6 +393,7 @@ interface Dealer {
   id: string
   dealer_name: string
   activation_code: string
+  serial_count?: number
   status: string
 }
 
@@ -411,6 +428,7 @@ const selectedWarranty = ref<Warranty | null>(null)
 const generateForm = reactive({
   count: 20,
   prefix: 'DLA',
+  dealer_id: '',
   qr_base_url: config.public.siteUrl,
 })
 
@@ -453,6 +471,7 @@ const { data: packagesData, refresh: refreshPackages } = await useFetch<FilmPack
 )
 
 const dealers = computed(() => dealersData.value || [])
+const activeDealers = computed(() => dealers.value.filter((dealer) => dealer.status === 'active'))
 const packages = computed(() => packagesData.value || [])
 
 watch([statusFilter, currentPage], () => refreshWarranties())
@@ -461,7 +480,7 @@ watch(search, () => {
   refreshWarranties()
 })
 watch(activeTab, (tab) => {
-  if (tab === 'dealers') refreshDealers()
+  if (tab === 'dealers' || tab === 'serials') refreshDealers()
   if (tab === 'packages') refreshPackages()
   if (tab === 'warranties') refreshWarranties()
 })
@@ -478,6 +497,10 @@ const apiFetch = async <T>(path: string, options: any = {}) => {
 }
 
 const generateSerials = async () => {
+  if (!generateForm.dealer_id) {
+    errorMessage.value = 'Vui lòng chọn đại lý nhận serial.'
+    return
+  }
   busy.value = true
   notice.value = ''
   try {

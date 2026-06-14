@@ -22,6 +22,7 @@ class DealerUpdate(BaseModel):
 
 class DealerResponse(DealerBase):
     id: str
+    serial_count: int = 0
     created_at: datetime
     updated_at: datetime
 
@@ -124,6 +125,7 @@ class WarrantyAdminResponse(BaseModel):
 class SerialGenerateRequest(BaseModel):
     count: int = Field(..., ge=1, le=1000)
     prefix: str = Field("DLA", min_length=1, max_length=12)
+    dealer_id: str = Field(..., min_length=1, max_length=36)
     qr_base_url: Optional[str] = Field(None, max_length=500)
 
 
