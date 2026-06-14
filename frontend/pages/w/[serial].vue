@@ -49,6 +49,28 @@
             </dl>
           </div>
 
+          <div class="rounded-lg border border-white/10 bg-white p-5 text-zinc-950 shadow-2xl">
+            <div class="flex flex-col gap-5 sm:flex-row sm:items-center">
+              <div class="mx-auto flex h-44 w-44 flex-shrink-0 items-center justify-center rounded-lg border border-zinc-200 bg-white p-3 sm:mx-0">
+                <img :src="qrPreviewSrc" :alt="`QR thông tin bảo hành ${lookup.serial}`" class="h-full w-full" />
+              </div>
+              <div class="min-w-0 flex-1">
+                <p class="text-xs font-semibold uppercase tracking-wide text-zinc-500">QR thông tin bảo hành</p>
+                <h2 class="mt-1 text-xl font-bold text-zinc-950">Tải ảnh QR cho khách hàng</h2>
+                <p class="mt-2 break-all text-sm text-zinc-600">{{ warrantyInfoUrl }}</p>
+                <button
+                  type="button"
+                  class="mt-4 inline-flex w-full items-center justify-center rounded-lg bg-zinc-950 px-4 py-3 font-semibold text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                  :disabled="!qrPngUrl"
+                  @click="downloadWarrantyQr"
+                >
+                  Tải ảnh QR
+                </button>
+                <p v-if="qrError" class="mt-3 text-sm font-medium text-red-600">{{ qrError }}</p>
+              </div>
+            </div>
+          </div>
+
           <div class="grid grid-cols-2 gap-3">
             <a href="tel:0869418104" class="rounded-lg bg-white px-4 py-3 text-center font-semibold text-zinc-950">
               Hotline
@@ -146,6 +168,8 @@
 </template>
 
 <script setup lang="ts">
+import { renderSVG } from 'uqr'
+
 definePageMeta({
   layout: false,
 })
@@ -188,6 +212,8 @@ const submitting = ref(false)
 const submitError = ref('')
 const loadError = ref(false)
 const lookup = ref<WarrantyLookup | null>(null)
+const qrPngUrl = ref('')
+const qrError = ref('')
 
 const form = reactive({
   vehicle_plate: '',
@@ -234,6 +260,29 @@ const warrantyRows = computed(() => {
   ]
 })
 
+const siteUrl = computed(() => {
+  const configuredUrl = String(config.public.siteUrl || '').replace(/\/$/, '')
+  if (configuredUrl) return configuredUrl
+  if (process.client) return window.location.origin
+  return 'https://newnice.net'
+})
+
+const warrantyInfoUrl = computed(() => `${siteUrl.value}/w/${encodeURIComponent(serial.value)}`)
+
+const qrSvg = computed(() =>
+  renderSVG(warrantyInfoUrl.value, {
+    ecc: 'M',
+    border: 2,
+    pixelSize: 10,
+    blackColor: '#09090b',
+    whiteColor: '#ffffff',
+  }),
+)
+
+const qrPreviewSrc = computed(() =>
+  qrPngUrl.value || `data:image/svg+xml;charset=utf-8,${encodeURIComponent(qrSvg.value)}`,
+)
+
 const activate = async () => {
   submitError.value = ''
   submitting.value = true
@@ -244,6 +293,7 @@ const activate = async () => {
       body: form,
     })
     await refresh()
+    await generateWarrantyQrImage()
   } catch (err: any) {
     submitError.value = warrantyErrorMessage(err)
   } finally {
@@ -270,6 +320,140 @@ const warrantyErrorMessage = (err: any) => {
   return typeof detail === 'string' ? messages[detail] || detail || fallback : fallback
 }
 
+const generateWarrantyQrImage = async () => {
+  if (!process.client || lookup.value?.status !== 'activated') return
+
+  qrError.value = ''
+
+  try {
+    if (qrPngUrl.value) {
+      URL.revokeObjectURL(qrPngUrl.value)
+      qrPngUrl.value = ''
+    }
+
+    const qrImage = await loadSvgImage(qrSvg.value)
+    const canvas = document.createElement('canvas')
+    const width = 900
+    const height = 1100
+    const qrSize = 560
+    const context = canvas.getContext('2d')
+
+    if (!context) {
+      throw new Error('Canvas is not supported')
+    }
+
+    canvas.width = width
+    canvas.height = height
+
+    context.fillStyle = '#ffffff'
+    context.fillRect(0, 0, width, height)
+
+    context.fillStyle = '#09090b'
+    context.textAlign = 'center'
+    context.font = '700 58px Arial, sans-serif'
+    context.fillText('Newnice', width / 2, 120)
+
+    context.font = '600 32px Arial, sans-serif'
+    context.fillText('Thông tin bảo hành điện tử', width / 2, 178)
+
+    context.fillStyle = '#f4f4f5'
+    roundRect(context, 120, 235, 660, 660, 28)
+    context.fill()
+
+    context.drawImage(qrImage, (width - qrSize) / 2, 285, qrSize, qrSize)
+
+    context.fillStyle = '#18181b'
+    context.font = '700 34px Arial, sans-serif'
+    context.fillText(`Serial: ${serial.value}`, width / 2, 950)
+
+    context.fillStyle = '#52525b'
+    context.font = '24px Arial, sans-serif'
+    wrapText(context, warrantyInfoUrl.value, width / 2, 1000, 760, 32)
+
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob((result) => {
+        if (result) resolve(result)
+        else reject(new Error('Cannot export QR image'))
+      }, 'image/png')
+    })
+
+    qrPngUrl.value = URL.createObjectURL(blob)
+  } catch (err) {
+    qrError.value = 'Không thể tạo ảnh QR. Vui lòng tải lại trang và thử lại.'
+  }
+}
+
+const loadSvgImage = (svg: string) =>
+  new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image()
+    const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+
+    image.onload = () => {
+      URL.revokeObjectURL(url)
+      resolve(image)
+    }
+    image.onerror = () => {
+      URL.revokeObjectURL(url)
+      reject(new Error('Cannot load QR SVG'))
+    }
+    image.src = url
+  })
+
+const roundRect = (
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number,
+) => {
+  context.beginPath()
+  context.moveTo(x + radius, y)
+  context.arcTo(x + width, y, x + width, y + height, radius)
+  context.arcTo(x + width, y + height, x, y + height, radius)
+  context.arcTo(x, y + height, x, y, radius)
+  context.arcTo(x, y, x + width, y, radius)
+  context.closePath()
+}
+
+const wrapText = (
+  context: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number,
+) => {
+  const words = text.split('')
+  let line = ''
+  let currentY = y
+
+  for (const char of words) {
+    const nextLine = `${line}${char}`
+    if (context.measureText(nextLine).width > maxWidth && line) {
+      context.fillText(line, x, currentY)
+      line = char
+      currentY += lineHeight
+    } else {
+      line = nextLine
+    }
+  }
+
+  if (line) context.fillText(line, x, currentY)
+}
+
+const downloadWarrantyQr = () => {
+  if (!process.client || !qrPngUrl.value) return
+
+  const link = document.createElement('a')
+  link.href = qrPngUrl.value
+  link.download = `newnice-bao-hanh-${serial.value}.png`
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
+
 const formatDate = (value: string) => new Date(value).toLocaleDateString('vi-VN')
 
 const statusLabel = (status?: string) => {
@@ -281,6 +465,22 @@ const statusLabel = (status?: string) => {
   }
   return status ? labels[status] || status : '-'
 }
+
+watch(
+  () => lookup.value?.status,
+  () => {
+    if (lookup.value?.status === 'activated') {
+      generateWarrantyQrImage()
+    }
+  },
+  { immediate: true },
+)
+
+onBeforeUnmount(() => {
+  if (qrPngUrl.value) {
+    URL.revokeObjectURL(qrPngUrl.value)
+  }
+})
 </script>
 
 <style scoped>
