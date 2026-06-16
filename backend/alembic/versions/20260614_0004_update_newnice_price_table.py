@@ -37,26 +37,24 @@ def upgrade() -> None:
         """
         UPDATE products
         SET name = 'Newnice Plus',
-            slug = 'newnice-plus',
             film_code = 'PLUS',
             short_description = 'Gói phim cách nhiệt Newnice Plus - cân bằng giữa hiệu quả cách nhiệt và chi phí.',
             price_sedan = 'Sedan: 7.500.000 đ',
             price_suv = 'SUV: 8.700.000 đ',
             updated_at = CURRENT_TIMESTAMP
-        WHERE slug = 'newnice-premium'
+        WHERE slug IN ('newnice-premium', 'newnice-plus')
         """
     )
     op.execute(
         """
         UPDATE products
         SET name = 'Newnice Pro',
-            slug = 'newnice-pro',
             film_code = 'PRO',
             short_description = 'Gói phim cách nhiệt Newnice Pro - hiệu quả cách nhiệt cao cho nhu cầu sử dụng chuyên sâu.',
             price_sedan = 'Sedan: 11.500.000 đ',
             price_suv = 'SUV: 12.900.000 đ',
             updated_at = CURRENT_TIMESTAMP
-        WHERE slug = 'newnice-crystal'
+        WHERE slug IN ('newnice-crystal', 'newnice-pro')
         """
     )
     op.execute(
@@ -91,26 +89,24 @@ def downgrade() -> None:
         """
         UPDATE products
         SET name = 'Newnice Premium',
-            slug = 'newnice-premium',
             film_code = 'NP',
             short_description = 'Gói phim cách nhiệt Newnice Premium - cân bằng giữa giá và chất lượng.',
             price_sedan = 'Sedan: 10.500.000 đ',
             price_suv = 'SUV: 11.500.000 đ',
             updated_at = CURRENT_TIMESTAMP
-        WHERE slug = 'newnice-plus'
+        WHERE slug IN ('newnice-premium', 'newnice-plus')
         """
     )
     op.execute(
         """
         UPDATE products
         SET name = 'Newnice Crystal',
-            slug = 'newnice-crystal',
             film_code = 'NC',
             short_description = 'Gói phim cách nhiệt Newnice Crystal - độ trong cao, cách nhiệt vượt trội.',
             price_sedan = 'Sedan: 12.500.000 đ',
             price_suv = 'SUV: 14.500.000 đ',
             updated_at = CURRENT_TIMESTAMP
-        WHERE slug = 'newnice-pro'
+        WHERE slug IN ('newnice-crystal', 'newnice-pro')
         """
     )
     op.execute(
