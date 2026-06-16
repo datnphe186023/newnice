@@ -85,18 +85,21 @@
           <div class="rounded-lg border border-amber-300/30 bg-amber-300/10 p-6">
             <p class="text-sm font-semibold uppercase tracking-wide text-amber-100">Serial: {{ lookup.serial }}</p>
             <h1 class="mt-3 text-2xl font-bold">Bảo hành chưa được kích hoạt</h1>
+            <p class="mt-2 text-sm font-medium text-amber-50">Loại bảo hành: {{ warrantyTypeLabel(warrantyType) }}</p>
           </div>
 
           <form class="rounded-lg border border-white/10 bg-white p-5 text-zinc-950 shadow-2xl" @submit.prevent="activate">
             <div class="grid gap-4">
-              <div>
-                <label class="label-dark" for="vehicle_plate">Biển số xe</label>
-                <input id="vehicle_plate" v-model="form.vehicle_plate" required class="input-dark uppercase" autocomplete="off" />
-              </div>
+              <div v-if="isVehicleWarranty" class="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label class="label-dark" for="vehicle_plate">Biển số xe</label>
+                  <input id="vehicle_plate" v-model="form.vehicle_plate" required class="input-dark uppercase" autocomplete="off" />
+                </div>
 
-              <div>
-                <label class="label-dark" for="vehicle_model">Mẫu xe</label>
-                <input id="vehicle_model" v-model="form.vehicle_model" required class="input-dark" autocomplete="off" />
+                <div>
+                  <label class="label-dark" for="vehicle_model">Mẫu xe</label>
+                  <input id="vehicle_model" v-model="form.vehicle_model" required class="input-dark" autocomplete="off" />
+                </div>
               </div>
 
               <div class="grid gap-4 sm:grid-cols-2">
@@ -110,34 +113,47 @@
                 </div>
               </div>
 
-              <div>
-                <label class="label-dark" for="film_package_id">Gói film dán</label>
-                <select id="film_package_id" v-model="form.film_package_id" required class="input-dark">
-                  <option value="" disabled>Chọn gói film</option>
-                  <option v-for="pkg in lookup.film_packages" :key="pkg.id" :value="pkg.id">
-                    {{ pkg.package_name }} - {{ Math.round(pkg.warranty_duration_months / 12) }} năm
-                  </option>
-                </select>
-              </div>
+              <template v-if="isVehicleWarranty">
+                <div>
+                  <label class="label-dark" for="film_package_id">Gói film dán</label>
+                  <select id="film_package_id" v-model="form.film_package_id" required class="input-dark">
+                    <option value="" disabled>Chọn gói film</option>
+                    <option v-for="pkg in lookup.film_packages" :key="pkg.id" :value="pkg.id">
+                      {{ pkg.package_name }} - {{ Math.round(pkg.warranty_duration_months / 12) }} năm
+                    </option>
+                  </select>
+                </div>
 
-              <div class="grid gap-4 sm:grid-cols-3">
+                <div class="grid gap-4 sm:grid-cols-3">
+                  <div>
+                    <label class="label-dark" for="front">Mã film kính lái</label>
+                    <input id="front" v-model="form.front_windshield_film_code" required class="input-dark" autocomplete="off" />
+                  </div>
+                  <div>
+                    <label class="label-dark" for="rear">Mã film kính hậu</label>
+                    <input id="rear" v-model="form.rear_windshield_film_code" required class="input-dark" autocomplete="off" />
+                  </div>
+                  <div>
+                    <label class="label-dark" for="side">Mã film kính sườn</label>
+                    <input id="side" v-model="form.side_window_film_code" required class="input-dark" autocomplete="off" />
+                  </div>
+                </div>
+              </template>
+
+              <div v-else class="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label class="label-dark" for="front">Mã film kính lái</label>
-                  <input id="front" v-model="form.front_windshield_film_code" required class="input-dark" autocomplete="off" />
+                  <label class="label-dark" for="film_code">Mã film</label>
+                  <input id="film_code" v-model="form.film_code" required class="input-dark" autocomplete="off" />
                 </div>
                 <div>
-                  <label class="label-dark" for="rear">Mã film kính hậu</label>
-                  <input id="rear" v-model="form.rear_windshield_film_code" required class="input-dark" autocomplete="off" />
-                </div>
-                <div>
-                  <label class="label-dark" for="side">Mã film kính sườn</label>
-                  <input id="side" v-model="form.side_window_film_code" required class="input-dark" autocomplete="off" />
+                  <label class="label-dark" for="area_m2">Số mét vuông</label>
+                  <input id="area_m2" v-model.number="form.area_m2" required min="0.1" step="0.1" type="number" class="input-dark" inputmode="decimal" />
                 </div>
               </div>
 
               <div class="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label class="label-dark" for="install_date">Ngày dán</label>
+                  <label class="label-dark" for="install_date">{{ isVehicleWarranty ? 'Ngày dán' : 'Ngày thi công' }}</label>
                   <input id="install_date" v-model="form.install_date" required type="date" class="input-dark" />
                 </div>
                 <div>
@@ -174,6 +190,8 @@ definePageMeta({
   layout: false,
 })
 
+type WarrantyType = 'auto_film' | 'auto_ppf' | 'building_film' | 'kitchen_ppf'
+
 interface FilmPackage {
   id: string
   package_name: string
@@ -182,17 +200,24 @@ interface FilmPackage {
 }
 
 interface WarrantyInfo {
+  warranty_type: WarrantyType
   customer_name: string
   customer_phone: string
-  vehicle_plate: string
-  vehicle_model: string
-  film_package: string
+  vehicle_plate?: string
+  vehicle_model?: string
+  film_package?: string
+  front_windshield_film_code?: string
+  rear_windshield_film_code?: string
+  side_window_film_code?: string
+  film_code?: string
+  area_m2?: number
   install_date: string
-  warranty_expiry: string
+  warranty_expiry?: string
 }
 
 interface WarrantyLookup {
   serial: string
+  warranty_type: WarrantyType
   status: string
   warranty?: WarrantyInfo
   film_packages: FilmPackage[]
@@ -207,6 +232,7 @@ useSeoMeta({
   robots: 'noindex, nofollow',
 })
 
+const vehicleWarrantyTypes: WarrantyType[] = ['auto_film', 'auto_ppf']
 const today = new Date().toISOString().slice(0, 10)
 const submitting = ref(false)
 const submitError = ref('')
@@ -216,6 +242,7 @@ const qrPngUrl = ref('')
 const qrError = ref('')
 
 const form = reactive({
+  warranty_type: 'auto_film' as WarrantyType,
   vehicle_plate: '',
   vehicle_model: '',
   customer_phone: '',
@@ -224,15 +251,33 @@ const form = reactive({
   front_windshield_film_code: '',
   rear_windshield_film_code: '',
   side_window_film_code: '',
+  film_code: '',
+  area_m2: undefined as number | undefined,
   install_date: today,
   activation_code: '',
 })
+
+const warrantyType = computed<WarrantyType>(() => lookup.value?.warranty_type || 'auto_film')
+const isVehicleWarranty = computed(() => vehicleWarrantyTypes.includes(warrantyType.value))
+
+const warrantyTypeLabel = (type?: WarrantyType) => {
+  const labels: Record<WarrantyType, string> = {
+    auto_film: 'Film ô tô',
+    auto_ppf: 'PPF xe',
+    building_film: 'Film nhà kính',
+    kitchen_ppf: 'PPF bếp',
+  }
+  return type ? labels[type] || type : '-'
+}
 
 const syncLookup = (data: WarrantyLookup | null | undefined) => {
   lookup.value = data || null
   loadError.value = !data
 
-  if (data?.status === 'unused' && data.film_packages.length && !form.film_package_id) {
+  if (!data) return
+
+  form.warranty_type = data.warranty_type || 'auto_film'
+  if (data.status === 'unused' && vehicleWarrantyTypes.includes(form.warranty_type) && data.film_packages.length && !form.film_package_id) {
     form.film_package_id = data.film_packages[0].id
   }
 }
@@ -253,15 +298,34 @@ watch(lookupData, syncLookup, { immediate: true })
 const warrantyRows = computed(() => {
   if (!lookup.value?.warranty) return []
   const warranty = lookup.value.warranty
-  return [
+  const rows = [
+    { label: 'Loại bảo hành', value: warrantyTypeLabel(warranty.warranty_type) },
     { label: 'Tên khách hàng', value: warranty.customer_name },
     { label: 'SĐT khách hàng', value: warranty.customer_phone },
-    { label: 'Biển số xe', value: warranty.vehicle_plate },
-    { label: 'Mẫu xe', value: warranty.vehicle_model },
-    { label: 'Gói film dán', value: warranty.film_package },
-    { label: 'Ngày dán', value: formatDate(warranty.install_date) },
-    { label: 'Hạn bảo hành', value: formatDate(warranty.warranty_expiry) },
   ]
+
+  if (vehicleWarrantyTypes.includes(warranty.warranty_type)) {
+    rows.push(
+      { label: 'Biển số xe', value: warranty.vehicle_plate || '-' },
+      { label: 'Mẫu xe', value: warranty.vehicle_model || '-' },
+      { label: 'Gói film dán', value: warranty.film_package || '-' },
+      { label: 'Mã film kính lái', value: warranty.front_windshield_film_code || '-' },
+      { label: 'Mã film kính hậu', value: warranty.rear_windshield_film_code || '-' },
+      { label: 'Mã film kính sườn', value: warranty.side_window_film_code || '-' },
+    )
+  } else {
+    rows.push(
+      { label: 'Mã film', value: warranty.film_code || '-' },
+      { label: 'Số mét vuông', value: warranty.area_m2 ? `${warranty.area_m2} m2` : '-' },
+    )
+  }
+
+  rows.push({ label: isVehicleWarranty.value ? 'Ngày dán' : 'Ngày thi công', value: formatDate(warranty.install_date) })
+  if (warranty.warranty_expiry) {
+    rows.push({ label: 'Hạn bảo hành', value: formatDate(warranty.warranty_expiry) })
+  }
+
+  return rows
 })
 
 const siteUrl = computed(() => {
@@ -292,7 +356,10 @@ const activate = async () => {
   try {
     lookup.value = await $fetch<WarrantyLookup>(`${config.public.apiBase}/warranties/${serial.value}/activate`, {
       method: 'POST',
-      body: form,
+      body: {
+        ...form,
+        warranty_type: warrantyType.value,
+      },
     })
     await refresh()
     await generateWarrantyQrImage()
@@ -318,6 +385,14 @@ const warrantyErrorMessage = (err: any) => {
     'Dealer activation code does not match this serial': 'Mã kích hoạt không thuộc đại lý được gán cho serial này.',
     'Invalid film package': 'Gói film đã chọn không hợp lệ.',
     'Warranty data is incomplete': 'Thông tin bảo hành chưa đầy đủ. Vui lòng liên hệ hotline để được hỗ trợ.',
+    'Warranty type does not match this serial': 'Loại bảo hành không khớp với serial này.',
+    'Vehicle plate is required': 'Vui lòng nhập biển số xe.',
+    'Vehicle model is required': 'Vui lòng nhập mẫu xe.',
+    'Front windshield film code is required': 'Vui lòng nhập mã film kính lái.',
+    'Rear windshield film code is required': 'Vui lòng nhập mã film kính hậu.',
+    'Side window film code is required': 'Vui lòng nhập mã film kính sườn.',
+    'Film code is required': 'Vui lòng nhập mã film.',
+    'Area is required': 'Vui lòng nhập số mét vuông.',
   }
 
   return typeof detail === 'string' ? messages[detail] || detail || fallback : fallback

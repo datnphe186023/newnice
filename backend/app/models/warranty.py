@@ -2,7 +2,7 @@ from datetime import date, datetime
 from typing import Optional
 from uuid import uuid4
 
-from sqlalchemy import Date, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import Date, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -54,6 +54,7 @@ class WarrantySerial(Base):
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
     serial: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     qr_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    warranty_type: Mapped[str] = mapped_column(String(30), default="auto_film", nullable=False)
     status: Mapped[str] = mapped_column(String(20), default="unused", nullable=False, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
     activated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
@@ -67,6 +68,8 @@ class WarrantySerial(Base):
     front_windshield_film_code: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     rear_windshield_film_code: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     side_window_film_code: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    film_code: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    area_m2: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     install_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     warranty_expiry: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
 

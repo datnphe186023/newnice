@@ -38,6 +38,9 @@ CurrentUser = Annotated[AdminUser, Depends(get_current_user)]
 
 VALID_SERIAL_STATUSES = {"unused", "activated", "expired", "void"}
 VALID_ACTIVE_STATUSES = {"active", "inactive"}
+VALID_WARRANTY_TYPES = {"auto_film", "auto_ppf", "building_film", "kitchen_ppf"}
+VEHICLE_WARRANTY_TYPES = {"auto_film", "auto_ppf"}
+AREA_WARRANTY_TYPES = {"building_film", "kitchen_ppf"}
 ALPHABET = string.ascii_uppercase + string.digits
 
 
@@ -47,6 +50,16 @@ def _normalize_serial(serial: str) -> str:
 
 def _normalize_code(code: str) -> str:
     return code.strip()
+
+
+def _warranty_type(row: WarrantySerial) -> str:
+    return row.warranty_type or "auto_film"
+
+
+def _require_text(value: str | None, detail: str) -> str:
+    if not value or not value.strip():
+        raise HTTPException(status_code=400, detail=detail)
+    return value.strip()
 
 
 def _add_months(value: date, months: int) -> date:
@@ -63,6 +76,7 @@ def _serialize_warranty(row: WarrantySerial) -> WarrantyAdminResponse:
         id=row.id,
         serial=row.serial,
         qr_url=row.qr_url,
+        warranty_type=_warranty_type(row),
         status=row.status,
         created_at=row.created_at,
         activated_at=row.activated_at,
@@ -77,29 +91,44 @@ def _serialize_warranty(row: WarrantySerial) -> WarrantyAdminResponse:
         front_windshield_film_code=row.front_windshield_film_code,
         rear_windshield_film_code=row.rear_windshield_film_code,
         side_window_film_code=row.side_window_film_code,
+        film_code=row.film_code,
+        area_m2=row.area_m2,
         install_date=row.install_date,
         warranty_expiry=row.warranty_expiry,
     )
 
 
 def _make_public_info(row: WarrantySerial) -> WarrantyPublicInfo:
-    if not (
-        row.customer_name
-        and row.customer_phone
-        and row.vehicle_plate
+    warranty_type = _warranty_type(row)
+    if not (row.customer_name and row.customer_phone and row.install_date):
+        raise HTTPException(status_code=409, detail="Warranty data is incomplete")
+
+    if warranty_type in VEHICLE_WARRANTY_TYPES and not (
+        row.vehicle_plate
         and row.vehicle_model
         and row.film_package
-        and row.install_date
+        and row.front_windshield_film_code
+        and row.rear_windshield_film_code
+        and row.side_window_film_code
         and row.warranty_expiry
     ):
         raise HTTPException(status_code=409, detail="Warranty data is incomplete")
 
+    if warranty_type in AREA_WARRANTY_TYPES and not (row.film_code and row.area_m2):
+        raise HTTPException(status_code=409, detail="Warranty data is incomplete")
+
     return WarrantyPublicInfo(
+        warranty_type=warranty_type,
         customer_name=row.customer_name,
         customer_phone=row.customer_phone,
         vehicle_plate=row.vehicle_plate,
         vehicle_model=row.vehicle_model,
-        film_package=row.film_package.package_name,
+        film_package=row.film_package.package_name if row.film_package else None,
+        front_windshield_film_code=row.front_windshield_film_code,
+        rear_windshield_film_code=row.rear_windshield_film_code,
+        side_window_film_code=row.side_window_film_code,
+        film_code=row.film_code,
+        area_m2=row.area_m2,
         install_date=row.install_date,
         warranty_expiry=row.warranty_expiry,
     )
@@ -143,16 +172,22 @@ async def lookup_warranty(serial: str, db: Db):
 
     if row.status == "unused":
         packages = await _active_packages(db)
-        return WarrantyLookupResponse(serial=row.serial, status=row.status, film_packages=packages)
+        return WarrantyLookupResponse(
+            serial=row.serial,
+            warranty_type=_warranty_type(row),
+            status=row.status,
+            film_packages=packages,
+        )
 
     if row.status == "activated":
         return WarrantyLookupResponse(
             serial=row.serial,
+            warranty_type=_warranty_type(row),
             status=row.status,
             warranty=_make_public_info(row),
         )
 
-    return WarrantyLookupResponse(serial=row.serial, status=row.status)
+    return WarrantyLookupResponse(serial=row.serial, warranty_type=_warranty_type(row), status=row.status)
 
 
 @router.post("/warranties/{serial}/activate", response_model=WarrantyLookupResponse)
@@ -175,16 +210,34 @@ async def activate_warranty(serial: str, payload: WarrantyActivationCreate, db: 
     if row.dealer_id and row.dealer_id != dealer.id:
         raise HTTPException(status_code=400, detail="Dealer activation code does not match this serial")
 
-    package = (
-        await db.execute(
-            select(FilmPackage).where(
-                FilmPackage.id == payload.film_package_id,
-                FilmPackage.status == "active",
+    warranty_type = _warranty_type(row)
+    if payload.warranty_type and payload.warranty_type != warranty_type:
+        raise HTTPException(status_code=400, detail="Warranty type does not match this serial")
+
+    package = None
+    if warranty_type in VEHICLE_WARRANTY_TYPES:
+        vehicle_plate = _require_text(payload.vehicle_plate, "Vehicle plate is required")
+        vehicle_model = _require_text(payload.vehicle_model, "Vehicle model is required")
+        front_code = _require_text(payload.front_windshield_film_code, "Front windshield film code is required")
+        rear_code = _require_text(payload.rear_windshield_film_code, "Rear windshield film code is required")
+        side_code = _require_text(payload.side_window_film_code, "Side window film code is required")
+        if not payload.film_package_id:
+            raise HTTPException(status_code=400, detail="Invalid film package")
+
+        package = (
+            await db.execute(
+                select(FilmPackage).where(
+                    FilmPackage.id == payload.film_package_id,
+                    FilmPackage.status == "active",
+                )
             )
-        )
-    ).scalar_one_or_none()
-    if not package:
-        raise HTTPException(status_code=400, detail="Invalid film package")
+        ).scalar_one_or_none()
+        if not package:
+            raise HTTPException(status_code=400, detail="Invalid film package")
+    else:
+        film_code = _require_text(payload.film_code, "Film code is required")
+        if payload.area_m2 is None or payload.area_m2 <= 0:
+            raise HTTPException(status_code=400, detail="Area is required")
 
     row.status = "activated"
     row.activated_at = datetime.utcnow()
@@ -192,15 +245,30 @@ async def activate_warranty(serial: str, payload: WarrantyActivationCreate, db: 
     row.dealer = dealer
     row.customer_name = payload.customer_name.strip()
     row.customer_phone = payload.customer_phone.strip()
-    row.vehicle_plate = payload.vehicle_plate.strip().upper()
-    row.vehicle_model = payload.vehicle_model.strip()
-    row.film_package_id = package.id
-    row.film_package = package
-    row.front_windshield_film_code = payload.front_windshield_film_code.strip()
-    row.rear_windshield_film_code = payload.rear_windshield_film_code.strip()
-    row.side_window_film_code = payload.side_window_film_code.strip()
     row.install_date = payload.install_date
-    row.warranty_expiry = _add_months(payload.install_date, package.warranty_duration_months)
+
+    if warranty_type in VEHICLE_WARRANTY_TYPES and package:
+        row.vehicle_plate = vehicle_plate.upper()
+        row.vehicle_model = vehicle_model
+        row.film_package_id = package.id
+        row.film_package = package
+        row.front_windshield_film_code = front_code
+        row.rear_windshield_film_code = rear_code
+        row.side_window_film_code = side_code
+        row.film_code = None
+        row.area_m2 = None
+        row.warranty_expiry = _add_months(payload.install_date, package.warranty_duration_months)
+    else:
+        row.vehicle_plate = None
+        row.vehicle_model = None
+        row.film_package_id = None
+        row.film_package = None
+        row.front_windshield_film_code = None
+        row.rear_windshield_film_code = None
+        row.side_window_film_code = None
+        row.film_code = film_code
+        row.area_m2 = payload.area_m2
+        row.warranty_expiry = None
 
     await db.commit()
     row = await _get_warranty_by_serial(db, serial)
@@ -237,6 +305,7 @@ async def list_warranties(
             WarrantySerial.serial.ilike(like),
             WarrantySerial.vehicle_plate.ilike(like),
             WarrantySerial.customer_phone.ilike(like),
+            WarrantySerial.film_code.ilike(like),
         )
         query = query.where(condition)
         count_query = count_query.where(condition)
@@ -274,6 +343,8 @@ async def update_warranty(warranty_id: str, payload: WarrantyAdminUpdate, db: Db
     update_data = payload.model_dump(exclude_unset=True)
     if "status" in update_data and update_data["status"] not in VALID_SERIAL_STATUSES:
         raise HTTPException(status_code=400, detail="Invalid warranty status")
+    if "warranty_type" in update_data and update_data["warranty_type"] not in VALID_WARRANTY_TYPES:
+        raise HTTPException(status_code=400, detail="Invalid warranty type")
     if "dealer_id" in update_data:
         dealer_id = update_data["dealer_id"]
         if row.dealer_id and dealer_id != row.dealer_id:
@@ -330,6 +401,7 @@ async def generate_warranty_serials(payload: SerialGenerateRequest, db: Db, _: C
         row = WarrantySerial(
             serial=serial,
             qr_url=f"{base_url}/w/{serial}" if base_url else f"/w/{serial}",
+            warranty_type=payload.warranty_type,
             dealer_id=dealer.id,
             dealer=dealer,
         )
@@ -362,16 +434,30 @@ async def export_warranty_serials(db: Db, _: CurrentUser):
 
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow(["serial", "qr_url", "status", "vehicle_plate", "customer_phone", "dealer", "film_package"])
+    writer.writerow([
+        "serial",
+        "qr_url",
+        "warranty_type",
+        "status",
+        "vehicle_plate",
+        "customer_phone",
+        "dealer",
+        "film_package",
+        "film_code",
+        "area_m2",
+    ])
     for row in rows:
         writer.writerow([
             row.serial,
             row.qr_url or f"/w/{row.serial}",
+            _warranty_type(row),
             row.status,
             row.vehicle_plate or "",
             row.customer_phone or "",
             row.dealer.dealer_name if row.dealer else "",
             row.film_package.package_name if row.film_package else "",
+            row.film_code or "",
+            row.area_m2 or "",
         ])
 
     output.seek(0)

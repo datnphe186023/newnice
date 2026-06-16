@@ -50,6 +50,7 @@
             <thead class="border-b bg-gray-50">
               <tr>
                 <th class="p-4 text-left text-sm font-semibold text-gray-600">Serial</th>
+                <th class="p-4 text-left text-sm font-semibold text-gray-600">Loại</th>
                 <th class="p-4 text-left text-sm font-semibold text-gray-600">Đại lý</th>
                 <th class="p-4 text-left text-sm font-semibold text-gray-600">Khách hàng</th>
                 <th class="p-4 text-left text-sm font-semibold text-gray-600">Xe</th>
@@ -64,6 +65,9 @@
                   <p class="font-mono text-sm font-semibold text-gray-900">{{ item.serial }}</p>
                   <p class="text-xs text-gray-500">{{ item.qr_url }}</p>
                 </td>
+                <td class="p-4 text-sm font-semibold text-gray-700">
+                  {{ warrantyTypeLabel(item.warranty_type) }}
+                </td>
                 <td class="p-4 text-sm text-gray-600">
                   {{ item.dealer_name || '-' }}
                 </td>
@@ -72,8 +76,14 @@
                   <p class="text-gray-500">{{ item.customer_phone || '-' }}</p>
                 </td>
                 <td class="p-4 text-sm text-gray-600">
-                  <p>{{ item.vehicle_plate || '-' }}</p>
-                  <p>{{ item.vehicle_model || '-' }}</p>
+                  <template v-if="isVehicleWarranty(item)">
+                    <p>{{ item.vehicle_plate || '-' }}</p>
+                    <p>{{ item.vehicle_model || '-' }}</p>
+                  </template>
+                  <template v-else>
+                    <p>{{ item.film_code || '-' }}</p>
+                    <p>{{ item.area_m2 ? `${item.area_m2} m2` : '-' }}</p>
+                  </template>
                 </td>
                 <td class="p-4 text-sm text-gray-600">
                   <p>{{ item.film_package_name || '-' }}</p>
@@ -128,6 +138,12 @@
             </select>
           </div>
           <div>
+            <label class="label">Loại bảo hành</label>
+            <select v-model="generateForm.warranty_type" required class="input">
+              <option v-for="type in warrantyTypes" :key="type.value" :value="type.value">{{ type.label }}</option>
+            </select>
+          </div>
+          <div>
             <label class="label">Prefix</label>
             <input v-model="generateForm.prefix" class="input uppercase" />
           </div>
@@ -147,6 +163,7 @@
           <div v-for="item in generatedSerials" :key="item.id" class="rounded-lg border p-3">
             <p class="font-mono text-sm font-semibold">{{ item.serial }}</p>
             <p class="mt-1 text-xs text-gray-600">Đại lý: {{ item.dealer_name || '-' }}</p>
+            <p class="mt-1 text-xs text-gray-600">Loại: {{ warrantyTypeLabel(item.warranty_type) }}</p>
             <p class="mt-1 break-all text-xs text-gray-500">{{ item.qr_url }}</p>
           </div>
         </div>
@@ -292,6 +309,12 @@
             </select>
           </div>
           <div>
+            <label class="label">Loại bảo hành</label>
+            <select v-model="editForm.warranty_type" class="input">
+              <option v-for="type in warrantyTypes" :key="type.value" :value="type.value">{{ type.label }}</option>
+            </select>
+          </div>
+          <div>
             <label class="label">Tên khách hàng</label>
             <input v-model="editForm.customer_name" class="input" />
           </div>
@@ -334,6 +357,14 @@
             <label class="label">Mã film kính sườn</label>
             <input v-model="editForm.side_window_film_code" class="input" />
           </div>
+          <div>
+            <label class="label">Mã film</label>
+            <input v-model="editForm.film_code" class="input" />
+          </div>
+          <div>
+            <label class="label">Số mét vuông</label>
+            <input v-model="editForm.area_m2" min="0" step="0.1" type="number" class="input" />
+          </div>
         </div>
 
         <div class="mt-6 flex justify-end gap-3">
@@ -369,10 +400,13 @@ interface Paginated<T> {
   total_pages: number
 }
 
+type WarrantyType = 'auto_film' | 'auto_ppf' | 'building_film' | 'kitchen_ppf'
+
 interface Warranty {
   id: string
   serial: string
   qr_url?: string
+  warranty_type: WarrantyType
   status: string
   dealer_id?: string
   dealer_name?: string
@@ -385,6 +419,8 @@ interface Warranty {
   front_windshield_film_code?: string
   rear_windshield_film_code?: string
   side_window_film_code?: string
+  film_code?: string
+  area_m2?: number
   install_date?: string
   warranty_expiry?: string
 }
@@ -425,10 +461,20 @@ const errorMessage = ref('')
 const generatedSerials = ref<Warranty[]>([])
 const selectedWarranty = ref<Warranty | null>(null)
 
+const warrantyTypes: { value: WarrantyType, label: string }[] = [
+  { value: 'auto_film', label: 'Film ô tô' },
+  { value: 'auto_ppf', label: 'PPF xe' },
+  { value: 'building_film', label: 'Film nhà kính' },
+  { value: 'kitchen_ppf', label: 'PPF bếp' },
+]
+
+const vehicleWarrantyTypes: WarrantyType[] = ['auto_film', 'auto_ppf']
+
 const generateForm = reactive({
   count: 20,
   prefix: 'DLA',
   dealer_id: '',
+  warranty_type: 'auto_film' as WarrantyType,
   qr_base_url: config.public.siteUrl,
 })
 
@@ -473,6 +519,9 @@ const { data: packagesData, refresh: refreshPackages } = await useFetch<FilmPack
 const dealers = computed(() => dealersData.value || [])
 const activeDealers = computed(() => dealers.value.filter((dealer) => dealer.status === 'active'))
 const packages = computed(() => packagesData.value || [])
+
+const warrantyTypeLabel = (type?: WarrantyType) => warrantyTypes.find((item) => item.value === type)?.label || type || '-'
+const isVehicleWarranty = (item: Warranty) => vehicleWarrantyTypes.includes(item.warranty_type || 'auto_film')
 
 watch([statusFilter, currentPage], () => refreshWarranties())
 watch(search, () => {
@@ -583,6 +632,7 @@ const openWarranty = (item: Warranty) => {
   selectedWarranty.value = item
   Object.assign(editForm, {
     status: item.status || 'unused',
+    warranty_type: item.warranty_type || 'auto_film',
     dealer_id: item.dealer_id || '',
     customer_name: item.customer_name || '',
     customer_phone: item.customer_phone || '',
@@ -594,6 +644,8 @@ const openWarranty = (item: Warranty) => {
     front_windshield_film_code: item.front_windshield_film_code || '',
     rear_windshield_film_code: item.rear_windshield_film_code || '',
     side_window_film_code: item.side_window_film_code || '',
+    film_code: item.film_code || '',
+    area_m2: item.area_m2 ? String(item.area_m2) : '',
   })
 }
 
