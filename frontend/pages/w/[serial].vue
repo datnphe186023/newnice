@@ -140,7 +140,17 @@
                 </div>
               </template>
 
-              <div v-else class="grid gap-4 sm:grid-cols-2">
+              <div v-if="!isVehicleWarranty && lookup.film_packages.length">
+                <label class="label-dark" for="film_package_id">Gói bảo hành</label>
+                <select id="film_package_id" v-model="form.film_package_id" class="input-dark">
+                  <option value="">Không chọn gói</option>
+                  <option v-for="pkg in lookup.film_packages" :key="pkg.id" :value="pkg.id">
+                    {{ pkg.package_name }} - {{ Math.round(pkg.warranty_duration_months / 12) }} năm
+                  </option>
+                </select>
+              </div>
+
+              <div v-if="!isVehicleWarranty" class="grid gap-4 sm:grid-cols-2">
                 <div>
                   <label class="label-dark" for="film_code">Mã film</label>
                   <input id="film_code" v-model="form.film_code" required class="input-dark" autocomplete="off" />
@@ -277,7 +287,7 @@ const syncLookup = (data: WarrantyLookup | null | undefined) => {
   if (!data) return
 
   form.warranty_type = data.warranty_type || 'auto_film'
-  if (data.status === 'unused' && vehicleWarrantyTypes.includes(form.warranty_type) && data.film_packages.length && !form.film_package_id) {
+  if (data.status === 'unused' && data.film_packages.length && !form.film_package_id) {
     form.film_package_id = data.film_packages[0].id
   }
 }
@@ -314,6 +324,9 @@ const warrantyRows = computed(() => {
       { label: 'Mã film kính sườn', value: warranty.side_window_film_code || '-' },
     )
   } else {
+    if (warranty.film_package) {
+      rows.push({ label: 'Gói bảo hành', value: warranty.film_package })
+    }
     rows.push(
       { label: 'Mã film', value: warranty.film_code || '-' },
       { label: 'Số mét vuông', value: warranty.area_m2 ? `${warranty.area_m2} m2` : '-' },

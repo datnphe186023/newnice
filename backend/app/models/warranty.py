@@ -2,7 +2,7 @@ from datetime import date, datetime
 from typing import Optional
 from uuid import uuid4
 
-from sqlalchemy import Date, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import Date, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -32,9 +32,13 @@ class Dealer(Base):
 
 class FilmPackage(Base):
     __tablename__ = "film_packages"
+    __table_args__ = (
+        UniqueConstraint("warranty_type", "package_name", name="uq_film_packages_type_name"),
+    )
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
-    package_name: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    package_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    warranty_type: Mapped[str] = mapped_column(String(30), default="auto_film", nullable=False)
     warranty_duration_months: Mapped[int] = mapped_column(Integer, nullable=False)
     status: Mapped[str] = mapped_column(String(20), default="active", nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)

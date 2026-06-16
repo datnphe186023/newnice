@@ -34,6 +34,7 @@ class DealerResponse(DealerBase):
 
 class FilmPackageBase(BaseModel):
     package_name: str = Field(..., min_length=1, max_length=255)
+    warranty_type: WarrantyType = "auto_film"
     warranty_duration_months: int = Field(..., ge=1, le=240)
     status: str = "active"
 
@@ -44,6 +45,7 @@ class FilmPackageCreate(FilmPackageBase):
 
 class FilmPackageUpdate(BaseModel):
     package_name: Optional[str] = None
+    warranty_type: Optional[WarrantyType] = None
     warranty_duration_months: Optional[int] = Field(None, ge=1, le=240)
     status: Optional[str] = None
 

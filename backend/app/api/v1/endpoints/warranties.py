@@ -149,12 +149,13 @@ async def _get_warranty_by_serial(db: AsyncSession, serial: str) -> WarrantySeri
     return row
 
 
-async def _active_packages(db: AsyncSession) -> list[FilmPackage]:
+async def _active_packages(db: AsyncSession, warranty_type: str | None = None) -> list[FilmPackage]:
+    query = select(FilmPackage).where(FilmPackage.status == "active")
+    if warranty_type:
+        query = query.where(FilmPackage.warranty_type == warranty_type)
     return (
         await db.execute(
-            select(FilmPackage)
-            .where(FilmPackage.status == "active")
-            .order_by(FilmPackage.warranty_duration_months)
+            query.order_by(FilmPackage.warranty_duration_months)
         )
     ).scalars().all()
 
@@ -171,10 +172,11 @@ async def lookup_warranty(serial: str, db: Db):
     row = await _get_warranty_by_serial(db, serial)
 
     if row.status == "unused":
-        packages = await _active_packages(db)
+        warranty_type = _warranty_type(row)
+        packages = await _active_packages(db, warranty_type)
         return WarrantyLookupResponse(
             serial=row.serial,
-            warranty_type=_warranty_type(row),
+            warranty_type=warranty_type,
             status=row.status,
             film_packages=packages,
         )
@@ -215,6 +217,19 @@ async def activate_warranty(serial: str, payload: WarrantyActivationCreate, db: 
         raise HTTPException(status_code=400, detail="Warranty type does not match this serial")
 
     package = None
+    if payload.film_package_id:
+        package = (
+            await db.execute(
+                select(FilmPackage).where(
+                    FilmPackage.id == payload.film_package_id,
+                    FilmPackage.status == "active",
+                    FilmPackage.warranty_type == warranty_type,
+                )
+            )
+        ).scalar_one_or_none()
+        if not package:
+            raise HTTPException(status_code=400, detail="Invalid film package")
+
     if warranty_type in VEHICLE_WARRANTY_TYPES:
         vehicle_plate = _require_text(payload.vehicle_plate, "Vehicle plate is required")
         vehicle_model = _require_text(payload.vehicle_model, "Vehicle model is required")
@@ -222,17 +237,6 @@ async def activate_warranty(serial: str, payload: WarrantyActivationCreate, db: 
         rear_code = _require_text(payload.rear_windshield_film_code, "Rear windshield film code is required")
         side_code = _require_text(payload.side_window_film_code, "Side window film code is required")
         if not payload.film_package_id:
-            raise HTTPException(status_code=400, detail="Invalid film package")
-
-        package = (
-            await db.execute(
-                select(FilmPackage).where(
-                    FilmPackage.id == payload.film_package_id,
-                    FilmPackage.status == "active",
-                )
-            )
-        ).scalar_one_or_none()
-        if not package:
             raise HTTPException(status_code=400, detail="Invalid film package")
     else:
         film_code = _require_text(payload.film_code, "Film code is required")
@@ -261,20 +265,21 @@ async def activate_warranty(serial: str, payload: WarrantyActivationCreate, db: 
     else:
         row.vehicle_plate = None
         row.vehicle_model = None
-        row.film_package_id = None
-        row.film_package = None
+        row.film_package_id = package.id if package else None
+        row.film_package = package
         row.front_windshield_film_code = None
         row.rear_windshield_film_code = None
         row.side_window_film_code = None
         row.film_code = film_code
         row.area_m2 = payload.area_m2
-        row.warranty_expiry = None
+        row.warranty_expiry = _add_months(payload.install_date, package.warranty_duration_months) if package else None
 
     await db.commit()
     row = await _get_warranty_by_serial(db, serial)
 
     return WarrantyLookupResponse(
         serial=row.serial,
+        warranty_type=_warranty_type(row),
         status=row.status,
         warranty=_make_public_info(row),
     )
@@ -526,7 +531,9 @@ async def update_dealer(dealer_id: str, payload: DealerUpdate, db: Db, _: Curren
 @router.get("/admin/film-packages", response_model=list[FilmPackageResponse])
 async def list_film_packages(db: Db, _: CurrentUser):
     return (
-        await db.execute(select(FilmPackage).order_by(FilmPackage.warranty_duration_months))
+        await db.execute(
+            select(FilmPackage).order_by(FilmPackage.warranty_type, FilmPackage.warranty_duration_months)
+        )
     ).scalars().all()
 
 
@@ -534,9 +541,12 @@ async def list_film_packages(db: Db, _: CurrentUser):
 async def create_film_package(payload: FilmPackageCreate, db: Db, _: CurrentUser):
     if payload.status not in VALID_ACTIVE_STATUSES:
         raise HTTPException(status_code=400, detail="Invalid package status")
+    if payload.warranty_type not in VALID_WARRANTY_TYPES:
+        raise HTTPException(status_code=400, detail="Invalid warranty type")
 
     package = FilmPackage(
         package_name=payload.package_name.strip(),
+        warranty_type=payload.warranty_type,
         warranty_duration_months=payload.warranty_duration_months,
         status=payload.status,
     )
@@ -557,6 +567,8 @@ async def update_film_package(package_id: str, payload: FilmPackageUpdate, db: D
     update_data = payload.model_dump(exclude_unset=True)
     if "status" in update_data and update_data["status"] not in VALID_ACTIVE_STATUSES:
         raise HTTPException(status_code=400, detail="Invalid package status")
+    if "warranty_type" in update_data and update_data["warranty_type"] not in VALID_WARRANTY_TYPES:
+        raise HTTPException(status_code=400, detail="Invalid warranty type")
     if "package_name" in update_data and update_data["package_name"]:
         update_data["package_name"] = update_data["package_name"].strip()
 

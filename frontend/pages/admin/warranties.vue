@@ -243,6 +243,12 @@
             <input v-model="packageForm.package_name" required class="input" />
           </div>
           <div>
+            <label class="label">Loại bảo hành</label>
+            <select v-model="packageForm.warranty_type" required class="input">
+              <option v-for="type in warrantyTypes" :key="type.value" :value="type.value">{{ type.label }}</option>
+            </select>
+          </div>
+          <div>
             <label class="label">Thời hạn bảo hành (tháng)</label>
             <input v-model.number="packageForm.warranty_duration_months" required min="1" type="number" class="input" />
           </div>
@@ -257,6 +263,7 @@
           <thead class="border-b bg-gray-50">
             <tr>
               <th class="p-4 text-left text-sm font-semibold text-gray-600">Gói film</th>
+              <th class="p-4 text-left text-sm font-semibold text-gray-600">Loại</th>
               <th class="p-4 text-left text-sm font-semibold text-gray-600">Tháng BH</th>
               <th class="p-4 text-left text-sm font-semibold text-gray-600">Trạng thái</th>
             </tr>
@@ -265,6 +272,11 @@
             <tr v-for="pkg in packages" :key="pkg.id">
               <td class="p-4">
                 <input v-model="pkg.package_name" class="w-full rounded-lg border px-3 py-2" @change="updatePackage(pkg)" />
+              </td>
+              <td class="p-4">
+                <select v-model="pkg.warranty_type" class="rounded-lg border px-3 py-2" @change="updatePackage(pkg)">
+                  <option v-for="type in warrantyTypes" :key="type.value" :value="type.value">{{ type.label }}</option>
+                </select>
               </td>
               <td class="p-4">
                 <input v-model.number="pkg.warranty_duration_months" type="number" min="1" class="w-28 rounded-lg border px-3 py-2" @change="updatePackage(pkg)" />
@@ -436,6 +448,7 @@ interface Dealer {
 interface FilmPackage {
   id: string
   package_name: string
+  warranty_type: WarrantyType
   warranty_duration_months: number
   status: string
 }
@@ -486,6 +499,7 @@ const dealerForm = reactive({
 
 const packageForm = reactive({
   package_name: '',
+  warranty_type: 'auto_film' as WarrantyType,
   warranty_duration_months: 36,
   status: 'active',
 })
@@ -610,6 +624,7 @@ const createPackage = async () => {
   try {
     await apiFetch<FilmPackage>('/admin/film-packages', { method: 'POST', body: packageForm })
     packageForm.package_name = ''
+    packageForm.warranty_type = 'auto_film'
     packageForm.warranty_duration_months = 36
     notice.value = 'Đã thêm gói film.'
     refreshPackages()
