@@ -163,6 +163,12 @@
           <span class="text-sm text-gray-600">
             {{ authStore.user?.full_name || authStore.user?.email }}
           </span>
+          <button
+            @click="openPasswordModal"
+            class="text-sm text-gray-600 hover:text-primary-700"
+          >
+            Đổi mật khẩu
+          </button>
           <button 
             @click="logout"
             class="text-sm text-red-600 hover:text-red-700"
@@ -177,6 +183,97 @@
         <slot />
       </main>
     </div>
+
+    <div
+      v-if="passwordModalOpen"
+      class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 px-4"
+      @click.self="closePasswordModal"
+    >
+      <div class="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+        <div class="mb-5">
+          <h2 class="text-lg font-semibold text-gray-900">Đổi mật khẩu admin</h2>
+          <p class="mt-1 text-sm text-gray-500">
+            Sau khi đổi mật khẩu, bạn cần đăng nhập lại.
+          </p>
+        </div>
+
+        <div
+          v-if="passwordError"
+          class="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+        >
+          {{ passwordError }}
+        </div>
+
+        <div
+          v-if="passwordSuccess"
+          class="mb-4 rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-700"
+        >
+          {{ passwordSuccess }}
+        </div>
+
+        <form class="space-y-4" @submit.prevent="changePassword">
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-gray-700">
+              Mật khẩu hiện tại
+            </label>
+            <input
+              v-model="passwordForm.currentPassword"
+              type="password"
+              autocomplete="current-password"
+              required
+              class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100"
+            />
+          </div>
+
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-gray-700">
+              Mật khẩu mới
+            </label>
+            <input
+              v-model="passwordForm.newPassword"
+              type="password"
+              autocomplete="new-password"
+              required
+              minlength="8"
+              class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100"
+            />
+            <p class="mt-1 text-xs text-gray-500">Tối thiểu 8 ký tự.</p>
+          </div>
+
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-gray-700">
+              Nhập lại mật khẩu mới
+            </label>
+            <input
+              v-model="passwordForm.confirmPassword"
+              type="password"
+              autocomplete="new-password"
+              required
+              minlength="8"
+              class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100"
+            />
+          </div>
+
+          <div class="flex justify-end gap-3 pt-2">
+            <button
+              type="button"
+              class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              :disabled="passwordSubmitting"
+              @click="closePasswordModal"
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+              :disabled="passwordSubmitting"
+            >
+              {{ passwordSubmitting ? 'Đang đổi...' : 'Lưu mật khẩu' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -185,8 +282,18 @@ import { useAuthStore } from '~/stores/auth'
 
 const route = useRoute()
 const router = useRouter()
+const config = useRuntimeConfig()
 const authStore = useAuthStore()
 const sidebarOpen = ref(false)
+const passwordModalOpen = ref(false)
+const passwordSubmitting = ref(false)
+const passwordError = ref('')
+const passwordSuccess = ref('')
+const passwordForm = reactive({
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+})
 
 // Initialize auth on mount
 onMounted(() => {
@@ -201,6 +308,67 @@ onMounted(() => {
 const logout = () => {
   authStore.logout()
   router.push('/admin/login')
+}
+
+const resetPasswordForm = () => {
+  passwordForm.currentPassword = ''
+  passwordForm.newPassword = ''
+  passwordForm.confirmPassword = ''
+  passwordError.value = ''
+  passwordSuccess.value = ''
+}
+
+const openPasswordModal = () => {
+  resetPasswordForm()
+  passwordModalOpen.value = true
+}
+
+const closePasswordModal = () => {
+  if (passwordSubmitting.value) {
+    return
+  }
+  passwordModalOpen.value = false
+  resetPasswordForm()
+}
+
+const changePassword = async () => {
+  passwordError.value = ''
+  passwordSuccess.value = ''
+
+  if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+    passwordError.value = 'Mật khẩu mới không khớp.'
+    return
+  }
+
+  if (passwordForm.currentPassword === passwordForm.newPassword) {
+    passwordError.value = 'Mật khẩu mới phải khác mật khẩu hiện tại.'
+    return
+  }
+
+  passwordSubmitting.value = true
+
+  try {
+    await $fetch(`${config.public.apiBase}/auth/change-password`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${authStore.token}`,
+      },
+      body: {
+        current_password: passwordForm.currentPassword,
+        new_password: passwordForm.newPassword,
+      },
+    })
+
+    passwordSuccess.value = 'Đã đổi mật khẩu. Đang chuyển về trang đăng nhập...'
+    window.setTimeout(() => {
+      authStore.logout()
+      router.push('/admin/login')
+    }, 900)
+  } catch (err: any) {
+    passwordError.value = err.data?.detail || 'Không thể đổi mật khẩu. Vui lòng thử lại.'
+  } finally {
+    passwordSubmitting.value = false
+  }
 }
 
 // Close sidebar on route change (mobile)

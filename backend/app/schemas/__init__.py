@@ -8,7 +8,14 @@ from app.schemas.quote import (
     QuoteRequestBase, QuoteRequestCreate, QuoteRequestUpdate, QuoteRequestResponse,
     ContactBase, ContactCreate, ContactResponse,
 )
-from app.schemas.user import Token, TokenData, UserLogin, UserCreate, UserResponse
+from app.schemas.user import (
+    PasswordChangeRequest,
+    Token,
+    TokenData,
+    UserLogin,
+    UserCreate,
+    UserResponse,
+)
 from app.schemas.post import PostBase, PostCreate, PostUpdate, PostResponse, PostListResponse
 from app.schemas.common import PaginatedResponse, MessageResponse
 from app.schemas.warranty import (
@@ -29,7 +36,7 @@ __all__ = [
     "QuoteRequestBase", "QuoteRequestCreate", "QuoteRequestUpdate", "QuoteRequestResponse",
     "ContactBase", "ContactCreate", "ContactResponse",
     # User
-    "Token", "TokenData", "UserLogin", "UserCreate", "UserResponse",
+    "PasswordChangeRequest", "Token", "TokenData", "UserLogin", "UserCreate", "UserResponse",
     # Post
     "PostBase", "PostCreate", "PostUpdate", "PostResponse", "PostListResponse",
     # Common

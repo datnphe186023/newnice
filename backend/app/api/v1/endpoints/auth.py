@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -9,7 +9,7 @@ from app.core.database import get_db
 from app.core.security import verify_password, create_access_token, get_password_hash
 from app.core.config import settings
 from app.models import AdminUser
-from app.schemas import Token, UserLogin, UserCreate, UserResponse
+from app.schemas import PasswordChangeRequest, Token, UserLogin, UserCreate, UserResponse
 from app.api.deps import get_current_user
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -57,6 +57,32 @@ async def get_me(
 ):
     """Get current user info"""
     return current_user
+
+
+@router.post("/change-password", status_code=status.HTTP_204_NO_CONTENT)
+async def change_password(
+    data: PasswordChangeRequest,
+    current_user: Annotated[AdminUser, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)]
+):
+    """Change password for the current admin user"""
+    if not verify_password(data.current_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect"
+        )
+
+    if data.current_password == data.new_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be different from current password"
+        )
+
+    current_user.password_hash = get_password_hash(data.new_password)
+    current_user.updated_at = datetime.utcnow()
+    await db.commit()
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.post("/register", response_model=UserResponse)
